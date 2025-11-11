@@ -1,0 +1,167 @@
+[
+  {
+    "category": "Error Diffusion Dithering",
+    "type": "classic",
+    "algorithm": "Floyd–Steinberg",
+    "description": "Diffuses the quantization error across 4 neighboring pixels. Produces smooth and detailed results with an excellent balance between quality and performance.",
+    "complexity": "medium",
+    "year": 1976,
+    "author": "Robert W. Floyd & Louis Steinberg",
+    "performance": 3,
+    "preview": "/250/pixel-synth.png"
+  },
+  {
+    "category": "Error Diffusion Dithering",
+    "type": "classic",
+    "algorithm": "Jarvis, Judice, and Ninke (JJN)",
+    "description": "Spreads the error over 12 pixels, creating smoother and more natural textures, though at a slower speed.",
+    "complexity": "high",
+    "year": 1976,
+    "author": "J.F. Jarvis, C.N. Judice & W.H. Ninke",
+    "performance": 4,
+    "preview": "/250/pixel-synth-1.png"
+  },
+  {
+    "category": "Error Diffusion Dithering",
+    "type": "classic",
+    "algorithm": "Stucki",
+    "description": "An optimized version of JJN with smaller weights. Produces sharper results with excellent detail preservation.",
+    "complexity": "high",
+    "year": 1981,
+    "author": "Peter Stucki",
+    "performance": 4,
+    "preview": "/250/pixel-synth-2.png"
+  },
+  {
+    "category": "Error Diffusion Dithering",
+    "type": "classic",
+    "algorithm": "Burkes",
+    "description": "A faster variant of Stucki with comparable quality. Uses diffusion across two lines for efficient processing.",
+    "complexity": "medium",
+    "year": 1988,
+    "author": "Daniel Burkes",
+    "performance": 2,
+    "preview": "/250/pixel-synth-3.png"
+  },
+  {
+    "category": "Error Diffusion Dithering",
+    "type": "classic",
+    "algorithm": "Sierra",
+    "description": "Balances quality and performance with a three-line diffusion. Produces natural and crisp textures.",
+    "complexity": "medium",
+    "year": 1986,
+    "author": "Frank Sierra",
+    "performance": 3,
+    "preview": "/250/pixel-synth-4.png"
+  },
+  {
+    "category": "Error Diffusion Dithering",
+    "type": "classic",
+    "algorithm": "Two-Row Sierra",
+    "description": "Reduced version of Sierra using two diffusion rows. Faster execution with slight quality loss.",
+    "complexity": "low",
+    "year": 1986,
+    "author": "Frank Sierra",
+    "performance": 2,
+    "preview": "/250/pixel-synth-5.png"
+  },
+  {
+    "category": "Error Diffusion Dithering",
+    "type": "classic",
+    "algorithm": "Sierra Lite",
+    "description": "Lightweight and fast variant of Sierra, ideal for real-time applications or previews.",
+    "complexity": "low",
+    "year": 1986,
+    "author": "Frank Sierra",
+    "performance": 1,
+    "preview": "/250/pixel-synth-6.png"
+  },
+  {
+    "category": "Error Diffusion Dithering",
+    "type": "classic",
+    "algorithm": "Atkinson",
+    "description": "Creates crisp, retro-style dot patterns. Uses fewer diffusion pixels, resulting in a distinct stippled appearance.",
+    "complexity": "low",
+    "year": 1984,
+    "author": "Bill Atkinson (Apple)",
+    "performance": 2,
+    "preview": "/250/pixel-synth-7.png"
+  },
+  {
+    "category": "Ordered Dithering",
+    "type": "classic",
+    "algorithm": "Bayer 2×2",
+    "description": "Smallest Bayer matrix. Produces visible patterns and a distinct pixelated look.",
+    "complexity": "low",
+    "year": 1973,
+    "author": "Bayer",
+    "performance": 1,
+    "preview": "/250/pixel-synth-8.png"
+  },
+  {
+    "category": "Ordered Dithering",
+    "type": "classic",
+    "algorithm": "Bayer 4×4",
+    "description": "Common Bayer matrix. Strikes a balance between smoothness and perceptible patterning.",
+    "complexity": "low",
+    "year": 1973,
+    "author": "Bayer",
+    "performance": 1,
+    "preview": "/250/pixel-synth-9.png"
+  },
+  {
+    "category": "Ordered Dithering",
+    "type": "classic",
+    "algorithm": "Bayer 8×8",
+    "description": "Larger Bayer matrix that minimizes visible patterns, resulting in smoother gradients.",
+    "complexity": "medium",
+    "year": 1973,
+    "author": "Bayer",
+    "performance": 2,
+    "preview": "/250/pixel-synth-10.png"
+  },
+  {
+    "category": "Ordered Dithering",
+    "type": "classic",
+    "algorithm": "Clustered Dot (Halftone Ordered)",
+    "description": "Groups pixels to simulate offset printing. Ideal for ink-dot or halftone-style appearances.",
+    "complexity": "medium",
+    "year": "1980s",
+    "author": "Various Researchers",
+    "performance": 2,
+    "preview": "/250/pixel-synth-11.png"
+  },
+  {
+    "category": "Ordered Dithering",
+    "type": "modern",
+    "algorithm": "Blue Noise",
+    "description": "Uses a blue-noise matrix for balanced error distribution. Avoids visible patterns, producing a natural look.",
+    "complexity": "high",
+    "year": 1993,
+    "author": "Ulichney",
+    "performance": 4,
+    "preview": "/250/pixel-synth-12.png"
+  },
+  {
+    "category": "Random / Noise-Based Dithering",
+    "type": "modern",
+    "algorithm": "Random Dither",
+    "description": "Applies purely random thresholds, producing a grainy texture with noticeable noise characteristics.",
+    "complexity": "low",
+    "year": "-",
+    "author": "-",
+    "performance": 1,
+    "preview": "/250/pixel-synth-13.png"
+  },
+  {
+    "category": "Random / Noise-Based Dithering",
+    "type": "modern",
+    "algorithm": "Void-and-Cluster",
+    "description": "Generates a procedurally balanced distribution of dots and voids. Produces a smooth, organic texture.",
+    "complexity": "high",
+    "year": 1993,
+    "author": "Ulichney",
+    "performance": 4,
+    "preview": "/250/pixel-synth-14.png"
+  }
+]
