@@ -12,7 +12,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
+import SidebarAd from "./sidebar-ad";
 // import { NavUser } from "./nav-user";
 
 const data = {
@@ -33,6 +35,7 @@ const data = {
 export function SidebarLeft({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
+  const { state } = useSidebar();
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -56,6 +59,7 @@ export function SidebarLeft({
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
+        <SidebarAd state={state} />
         {/* <NavUser
           user={{
             name: "PixelSynth",
