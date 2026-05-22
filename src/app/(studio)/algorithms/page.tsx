@@ -1,5 +1,3 @@
-"use client";
-
 import { AlgorithmCard } from "@/components/algorithm-card";
 import { GlobalHeader } from "@/components/global-header";
 import { BreadcrumbItem, BreadcrumbLink } from "@/components/ui/breadcrumb";
@@ -17,7 +15,10 @@ export default function AlgorithmsPage() {
     >
       <GlobalHeader />
       <div className="flex flex-col gap-4 p-4">
-        <h1 tabIndex={-1} className="text-2xl font-semibold focus:outline-hidden">
+        <h1
+          tabIndex={-1}
+          className="text-2xl font-semibold focus:outline-hidden"
+        >
           Dithering Algorithms
         </h1>
         <p className="text-muted-foreground">
@@ -31,8 +32,12 @@ export default function AlgorithmsPage() {
             gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
           }}
         >
-          {algorithms.map((alg) => (
-            <AlgorithmCard key={alg.algorithm} data={alg} />
+          {algorithms.map((alg, index) => (
+            <AlgorithmCard
+              key={alg.algorithm}
+              data={alg}
+              preloadPreview={index < 4}
+            />
           ))}
         </section>
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { CircleQuestionMark } from "lucide-react";
 import {
   Tooltip,
@@ -10,6 +10,7 @@ import {
 
 export function InfoTooltip() {
   const [open, setOpen] = useState(false);
+  const pointerDownRef = useRef(false);
 
   return (
     <Tooltip open={open} onOpenChange={setOpen}>
@@ -18,6 +19,22 @@ export function InfoTooltip() {
           type="button"
           aria-label="Show dither control help"
           aria-expanded={open}
+          onPointerDown={() => {
+            pointerDownRef.current = true;
+          }}
+          onFocus={() => {
+            if (pointerDownRef.current) {
+              pointerDownRef.current = false;
+              return;
+            }
+            setOpen(true);
+          }}
+          onFocusCapture={() => {
+            if (!pointerDownRef.current) {
+              setOpen(true);
+            }
+          }}
+          onBlur={() => setOpen(false)}
           onClick={() => setOpen((prev) => !prev)}
           className="text-muted-foreground hover:text-foreground focus-visible:ring-ring rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-hidden"
         >

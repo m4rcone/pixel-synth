@@ -1,3 +1,5 @@
+"use client";
+
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import {
   Breadcrumb,

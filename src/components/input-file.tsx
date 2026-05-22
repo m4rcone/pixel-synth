@@ -20,8 +20,6 @@ export function InputFile() {
       if (!result) return;
 
       const img = new Image();
-      img.src = result.toString();
-
       img.onload = () => {
         const MAX_SIZE = 2000;
         let { width, height } = img;
@@ -41,17 +39,17 @@ export function InputFile() {
           ctx.drawImage(img, 0, 0, width, height);
 
           const resizedImg = new Image();
-          resizedImg.src = canvas.toDataURL("image/png");
-
           resizedImg.onload = () => {
             setBaseImage(resizedImg);
             setEditorState(EditorState.Uploaded);
           };
+          resizedImg.src = canvas.toDataURL("image/png");
         } else {
           setBaseImage(img);
           setEditorState(EditorState.Uploaded);
         }
       };
+      img.src = result.toString();
     };
 
     reader.readAsDataURL(file);

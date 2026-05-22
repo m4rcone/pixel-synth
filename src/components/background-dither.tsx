@@ -1,7 +1,6 @@
 "use client";
 
 import * as THREE from "three";
-import "../styles/background.css";
 import { Effect } from "postprocessing";
 import { useRef, useEffect, forwardRef } from "react";
 import { Canvas, useFrame, useThree, ThreeEvent } from "@react-three/fiber";
@@ -161,14 +160,14 @@ class RetroEffectImpl extends Effect {
   }
 }
 
+const WrappedRetroEffect = wrapEffect(RetroEffectImpl);
+
 const RetroEffect = forwardRef<
   RetroEffectImpl,
   { colorNum: number; pixelSize: number }
 >((props, ref) => {
   const { colorNum, pixelSize } = props;
-  const WrappedRetroEffect = wrapEffect(RetroEffectImpl);
   return (
-    // eslint-disable-next-line react-hooks/static-components
     <WrappedRetroEffect ref={ref} colorNum={colorNum} pixelSize={pixelSize} />
   );
 });
@@ -257,8 +256,14 @@ function DitheredWaves({
       prevColor.current = [...waveColor];
     }
 
-    u.enableMouseInteraction.value = enableMouseInteraction ? 1 : 0;
-    u.mouseRadius.value = mouseRadius;
+    const nextMouseInteraction = enableMouseInteraction ? 1 : 0;
+    if (u.enableMouseInteraction.value !== nextMouseInteraction) {
+      u.enableMouseInteraction.value = nextMouseInteraction;
+    }
+
+    if (u.mouseRadius.value !== mouseRadius) {
+      u.mouseRadius.value = mouseRadius;
+    }
 
     if (enableMouseInteraction) {
       u.mousePos.value.copy(mouseRef.current);
@@ -304,7 +309,7 @@ function DitheredWaves({
   );
 }
 
-interface DitherProps {
+export interface DitherProps {
   waveSpeed?: number;
   waveFrequency?: number;
   waveAmplitude?: number;
@@ -339,7 +344,8 @@ export function BackgroundDither({
       className="dither-container"
       camera={{ position: [0, 0, 6] }}
       dpr={1}
-      gl={{ antialias: true, preserveDrawingBuffer: true }}
+      frameloop={prefersReducedMotion ? "demand" : "always"}
+      gl={{ antialias: true }}
     >
       <DitheredWaves
         waveSpeed={waveSpeed}

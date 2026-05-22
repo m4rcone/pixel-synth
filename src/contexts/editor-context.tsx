@@ -5,7 +5,6 @@ import { createContext, useContext, useState } from "react";
 import { DitherAlgorithm } from "@/lib/enum/dither-algorithm";
 import { useImageContext } from "./image-context";
 import { Filters } from "@/lib/types/filters";
-import { renderPipeline } from "@/lib/editor";
 import { EditorState } from "@/lib/enum/editor-state";
 import {
   DEFAULT_COLOR_COUNT,
@@ -97,6 +96,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     }
 
     try {
+      const { renderPipeline } = await import("@/lib/editor/render");
       const result = await renderPipeline({
         baseImage,
         hasDither,

@@ -2,9 +2,6 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ImageProvider } from "@/contexts/image-context";
-import { CanvasProvider } from "@/contexts/canvas-context";
-import { EditorProvider } from "@/contexts/editor-context";
 import { RouteFocusManager } from "@/components/route-focus-manager";
 
 const geistSans = Geist({
@@ -46,11 +43,7 @@ export default function RootLayout({
             Skip to content
           </a>
           <RouteFocusManager />
-          <ImageProvider>
-            <CanvasProvider>
-              <EditorProvider>{children}</EditorProvider>
-            </CanvasProvider>
-          </ImageProvider>
+          {children}
         </ThemeProvider>
       </body>
     </html>

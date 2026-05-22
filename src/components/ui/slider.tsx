@@ -11,14 +11,14 @@ function Slider({
   value,
   min = 0,
   max = 100,
+  "aria-label": ariaLabelProp,
+  "aria-labelledby": ariaLabelledByProp,
   ...props
 }: React.ComponentProps<typeof SliderPrimitive.Root>) {
   const ariaLabel =
-    typeof props["aria-label"] === "string" ? props["aria-label"] : undefined;
+    typeof ariaLabelProp === "string" ? ariaLabelProp : undefined;
   const ariaLabelledBy =
-    typeof props["aria-labelledby"] === "string"
-      ? props["aria-labelledby"]
-      : undefined;
+    typeof ariaLabelledByProp === "string" ? ariaLabelledByProp : undefined;
   const _values = React.useMemo(
     () =>
       Array.isArray(value)

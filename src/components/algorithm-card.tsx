@@ -1,8 +1,5 @@
-"use client";
-
-import Image from "next/image";
-import { useState } from "react";
-import { Gauge, Cpu, Eye, EyeClosed } from "lucide-react";
+import { Gauge, Cpu } from "lucide-react";
+import { AlgorithmCardPreview } from "@/components/algorithm-card-preview";
 import {
   Card,
   CardTitle,
@@ -23,9 +20,13 @@ type Algorithm = {
   preview: string;
 };
 
-export function AlgorithmCard({ data }: { data: Algorithm }) {
-  const [showOriginal, setShowOriginal] = useState(false);
-
+export function AlgorithmCard({
+  data,
+  preloadPreview = false,
+}: {
+  data: Algorithm;
+  preloadPreview?: boolean;
+}) {
   const complexityColor =
     data.complexity === "high"
       ? "border-destructive/40 bg-destructive/10 text-destructive"
@@ -46,28 +47,11 @@ export function AlgorithmCard({ data }: { data: Algorithm }) {
 
   return (
     <Card className="border-border bg-background relative flex h-full flex-col overflow-hidden border pt-0 transition-all hover:shadow-md">
-      {/* Imagem fixa 250x250 */}
-      <div className="bg-muted/30 relative aspect-square w-full">
-        <Image
-          src={!showOriginal ? data.preview : "/250/sphere-250.png"}
-          alt={data.algorithm}
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, 250px"
-          priority
-        />
-        <button
-          onClick={() => setShowOriginal((prev) => !prev)}
-          className="bg-background/80 hover:bg-background absolute right-2 bottom-2 rounded-full p-1 shadow-sm transition"
-          aria-label="Toggle preview"
-        >
-          {showOriginal ? (
-            <EyeClosed width={16} height={16} />
-          ) : (
-            <Eye width={16} height={16} />
-          )}
-        </button>
-      </div>
+      <AlgorithmCardPreview
+        algorithm={data.algorithm}
+        preview={data.preview}
+        preload={preloadPreview}
+      />
 
       <CardHeader className="pb-2">
         <CardTitle className="text-lg leading-tight font-semibold">

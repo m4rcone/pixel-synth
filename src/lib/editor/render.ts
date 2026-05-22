@@ -2,7 +2,6 @@ import { Filters } from "@/lib/types/filters";
 import { DitherAlgorithm } from "@/lib/enum/dither-algorithm";
 import { hexToRgb } from "@/lib/utils";
 import { applyDither } from "./dither";
-import { applyPixiFilters } from "./filters";
 import { applyToneMapping } from "./tone-mapping";
 import { generateLuminanceMap } from "./luminance";
 import { downscaleImage, upscaleImage } from "./resize";
@@ -57,6 +56,7 @@ export async function renderPipeline({
       filters.blur > DEFAULT_FILTERS.blur;
 
     if (hasNewFilters) {
+      const { applyPixiFilters } = await import("./filters");
       processedCanvas = await applyPixiFilters(processedCanvas, filters);
     }
 

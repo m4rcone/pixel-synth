@@ -48,9 +48,7 @@ export async function applyPixiFilters(
   }
 
   if (filters.blur !== DEFAULT_FILTERS.blur) {
-    const blur = new BlurFilter();
-    blur.blur = filters.blur;
-    blur.quality = 4;
+    const blur = new BlurFilter({ strength: filters.blur, quality: 4 });
     appliedFilters.push(blur);
   }
 

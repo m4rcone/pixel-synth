@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { BackgroundDither } from "@/components/background-dither";
+import { BackgroundDitherLoader } from "@/components/background-dither-loader";
 import { Sparkles, SlidersHorizontal, Palette, SunMedium } from "lucide-react";
 
 export default function HomePage() {
@@ -12,7 +12,7 @@ export default function HomePage() {
     >
       {/* BACKGROUND */}
       <div className="absolute inset-0">
-        <BackgroundDither
+        <BackgroundDitherLoader
           waveColor={[0.5, 0.5, 0.5]}
           disableAnimation={false}
           enableMouseInteraction={true}
