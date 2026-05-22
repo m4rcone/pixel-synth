@@ -1,50 +1,29 @@
-# Pixel Synth
+# PixelSynth
 
-Aplicação web de processamento de imagens com 15 algoritmos de dithering, oferecendo controles interativos de escala, contraste, brilho, ruído e blur, além de ajustes de tonalidade por sombras, médios e realces. Suporta preservação de luminância e processamento visual em tempo real via WebGL.
+Turn any image into algorithmic art using real dithering techniques — right in your browser. Upload a photo, pick from 15 dithering algorithms, tune the look, and export the result. No server uploads, no accounts.
 
-🌐 Demo: https://pixel-synth.vercel.app  
-📦 Repositório: https://github.com/m4rcone/pixel-synth
+🌐 **Live:** https://pixelsynth.art
+💻 **Repo:** https://github.com/m4rcone/pixel-synth
 
----
+## Features
 
-## Visão geral
+- **15 dithering algorithms** — error diffusion (Floyd–Steinberg, Stucki, Atkinson…), ordered (Bayer, clustered dot, blue noise) and noise-based.
+- **Interactive controls** — processing scale, brightness, contrast, noise and blur.
+- **Tone mapping** — assign custom colors to shadows, midtones and highlights, with optional luminance preservation.
+- **Live before / after** — pan, zoom and compare the original against the processed image.
+- **100% client-side** — every pixel is computed locally; nothing leaves your device.
+- **Responsive & accessible** — works on desktop and mobile, with keyboard support.
 
-O **Pixel Synth** é uma aplicação web de processamento de imagens responsivo que utiliza **WebGL** para aplicar efeitos visuais de forma interativa e performática diretamente no navegador. O projeto oferece **15 algoritmos de dithering**, ajustes finos de imagem e preservação de luminância, permitindo resultados precisos e estilizados em tempo real.
+## Tech stack
 
----
+- **Next.js** (App Router) · **React** · **TypeScript**
+- **Tailwind CSS** · **shadcn/ui** (Radix UI)
+- **Konva** (canvas viewport) · **Pixi.js** (image filters) · **Three.js** (animated background)
+- Deployed on **Vercel**
 
-## Funcionalidades
+## Getting started
 
-- 15 algoritmos de dithering
-- Controles interativos:
-  - Escala
-  - Brilho
-  - Contraste
-  - Ruído
-  - Blur
-- Ajustes de tonalidade:
-  - Shadows
-  - Midtones
-  - Highlights
-- Preservação de luminância
-- Renderização em tempo real via WebGL
-- Interface responsiva (desktop e mobile)
-
----
-
-## Tecnologias
-
-- TypeScript  
-- React  
-- Next.js  
-- Pixi.js  
-- TailwindCSS  
-- Shadcn/UI  
-- Vercel  
-
----
-
-## Execução local
+Requires **Node 20+**.
 
 ```bash
 git clone https://github.com/m4rcone/pixel-synth.git
@@ -53,6 +32,15 @@ npm install
 npm run dev
 ```
 
+Then open http://localhost:3000.
+
+### Scripts
+
+- `npm run dev` — start the dev server
+- `npm run build` — production build
+- `npm start` — run the production build
+- `npm run test:a11y` — accessibility tests (Playwright)
+
 ## Status
 
-- Projeto pessoal em evolução, com foco em experimentação gráfica, performance e boas práticas de front-end moderno.
+A personal project by [m4rcone](https://github.com/m4rcone), focused on graphics experimentation, performance and modern front-end practices.
