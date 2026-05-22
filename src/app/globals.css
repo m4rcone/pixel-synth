@@ -45,6 +45,7 @@
 }
 
 :root {
+  color-scheme: light;
   --radius: 0.625rem;
   --font-display-serif: "Iowan Old Style", "Palatino Linotype", Palatino,
     Georgia, serif;
@@ -88,6 +89,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   /* Darkroom palette — mirrors the landing page ".lab" scope */
   --background: #0a0a0b;
   --foreground: #eceae4;

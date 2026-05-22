@@ -2,9 +2,6 @@ import type { Metadata } from "next";
 import { StructuredData } from "@/components/structured-data";
 import { SidebarRight } from "@/components/sidebar-right";
 import { SidebarInset } from "@/components/ui/sidebar";
-import { ImageProvider } from "@/contexts/image-context";
-import { CanvasProvider } from "@/contexts/canvas-context";
-import { EditorProvider } from "@/contexts/editor-context";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
 const description =
@@ -86,22 +83,18 @@ export default function EditorRouteLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ImageProvider>
-      <CanvasProvider>
-        <EditorProvider>
-          <StructuredData data={editorStructuredData} />
-          <SidebarInset
-            id="main-content"
-            tabIndex={-1}
-            className="relative h-full overflow-hidden focus:outline-hidden lg:pr-80"
-          >
-            {children}
-          </SidebarInset>
-          <aside aria-label="Editor controls">
-            <SidebarRight />
-          </aside>
-        </EditorProvider>
-      </CanvasProvider>
-    </ImageProvider>
+    <>
+      <StructuredData data={editorStructuredData} />
+      <SidebarInset
+        id="main-content"
+        tabIndex={-1}
+        className="relative h-full overflow-hidden focus:outline-hidden lg:pr-80"
+      >
+        {children}
+      </SidebarInset>
+      <aside aria-label="Editor controls">
+        <SidebarRight />
+      </aside>
+    </>
   );
 }

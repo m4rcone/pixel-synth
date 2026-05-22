@@ -1,5 +1,5 @@
 import "./globals.css";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { RouteFocusManager } from "@/components/route-focus-manager";
@@ -64,6 +64,12 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     images: [siteConfig.previewImage],
   },
+};
+
+export const viewport: Viewport = {
+  // Dark-first UI (default theme is dark and the landing page is always dark),
+  // so the browser chrome matches the darkroom background.
+  themeColor: "#0a0a0b",
 };
 
 export default function RootLayout({

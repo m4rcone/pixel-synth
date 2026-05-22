@@ -23,7 +23,7 @@ export function SaveButton() {
 
     const link = document.createElement("a");
     link.href = imageUrl;
-    link.download = "pixel-synth";
+    link.download = "pixel-synth.png";
     link.click();
   }
 
