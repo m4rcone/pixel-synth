@@ -1,10 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import {
   Breadcrumb,
   BreadcrumbList,
   BreadcrumbItem,
+  BreadcrumbLink,
   BreadcrumbSeparator,
 } from "./ui/breadcrumb";
 import { SidebarTrigger } from "./ui/sidebar";
@@ -23,7 +25,11 @@ export function GlobalHeader() {
         />
         <Breadcrumb>
           <BreadcrumbList>
-            <BreadcrumbItem>Home</BreadcrumbItem>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/">Home</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
             {extra && (
               <>
                 <BreadcrumbSeparator />

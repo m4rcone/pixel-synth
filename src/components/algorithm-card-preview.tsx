@@ -19,7 +19,11 @@ export function AlgorithmCardPreview({
     <div className="bg-muted/30 relative aspect-square w-full">
       <Image
         src={!showOriginal ? preview : "/250/sphere-250.png"}
-        alt={algorithm}
+        alt={
+          showOriginal
+            ? "Original sphere image before dithering"
+            : `${algorithm} dithering preview`
+        }
         fill
         className="object-cover"
         sizes="(max-width: 768px) 100vw, 250px"

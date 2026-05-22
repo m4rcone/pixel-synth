@@ -7,6 +7,7 @@ import {
   CardContent,
   CardDescription,
 } from "@/components/ui/card";
+import { slugify } from "@/lib/slugify";
 
 type Algorithm = {
   category: string;
@@ -27,6 +28,8 @@ export function AlgorithmCard({
   data: Algorithm;
   preloadPreview?: boolean;
 }) {
+  const algorithmId = `algorithm-${slugify(data.algorithm)}`;
+  const titleId = `${algorithmId}-title`;
   const complexityColor =
     data.complexity === "high"
       ? "border-destructive/40 bg-destructive/10 text-destructive"
@@ -46,7 +49,12 @@ export function AlgorithmCard({
   ));
 
   return (
-    <Card className="border-border bg-background relative flex h-full flex-col overflow-hidden border pt-0 transition-all hover:shadow-md">
+    <Card
+      id={algorithmId}
+      role="article"
+      aria-labelledby={titleId}
+      className="border-border bg-background relative flex h-full flex-col overflow-hidden border pt-0 transition-all hover:shadow-md"
+    >
       <AlgorithmCardPreview
         algorithm={data.algorithm}
         preview={data.preview}
@@ -54,7 +62,7 @@ export function AlgorithmCard({
       />
 
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg leading-tight font-semibold">
+        <CardTitle id={titleId} className="text-lg leading-tight font-semibold">
           {data.algorithm}
         </CardTitle>
         <CardDescription className="text-muted-foreground text-xs">

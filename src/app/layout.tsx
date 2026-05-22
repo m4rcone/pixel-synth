@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { RouteFocusManager } from "@/components/route-focus-manager";
+import { siteConfig } from "@/lib/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,9 +16,53 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PixelSynth",
-  description:
-    "Transform images into algorithmic art using real dithering techniques. Experiment, compare, and synth your pixels.",
+  metadataBase: new URL(siteConfig.url),
+  applicationName: siteConfig.name,
+  title: {
+    default: siteConfig.title,
+    template: `%s | ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  authors: [{ name: siteConfig.creator, url: siteConfig.links.github }],
+  creator: siteConfig.creator,
+  publisher: siteConfig.name,
+  category: "image editing",
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  openGraph: {
+    title: siteConfig.title,
+    description: siteConfig.description,
+    url: "/",
+    siteName: siteConfig.name,
+    locale: "en_US",
+    type: "website",
+    images: [
+      {
+        url: siteConfig.previewImage,
+        width: 250,
+        height: 250,
+        alt: "PixelSynth dithering preview",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary",
+    title: siteConfig.title,
+    description: siteConfig.description,
+    images: [siteConfig.previewImage],
+  },
 };
 
 export default function RootLayout({

@@ -1,7 +1,47 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { BackgroundDitherLoader } from "@/components/background-dither-loader";
+import { StructuredData } from "@/components/structured-data";
+import { absoluteUrl, siteConfig } from "@/lib/site";
 import { Sparkles, SlidersHorizontal, Palette, SunMedium } from "lucide-react";
+
+const homeStructuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: siteConfig.name,
+    url: siteConfig.url,
+    description: siteConfig.description,
+    inLanguage: "en",
+    publisher: {
+      "@type": "Person",
+      name: siteConfig.creator,
+      url: siteConfig.links.github,
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: siteConfig.name,
+    url: siteConfig.url,
+    description: siteConfig.description,
+    applicationCategory: "MultimediaApplication",
+    browserRequirements: "Requires a modern web browser",
+    operatingSystem: "Web",
+    isAccessibleForFree: true,
+    image: absoluteUrl(siteConfig.previewImage),
+    creator: {
+      "@type": "Person",
+      name: siteConfig.creator,
+      url: siteConfig.links.github,
+    },
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+  },
+];
 
 export default function HomePage() {
   return (
@@ -10,6 +50,8 @@ export default function HomePage() {
       tabIndex={-1}
       className="text-foreground relative h-screen w-full overflow-hidden focus:outline-hidden"
     >
+      <StructuredData data={homeStructuredData} />
+
       {/* BACKGROUND */}
       <div className="absolute inset-0">
         <BackgroundDitherLoader
@@ -40,12 +82,22 @@ export default function HomePage() {
             techniques. Experiment, compare, and synth your pixels.
           </p>
 
-          <div className="mt-8 flex justify-center">
-            <Link href="/editor">
-              <Button size="lg" className="text-sm font-semibold tracking-wide">
-                Try it now
-              </Button>
-            </Link>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Button
+              asChild
+              size="lg"
+              className="text-sm font-semibold tracking-wide"
+            >
+              <Link href="/editor">Try it now</Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="text-sm font-semibold tracking-wide"
+            >
+              <Link href="/algorithms">View algorithms</Link>
+            </Button>
           </div>
         </section>
 
