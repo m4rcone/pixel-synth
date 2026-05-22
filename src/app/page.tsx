@@ -87,7 +87,7 @@ export default function HomePage() {
     <main
       id="main-content"
       tabIndex={-1}
-      className="lab lab-grain font-sans relative min-h-screen w-full overflow-x-hidden bg-[var(--ink)] text-[var(--paper)] focus:outline-hidden"
+      className="lab lab-grain relative min-h-screen w-full overflow-x-hidden bg-[var(--ink)] font-sans text-[var(--paper)] focus:outline-hidden"
     >
       <StructuredData data={homeStructuredData} />
 
@@ -96,7 +96,7 @@ export default function HomePage() {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 overflow-hidden"
       >
-        <div className="absolute inset-0 opacity-[0.4] [mask-image:radial-gradient(120%_90%_at_85%_-10%,black,transparent_70%)]">
+        <div className="absolute inset-0 [mask-image:radial-gradient(120%_90%_at_85%_-10%,black,transparent_70%)] opacity-[0.4]">
           <BackgroundDitherLoader
             waveColor={[0.46, 0.46, 0.5]}
             disableAnimation={false}
@@ -127,7 +127,7 @@ export default function HomePage() {
           </Link>
           <nav
             aria-label="Primary"
-            className="font-mono flex items-center gap-1 text-[11px] tracking-[0.15em] uppercase sm:gap-2"
+            className="flex items-center gap-1 font-mono text-[11px] tracking-[0.15em] uppercase sm:gap-2"
           >
             <Link
               href="/algorithms"
@@ -156,7 +156,7 @@ export default function HomePage() {
         <section className="grid flex-1 items-center gap-12 py-10 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="max-w-xl">
             <p
-              className="lab-fade font-mono mb-7 inline-flex items-center gap-2 rounded-full border border-[var(--line-strong)] px-3 py-1.5 text-[10px] tracking-[0.22em] text-[var(--paper-dim)] uppercase"
+              className="lab-fade mb-7 inline-flex items-center gap-2 rounded-full border border-[var(--line-strong)] px-3 py-1.5 font-mono text-[10px] tracking-[0.22em] text-[var(--paper-dim)] uppercase"
               style={{ animationDelay: "0.05s" }}
             >
               <span className="lab-blink size-1.5 rounded-full bg-[var(--safelight)]" />
@@ -198,23 +198,21 @@ export default function HomePage() {
                 asChild
                 size="lg"
                 variant="outline"
-                className="font-mono border-[var(--line-strong)] bg-transparent text-xs tracking-[0.12em] text-[var(--paper)] uppercase hover:bg-white/5 hover:text-[var(--paper)]"
+                className="border-[var(--line-strong)] bg-transparent font-mono text-xs tracking-[0.12em] text-[var(--paper)] uppercase hover:bg-white/5 hover:text-[var(--paper)]"
               >
                 <Link href="/algorithms">Browse algorithms</Link>
               </Button>
             </div>
 
             <dl
-              className="lab-fade font-mono mt-10 flex flex-wrap items-center gap-x-3 gap-y-2 text-[10px] tracking-[0.18em] text-[var(--paper-dim)] uppercase"
+              className="lab-fade mt-10 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-[10px] tracking-[0.18em] text-[var(--paper-dim)] uppercase"
               style={{ animationDelay: "0.42s" }}
             >
               <Spec value="15" label="Algorithms" />
               <Dot />
-              <Spec value="5" label="Categories" />
+              <Spec value="3" label="Categories" />
               <Dot />
               <Spec value="100%" label="Local" />
-              <Dot />
-              <Spec value="Est. 1976" label="" />
             </dl>
           </div>
 
@@ -235,7 +233,7 @@ export default function HomePage() {
           </ul>
           <div
             aria-hidden="true"
-            className="lab-marquee-track font-mono flex w-max items-center text-sm tracking-[0.2em] whitespace-nowrap text-[var(--paper-dim)] uppercase"
+            className="lab-marquee-track flex w-max items-center font-mono text-sm tracking-[0.2em] whitespace-nowrap text-[var(--paper-dim)] uppercase"
           >
             {[...ALGORITHMS, ...ALGORITHMS].map((a, i) => (
               <span key={i} className="flex items-center">
@@ -250,10 +248,7 @@ export default function HomePage() {
         </section>
 
         {/* FEATURES */}
-        <section
-          aria-labelledby="features-heading"
-          className="py-16 sm:py-24"
-        >
+        <section aria-labelledby="features-heading" className="py-16 sm:py-24">
           <div className="mb-8 flex items-baseline justify-between">
             <h2
               id="features-heading"
@@ -261,7 +256,7 @@ export default function HomePage() {
             >
               A darkroom for pixels
             </h2>
-            <span className="font-mono hidden text-[10px] tracking-[0.2em] text-[var(--paper-dim)] uppercase sm:inline">
+            <span className="hidden font-mono text-[10px] tracking-[0.2em] text-[var(--paper-dim)] uppercase sm:inline">
               / Capabilities
             </span>
           </div>
@@ -272,7 +267,7 @@ export default function HomePage() {
                 key={f.n}
                 className="group bg-[var(--ink)] p-6 transition-colors hover:bg-[var(--ink-2)] sm:p-8"
               >
-                <div className="font-mono flex items-center justify-between text-[10px] tracking-[0.2em] uppercase">
+                <div className="flex items-center justify-between font-mono text-[10px] tracking-[0.2em] uppercase">
                   <span className="text-[var(--safelight)]">{f.n}</span>
                   <span className="text-[var(--paper-dim)]">{f.label}</span>
                 </div>
@@ -290,7 +285,7 @@ export default function HomePage() {
           <div className="mt-12 flex flex-col items-center gap-5 rounded-xl border border-[var(--line)] bg-[var(--ink-2)]/60 px-6 py-10 text-center">
             <p className="font-display max-w-lg text-2xl leading-snug sm:text-3xl">
               Drop in an image. Pick an algorithm.{" "}
-              <span className="italic text-[var(--paper-dim)]">
+              <span className="text-[var(--paper-dim)] italic">
                 Watch it develop.
               </span>
             </p>
@@ -307,7 +302,7 @@ export default function HomePage() {
         {/* FOOTER */}
         <footer className="mt-auto flex flex-col items-center justify-between gap-3 border-t border-[var(--line)] py-7 text-center sm:flex-row sm:text-left">
           <p className="font-mono text-[11px] tracking-[0.1em] text-[var(--paper-dim)]">
-            © 2025 PixelSynth — a dithering image editor
+            © 2026 PixelSynth — a dithering image editor
           </p>
           <p className="font-mono text-[11px] tracking-[0.1em] text-[var(--paper-dim)]">
             Built by{" "}
