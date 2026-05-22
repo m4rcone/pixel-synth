@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { RouteFocusManager } from "@/components/route-focus-manager";
 import { siteConfig } from "@/lib/site";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -90,6 +91,7 @@ export default function RootLayout({
           <RouteFocusManager />
           {children}
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
