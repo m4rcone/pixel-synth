@@ -31,21 +31,35 @@ export function NavMain({
 
           return (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild tooltip={item.title}>
+              <SidebarMenuButton
+                asChild
+                tooltip={item.title}
+                data-active={isActive}
+                className="data-[active=true]:bg-[var(--sidebar-accent)]"
+              >
                 <Link
                   href={item.url}
-                  className={`flex items-center gap-2 transition-colors ${
+                  aria-current={isActive ? "page" : undefined}
+                  className={`relative flex items-center gap-2.5 transition-colors ${
                     isActive
-                      ? "text-primary font-medium"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "text-foreground"
+                      : "text-[var(--paper-dim)] hover:text-foreground"
                   }`}
                 >
+                  <span
+                    aria-hidden="true"
+                    className={`absolute top-1/2 -left-2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-[var(--safelight)] transition-opacity ${
+                      isActive ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
                   {item.icon && (
                     <item.icon
-                      className={`h-4 w-4 ${isActive ? "text-primary" : "text-muted-foreground"}`}
+                      className={`h-4 w-4 shrink-0 ${isActive ? "text-[var(--safelight)]" : ""}`}
                     />
                   )}
-                  <span>{item.title}</span>
+                  <span className="font-mono text-[11px] tracking-[0.16em] uppercase">
+                    {item.title}
+                  </span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

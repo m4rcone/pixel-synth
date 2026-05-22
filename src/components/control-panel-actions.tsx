@@ -93,10 +93,9 @@ export function ControlPanelActions() {
     <div className="flex min-h-[39.5px] w-full items-center">
       {editorState !== EditorState.Rendered && (
         <Button
-          variant="outline"
           onClick={() => handleRender(true)}
           disabled={editorState === EditorState.Initial || isRendering}
-          className="flex flex-1 items-center justify-center gap-1"
+          className="font-mono flex flex-1 items-center justify-center gap-1.5 text-xs tracking-[0.12em] uppercase"
         >
           <Sparkles className="h-4 w-4" />
           Apply Dither
@@ -111,7 +110,7 @@ export function ControlPanelActions() {
               <Button
                 variant="destructive"
                 disabled={isRendering}
-                className="flex flex-1 items-center justify-center gap-1"
+                className="font-mono flex flex-1 items-center justify-center gap-1.5 text-xs tracking-[0.12em] uppercase"
               >
                 <Trash2 className="h-4 w-4" />
                 Discard
@@ -127,7 +126,10 @@ export function ControlPanelActions() {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDiscard}>
+                <AlertDialogAction
+                  onClick={handleDiscard}
+                  className="bg-destructive text-white hover:bg-destructive/90"
+                >
                   Confirm
                 </AlertDialogAction>
               </AlertDialogFooter>
@@ -140,7 +142,7 @@ export function ControlPanelActions() {
               <Button
                 variant="outline"
                 disabled={isRendering}
-                className="flex flex-1 items-center justify-center gap-1"
+                className="font-mono flex flex-1 items-center justify-center gap-1.5 text-xs tracking-[0.12em] uppercase"
               >
                 <RotateCcw className="h-4 w-4" />
                 Reset

@@ -41,9 +41,9 @@ export function CanvasController({ onStatusChange }: CanvasControllerProps) {
   };
 
   return (
-    <div className="flex min-h-14 items-center justify-between border-t px-6 lg:px-3">
-      <span className="text-muted-foreground text-sm">
-        Zoom: {(scaleZoom * 100).toFixed()}%
+    <div className="flex min-h-14 items-center justify-between border-t border-[var(--line)] px-6 lg:px-3">
+      <span className="font-mono text-[10px] tracking-[0.16em] text-[var(--paper-dim)] uppercase tabular-nums">
+        Zoom {(scaleZoom * 100).toFixed()}%
       </span>
       <div className="flex items-center gap-2">
         <SaveButton />

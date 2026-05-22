@@ -36,10 +36,10 @@ export function SliderScale() {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <Label htmlFor="dither-scale" className="text-muted-foreground">
+        <Label htmlFor="dither-scale" className="font-mono text-[10px] tracking-[0.16em] text-[var(--paper-dim)] uppercase">
           Processing Scale
         </Label>
-        <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-xs">
+        <span className="font-mono text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-xs tabular-nums">
           {baseImage && editorState !== EditorState.Initial
             ? `${(ditherScale * 100).toFixed(0)}%`
             : "-"}
@@ -62,10 +62,10 @@ export function SliderScale() {
           }
         />
 
-        <span className="text-muted-foreground text-center text-xs">
+        <span className="font-mono text-muted-foreground text-center text-[10px] tracking-[0.1em] tabular-nums">
           {baseImage && editorState !== EditorState.Initial
-            ? `${scaledWidth} x ${scaledHeight}`
-            : "-"}
+            ? `${scaledWidth} × ${scaledHeight}`
+            : "—"}
         </span>
       </div>
     </div>

@@ -92,7 +92,7 @@ export default function AlgorithmsLayout({
     <SidebarInset
       id="main-content"
       tabIndex={-1}
-      className="relative h-full overflow-hidden focus:outline-hidden"
+      className="relative h-svh overflow-y-auto focus:outline-hidden"
     >
       <StructuredData data={algorithmsStructuredData} />
       {children}

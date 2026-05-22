@@ -30,7 +30,7 @@ export function SelectAlgorithm() {
 
   return (
     <div className="flex flex-col gap-2">
-      <Label htmlFor="algorithm" className="text-muted-foreground">
+      <Label htmlFor="algorithm" className="font-mono text-[10px] tracking-[0.16em] text-[var(--paper-dim)] uppercase">
         Algorithm
       </Label>
       <Select

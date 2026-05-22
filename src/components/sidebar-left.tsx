@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { AudioLines, BrainCircuit, Sparkles } from "lucide-react";
+import { BrainCircuit, Sparkles } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
 import {
@@ -39,15 +39,19 @@ export function SidebarLeft({
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <Link href="/">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <AudioLines className="size-4" />
-                </div>
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-medium">PixelSynth v.0</span>
-                  <span className="text-muted-foreground text-xs"></span>
-                </div>
+            <SidebarMenuButton
+              size="lg"
+              asChild
+              className="hover:bg-[var(--sidebar-accent)]"
+            >
+              <Link href="/" className="flex items-center gap-2.5">
+                <span
+                  aria-hidden="true"
+                  className="lab-dots grid size-7 shrink-0 place-items-center rounded-[5px] border border-[var(--line-strong)] text-white/65"
+                />
+                <span className="font-display text-lg tracking-tight">
+                  PixelSynth
+                </span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

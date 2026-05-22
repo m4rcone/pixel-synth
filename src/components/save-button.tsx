@@ -32,7 +32,7 @@ export function SaveButton() {
       variant="outline"
       onClick={handleSave}
       disabled={!processedImage || processedImage === baseImage}
-      className="flex gap-1"
+      className="font-mono flex gap-1.5 text-xs tracking-[0.12em] uppercase"
     >
       <Download className="h-4 w-4" />
       Save

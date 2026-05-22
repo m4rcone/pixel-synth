@@ -79,40 +79,53 @@
   --sidebar-accent-foreground: hsl(240 5.9% 10%);
   --sidebar-border: hsl(220 13% 91%);
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
+
+  /* Dither Lab accents — shared by landing + studio (light fallbacks) */
+  --safelight: #d83a30;
+  --paper-dim: #6b6964;
+  --line: rgba(10, 10, 11, 0.1);
+  --line-strong: rgba(10, 10, 11, 0.18);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: hsl(217.2 91.2% 59.8%);
+  /* Darkroom palette — mirrors the landing page ".lab" scope */
+  --background: #0a0a0b;
+  --foreground: #eceae4;
+  --card: #101013;
+  --card-foreground: #eceae4;
+  --popover: #101013;
+  --popover-foreground: #eceae4;
+  --primary: #eceae4;
+  --primary-foreground: #0a0a0b;
+  --secondary: #18181c;
+  --secondary-foreground: #eceae4;
+  --muted: #18181c;
+  --muted-foreground: #8f8d87;
+  --accent: #1c1c21;
+  --accent-foreground: #eceae4;
+  --destructive: #ff453a;
+  --border: rgba(236, 234, 228, 0.13);
+  --input: rgba(236, 234, 228, 0.18);
+  --ring: #ff453a;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: hsl(240 5.9% 10%);
-  --sidebar-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-primary: hsl(224.3 76.3% 48%);
-  --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(240 3.7% 15.9%);
-  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-border: hsl(240 3.7% 15.9%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --sidebar: #0c0c0e;
+  --sidebar-foreground: #eceae4;
+  --sidebar-primary: #eceae4;
+  --sidebar-primary-foreground: #0a0a0b;
+  --sidebar-accent: #18181c;
+  --sidebar-accent-foreground: #eceae4;
+  --sidebar-border: rgba(236, 234, 228, 0.1);
+  --sidebar-ring: #ff453a;
+
+  /* Dither Lab accents — shared by landing + studio */
+  --safelight: #ff453a;
+  --paper-dim: #8f8d87;
+  --line: rgba(236, 234, 228, 0.13);
+  --line-strong: rgba(236, 234, 228, 0.28);
 }
 
 @layer base {

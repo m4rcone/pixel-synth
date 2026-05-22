@@ -40,10 +40,10 @@ export function FilterControls() {
       {/* Contrast */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <Label htmlFor="contrast" className="text-muted-foreground">
+          <Label htmlFor="contrast" className="font-mono text-[10px] tracking-[0.16em] text-[var(--paper-dim)] uppercase">
             Contrast
           </Label>
-          <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-xs">
+          <span className="font-mono text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-xs tabular-nums">
             {editorState === EditorState.Initial
               ? "-"
               : filters.contrast.toFixed(2)}
@@ -73,10 +73,10 @@ export function FilterControls() {
       {/* Brightness */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <Label htmlFor="brightness" className="text-muted-foreground">
+          <Label htmlFor="brightness" className="font-mono text-[10px] tracking-[0.16em] text-[var(--paper-dim)] uppercase">
             Brightness
           </Label>
-          <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-xs">
+          <span className="font-mono text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-xs tabular-nums">
             {editorState === EditorState.Initial
               ? "-"
               : (filters.brightness - 1).toFixed(2)}
@@ -106,10 +106,10 @@ export function FilterControls() {
       {/* Noise */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <Label htmlFor="noise" className="text-muted-foreground">
+          <Label htmlFor="noise" className="font-mono text-[10px] tracking-[0.16em] text-[var(--paper-dim)] uppercase">
             Noise
           </Label>
-          <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-xs">
+          <span className="font-mono text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-xs tabular-nums">
             {editorState === EditorState.Initial
               ? "-"
               : filters.noise.toFixed(2)}
@@ -139,10 +139,10 @@ export function FilterControls() {
       {/* Blur */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <Label htmlFor="blur" className="text-muted-foreground">
+          <Label htmlFor="blur" className="font-mono text-[10px] tracking-[0.16em] text-[var(--paper-dim)] uppercase">
             Blur
           </Label>
-          <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-xs">
+          <span className="font-mono text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-xs tabular-nums">
             {editorState === EditorState.Initial
               ? "-"
               : filters.blur.toFixed(2)}

@@ -25,39 +25,42 @@ export function SidebarRight({
       className="bg-background fixed top-0 right-0 z-40 hidden h-svh w-80 border-l lg:flex"
       {...props}
     >
-      <SidebarHeader className="border-sidebar-border flex h-14 flex-row items-center justify-between border-b px-3">
-        <SidebarGroupLabel className="text-foreground px-0 text-sm">
-          Control Panel
-        </SidebarGroupLabel>
+      <SidebarHeader className="flex h-14 flex-row items-center justify-between border-b border-[var(--line)] px-4">
+        <div className="flex items-center gap-2">
+          <span className="lab-blink size-1.5 rounded-full bg-[var(--safelight)]" />
+          <span className="font-display text-base tracking-tight">
+            Control Panel
+          </span>
+        </div>
         <InfoTooltip />
       </SidebarHeader>
       <SidebarContent
         aria-label="Editor control groups"
         tabIndex={0}
-        className="focus-visible:ring-ring gap-0 focus-visible:ring-2 focus-visible:outline-hidden"
+        className="focus-visible:ring-ring gap-0 py-2 focus-visible:ring-2 focus-visible:outline-hidden"
       >
-        <SidebarGroupLabel className="mt-2 flex justify-center gap-1 text-sm">
-          <Settings />
-          Dither Controls
+        <SidebarGroupLabel className="font-mono mt-1 flex items-center gap-1.5 px-4 text-[10px] tracking-[0.18em] text-[var(--paper-dim)] uppercase">
+          <Settings className="size-3.5 text-[var(--safelight)]" />
+          Dither
         </SidebarGroupLabel>
-        <div className="mb-3 flex flex-col gap-2 px-3">
+        <div className="mb-3 flex flex-col gap-3 px-4">
           <SelectAlgorithm />
           <SliderScale />
         </div>
-        <SidebarSeparator className="mx-0 my-2" />
-        <SidebarGroupLabel className="flex justify-center gap-1 text-sm">
-          <SlidersHorizontal />
-          Filter Controls
+        <SidebarSeparator className="mx-0 my-2 bg-[var(--line)]" />
+        <SidebarGroupLabel className="font-mono flex items-center gap-1.5 px-4 text-[10px] tracking-[0.18em] text-[var(--paper-dim)] uppercase">
+          <SlidersHorizontal className="size-3.5 text-[var(--safelight)]" />
+          Filters
         </SidebarGroupLabel>
-        <div className="mb-3 px-3">
+        <div className="mb-3 px-4">
           <FilterControls />
         </div>
-        <SidebarSeparator className="mx-0 my-2" />
-        <SidebarGroupLabel className="flex justify-center gap-1 text-sm">
-          <Palette />
-          Tone Controls
+        <SidebarSeparator className="mx-0 my-2 bg-[var(--line)]" />
+        <SidebarGroupLabel className="font-mono flex items-center gap-1.5 px-4 text-[10px] tracking-[0.18em] text-[var(--paper-dim)] uppercase">
+          <Palette className="size-3.5 text-[var(--safelight)]" />
+          Tone
         </SidebarGroupLabel>
-        <div className="mb-3 px-3">
+        <div className="mb-3 px-4">
           <ToneControls />
         </div>
       </SidebarContent>

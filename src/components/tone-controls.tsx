@@ -80,7 +80,10 @@ export function ToneControls() {
     <div className="flex flex-col gap-2">
       {/* Color count */}
       <div className="flex flex-col gap-2">
-        <Label htmlFor="tone-mapping" className="text-muted-foreground">
+        <Label
+          htmlFor="tone-mapping"
+          className="font-mono text-[10px] tracking-[0.16em] text-[var(--paper-dim)] uppercase"
+        >
           Color Mode
         </Label>
         <div className="flex items-center gap-4">
@@ -192,11 +195,14 @@ function ToneControl({
     <div className="flex flex-col gap-2">
       <div className="flex flex-col">
         <div className="flex items-center justify-between">
-          <span id={labelId} className="text-muted-foreground text-sm">
+          <span
+            id={labelId}
+            className="font-mono text-[10px] tracking-[0.16em] text-[var(--paper-dim)] uppercase"
+          >
             {label}
           </span>
 
-          <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-xs">
+          <span className="font-mono text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-xs tabular-nums">
             {editorState === EditorState.Initial ? (
               "-"
             ) : label !== ToneRange.Highlights ? (

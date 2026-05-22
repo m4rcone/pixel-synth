@@ -19,19 +19,20 @@ export function MobileEditorPanel() {
   return (
     <section
       aria-labelledby="mobile-control-panel-heading"
-      className="bg-background flex flex-col gap-1 border-t px-6 py-2"
+      className="bg-background flex flex-col gap-1 border-t border-[var(--line)] px-6 py-2"
     >
       <div className="mt-4 flex items-center justify-between">
         <h2
           id="mobile-control-panel-heading"
-          className="flex items-center gap-2 text-sm font-semibold tracking-wide"
+          className="flex items-center gap-2 font-display text-lg tracking-tight"
         >
+          <span className="lab-blink size-1.5 rounded-full bg-[var(--safelight)]" />
           Control Panel
         </h2>
         <InfoTooltip />
       </div>
 
-      <Separator className="mt-2" />
+      <Separator className="mt-2 bg-[var(--line)]" />
 
       <Accordion
         type="multiple"
@@ -39,7 +40,7 @@ export function MobileEditorPanel() {
         className="w-full"
       >
         <AccordionItem value="dither">
-          <AccordionTrigger className="flex items-center gap-1 py-2 text-sm">
+          <AccordionTrigger className="font-mono flex items-center gap-1.5 py-2 text-[11px] tracking-[0.16em] uppercase">
             <Settings className="h-4 w-4" />
             Dither Controls
           </AccordionTrigger>
@@ -52,7 +53,7 @@ export function MobileEditorPanel() {
         <Separator />
 
         <AccordionItem value="filter">
-          <AccordionTrigger className="flex items-center gap-1 py-2 text-sm">
+          <AccordionTrigger className="font-mono flex items-center gap-1.5 py-2 text-[11px] tracking-[0.16em] uppercase">
             <SlidersHorizontal className="h-4 w-4" />
             Filter Controls
           </AccordionTrigger>
@@ -64,7 +65,7 @@ export function MobileEditorPanel() {
         <Separator />
 
         <AccordionItem value="tone">
-          <AccordionTrigger className="flex items-center gap-1 py-2 text-sm">
+          <AccordionTrigger className="font-mono flex items-center gap-1.5 py-2 text-[11px] tracking-[0.16em] uppercase">
             <Blend className="h-4 w-4" />
             Tone Controls
           </AccordionTrigger>
