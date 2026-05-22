@@ -5,7 +5,11 @@ import { Sparkles, SlidersHorizontal, Palette, SunMedium } from "lucide-react";
 
 export default function HomePage() {
   return (
-    <main className="text-foreground relative h-screen w-full overflow-hidden">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="text-foreground relative h-screen w-full overflow-hidden focus:outline-hidden"
+    >
       {/* BACKGROUND */}
       <div className="absolute inset-0">
         <BackgroundDither
@@ -24,7 +28,10 @@ export default function HomePage() {
       <div className="relative z-10 flex h-full flex-col justify-between">
         {/* HERO */}
         <section className="flex flex-1 flex-col items-center justify-center px-6 text-center">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-7xl md:text-8xl">
+          <h1
+            tabIndex={-1}
+            className="text-5xl font-extrabold tracking-tight focus:outline-hidden sm:text-7xl md:text-8xl"
+          >
             PixelSynth
           </h1>
 
@@ -45,7 +52,13 @@ export default function HomePage() {
         {/* FOOTER */}
         <footer className="bg-background/60 backdrop-blur-sm">
           <div className="mx-auto max-w-6xl px-4 py-4">
-            <div className="grid grid-cols-2 gap-6 text-center md:grid-cols-4">
+            <section
+              aria-labelledby="features-heading"
+              className="grid grid-cols-2 gap-6 text-center md:grid-cols-4"
+            >
+              <h2 id="features-heading" className="sr-only">
+                PixelSynth features
+              </h2>
               <FeatureCard
                 icon={<Sparkles size={20} />}
                 title="Dithering Algorithms"
@@ -66,7 +79,7 @@ export default function HomePage() {
                 title="Luminance Preservation"
                 desc="Keep natural tones while applying dithers."
               />
-            </div>
+            </section>
 
             <div className="border-muted text-muted-foreground -mx-999 mt-6 border-t pt-4 text-center text-xs sm:text-sm">
               <p>
@@ -75,7 +88,7 @@ export default function HomePage() {
                   href="https://github.com/m4rcone"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-muted-foreground font-semibold transition-colors hover:text-neutral-200"
+                  className="text-muted-foreground hover:text-foreground font-semibold transition-colors"
                 >
                   m4rcone
                 </a>
@@ -100,11 +113,13 @@ function FeatureCard({
 }) {
   return (
     <div className="flex flex-col items-center gap-1 text-center">
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-800/70 text-neutral-300 shadow-sm">
+      <div className="bg-muted/70 text-muted-foreground flex h-10 w-10 items-center justify-center rounded-xl shadow-sm">
         {icon}
       </div>
-      <h3 className="text-sm font-semibold text-neutral-200">{title}</h3>
-      <p className="max-w-48 text-xs leading-snug text-neutral-400">{desc}</p>
+      <h3 className="text-foreground text-sm font-semibold">{title}</h3>
+      <p className="text-muted-foreground max-w-48 text-xs leading-snug">
+        {desc}
+      </p>
     </div>
   );
 }

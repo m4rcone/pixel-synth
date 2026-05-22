@@ -51,6 +51,7 @@ export function FilterControls() {
         </div>
         <Slider
           id="contrast"
+          aria-label="Contrast"
           value={[filters.contrast]}
           min={-1}
           max={1}
@@ -83,6 +84,7 @@ export function FilterControls() {
         </div>
         <Slider
           id="brightness"
+          aria-label="Brightness"
           value={[filters.brightness]}
           min={0}
           max={2}
@@ -115,6 +117,7 @@ export function FilterControls() {
         </div>
         <Slider
           id="noise"
+          aria-label="Noise"
           value={[filters.noise]}
           min={0}
           max={1}
@@ -136,7 +139,7 @@ export function FilterControls() {
       {/* Blur */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <Label htmlFor="blue" className="text-muted-foreground">
+          <Label htmlFor="blur" className="text-muted-foreground">
             Blur
           </Label>
           <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-xs">
@@ -147,6 +150,7 @@ export function FilterControls() {
         </div>
         <Slider
           id="blur"
+          aria-label="Blur"
           value={[filters.blur]}
           min={0}
           max={5}

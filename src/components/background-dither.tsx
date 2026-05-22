@@ -6,6 +6,7 @@ import { Effect } from "postprocessing";
 import { useRef, useEffect, forwardRef } from "react";
 import { Canvas, useFrame, useThree, ThreeEvent } from "@react-three/fiber";
 import { EffectComposer, wrapEffect } from "@react-three/postprocessing";
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 
 const waveVertexShader = `
 precision highp float;
@@ -326,8 +327,15 @@ export function BackgroundDither({
   enableMouseInteraction = true,
   mouseRadius = 1,
 }: DitherProps) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const shouldDisableAnimation = disableAnimation || prefersReducedMotion;
+  const shouldEnableMouseInteraction =
+    enableMouseInteraction && !prefersReducedMotion;
+
   return (
     <Canvas
+      aria-hidden="true"
+      role="presentation"
       className="dither-container"
       camera={{ position: [0, 0, 6] }}
       dpr={1}
@@ -340,8 +348,8 @@ export function BackgroundDither({
         waveColor={waveColor}
         colorNum={colorNum}
         pixelSize={pixelSize}
-        disableAnimation={disableAnimation}
-        enableMouseInteraction={enableMouseInteraction}
+        disableAnimation={shouldDisableAnimation}
+        enableMouseInteraction={shouldEnableMouseInteraction}
         mouseRadius={mouseRadius}
       />
     </Canvas>

@@ -2,6 +2,7 @@
 
 import { type ChangeEvent } from "react";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useImageContext } from "@/contexts/image-context";
 import { EditorState } from "@/lib/enum/editor-state";
 
@@ -59,9 +60,20 @@ export function InputFile() {
   return (
     <div className="flex h-[300px] items-center justify-center px-6 py-4 md:h-[500px] lg:h-full">
       <div className="flex flex-col gap-3">
-        <h2 className="text-center font-semibold">Click to start</h2>
-        <Input type="file" accept="image/*" onChange={handleFileUpload} />
-        <span className="text-muted-foreground text-center text-xs">
+        <Label htmlFor="image-upload" className="justify-center font-semibold">
+          Click to start
+        </Label>
+        <Input
+          id="image-upload"
+          type="file"
+          accept="image/*"
+          aria-describedby="image-upload-description"
+          onChange={handleFileUpload}
+        />
+        <span
+          id="image-upload-description"
+          className="text-muted-foreground text-center text-xs"
+        >
           All image formats supported by your browser
         </span>
       </div>

@@ -31,7 +31,11 @@ export function SidebarRight({
         </SidebarGroupLabel>
         <InfoTooltip />
       </SidebarHeader>
-      <SidebarContent className="gap-0">
+      <SidebarContent
+        aria-label="Editor control groups"
+        tabIndex={0}
+        className="focus-visible:ring-ring gap-0 focus-visible:ring-2 focus-visible:outline-hidden"
+      >
         <SidebarGroupLabel className="mt-2 flex justify-center gap-1 text-sm">
           <Settings />
           Dither Controls

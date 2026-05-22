@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { AudioLines, BrainCircuit, Sparkles } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -39,7 +40,7 @@ export function SidebarLeft({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="./">
+              <Link href="/">
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <AudioLines className="size-4" />
                 </div>
@@ -47,13 +48,15 @@ export function SidebarLeft({
                   <span className="font-medium">PixelSynth v.0</span>
                   <span className="text-muted-foreground text-xs"></span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <nav aria-label="Studio">
+          <NavMain items={data.navMain} />
+        </nav>
       </SidebarContent>
       <SidebarFooter>
         {/* <NavUser

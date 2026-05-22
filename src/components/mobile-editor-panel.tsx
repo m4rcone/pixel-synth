@@ -17,9 +17,15 @@ import { InfoTooltip } from "./info-tooltip";
 
 export function MobileEditorPanel() {
   return (
-    <section className="bg-background flex flex-col gap-1 border-t px-6 py-2">
+    <section
+      aria-labelledby="mobile-control-panel-heading"
+      className="bg-background flex flex-col gap-1 border-t px-6 py-2"
+    >
       <div className="mt-4 flex items-center justify-between">
-        <h2 className="flex items-center gap-2 text-sm font-semibold tracking-wide">
+        <h2
+          id="mobile-control-panel-heading"
+          className="flex items-center gap-2 text-sm font-semibold tracking-wide"
+        >
           Control Panel
         </h2>
         <InfoTooltip />

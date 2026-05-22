@@ -28,10 +28,12 @@ export function AlgorithmCard({ data }: { data: Algorithm }) {
 
   const complexityColor =
     data.complexity === "high"
-      ? "text-red-500"
+      ? "border-destructive/40 bg-destructive/10 text-destructive"
       : data.complexity === "medium"
-        ? "text-yellow-500"
-        : "text-green-500";
+        ? "border-primary/40 bg-primary/10 text-primary"
+        : "border-muted-foreground/40 bg-muted text-muted-foreground";
+
+  const complexityLabel = `${data.complexity} complexity`;
 
   const performanceDots = Array.from({ length: 5 }).map((_, i) => (
     <span
@@ -82,12 +84,22 @@ export function AlgorithmCard({ data }: { data: Algorithm }) {
 
           <div className="mt-2 flex flex-wrap gap-3 text-xs">
             <div className="flex items-center gap-1">
-              <Cpu className="h-3 w-3" />
-              <span className={complexityColor}>{data.complexity}</span>
+              <Cpu className="h-3 w-3" aria-hidden="true" />
+              <span
+                aria-label={complexityLabel}
+                className={`rounded-full border px-2 py-0.5 capitalize ${complexityColor}`}
+              >
+                {data.complexity}
+              </span>
             </div>
             <div className="flex items-center gap-1">
-              <Gauge className="h-3 w-3" />
-              <div className="flex gap-0.5">{performanceDots}</div>
+              <Gauge className="h-3 w-3" aria-hidden="true" />
+              <span className="sr-only">
+                Performance: {data.performance} of 5
+              </span>
+              <div aria-hidden="true" className="flex gap-0.5">
+                {performanceDots}
+              </div>
             </div>
           </div>
         </div>

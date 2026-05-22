@@ -48,6 +48,7 @@ export function SliderScale() {
       <div className="flex flex-col justify-center gap-1">
         <Slider
           id="dither-scale"
+          aria-label="Processing scale"
           value={[ditherScale]}
           min={0.05}
           max={1}

@@ -17,12 +17,15 @@ export default function AlgorithmsPage() {
     >
       <GlobalHeader />
       <div className="flex flex-col gap-4 p-4">
-        <h1 className="text-2xl font-semibold">Dithering Algorithms</h1>
+        <h1 tabIndex={-1} className="text-2xl font-semibold focus:outline-hidden">
+          Dithering Algorithms
+        </h1>
         <p className="text-muted-foreground">
           Learn how each algorithm transforms your image through pixel
           diffusion.
         </p>
-        <main
+        <section
+          aria-label="Dithering algorithm catalog"
           className="grid gap-4"
           style={{
             gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
@@ -31,7 +34,7 @@ export default function AlgorithmsPage() {
           {algorithms.map((alg) => (
             <AlgorithmCard key={alg.algorithm} data={alg} />
           ))}
-        </main>
+        </section>
       </div>
     </BreadcrumbProvider>
   );

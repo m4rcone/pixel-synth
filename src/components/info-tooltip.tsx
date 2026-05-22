@@ -14,12 +14,15 @@ export function InfoTooltip() {
   return (
     <Tooltip open={open} onOpenChange={setOpen}>
       <TooltipTrigger asChild>
-        <CircleQuestionMark
-          width={18}
-          height={18}
+        <button
+          type="button"
+          aria-label="Show dither control help"
+          aria-expanded={open}
           onClick={() => setOpen((prev) => !prev)}
-          className="cursor-help"
-        />
+          className="text-muted-foreground hover:text-foreground focus-visible:ring-ring rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-hidden"
+        >
+          <CircleQuestionMark width={18} height={18} aria-hidden="true" />
+        </button>
       </TooltipTrigger>
       <TooltipContent className="mr-4 flex w-[290px] flex-col gap-1">
         <div>

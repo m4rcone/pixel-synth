@@ -11,11 +11,19 @@ export default function EditorLayout({
   return (
     <SidebarProvider>
       <BreadcrumbProvider>
-        <SidebarLeft />
-        <SidebarInset className="relative h-full overflow-hidden lg:pr-80">
+        <aside aria-label="Primary navigation">
+          <SidebarLeft />
+        </aside>
+        <SidebarInset
+          id="main-content"
+          tabIndex={-1}
+          className="relative h-full overflow-hidden focus:outline-hidden lg:pr-80"
+        >
           {children}
         </SidebarInset>
-        <SidebarRight />
+        <aside aria-label="Editor controls">
+          <SidebarRight />
+        </aside>
       </BreadcrumbProvider>
     </SidebarProvider>
   );

@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ImageProvider } from "@/contexts/image-context";
 import { CanvasProvider } from "@/contexts/canvas-context";
 import { EditorProvider } from "@/contexts/editor-context";
+import { RouteFocusManager } from "@/components/route-focus-manager";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +39,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <a
+            href="#main-content"
+            className="bg-background text-foreground ring-ring fixed top-3 left-3 z-50 -translate-y-20 rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-transform focus:translate-y-0 focus:ring-2 focus:outline-hidden"
+          >
+            Skip to content
+          </a>
+          <RouteFocusManager />
           <ImageProvider>
             <CanvasProvider>
               <EditorProvider>{children}</EditorProvider>

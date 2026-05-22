@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type LucideIcon } from "lucide-react";
 import {
@@ -31,7 +32,7 @@ export function NavMain({
           return (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild tooltip={item.title}>
-                <a
+                <Link
                   href={item.url}
                   className={`flex items-center gap-2 transition-colors ${
                     isActive
@@ -45,7 +46,7 @@ export function NavMain({
                     />
                   )}
                   <span>{item.title}</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           );

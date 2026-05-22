@@ -181,14 +181,20 @@ function ToneControl({
   const { editorState } = useImageContext();
   const lastColorRef = useRef(color);
   const hasChangedRef = useRef(false);
+  const controlId = `tone-${label.toLowerCase()}`;
+  const labelId = `${controlId}-label`;
+  const colorId = `${controlId}-color`;
+  const colorLabelId = `${colorId}-label`;
+  const rangeId = `${controlId}-range`;
+  const rangeLabelId = `${rangeId}-label`;
 
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-col">
         <div className="flex items-center justify-between">
-          <Label htmlFor="contrast" className="text-muted-foreground">
+          <span id={labelId} className="text-muted-foreground text-sm">
             {label}
-          </Label>
+          </span>
 
           <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-xs">
             {editorState === EditorState.Initial ? (
@@ -204,8 +210,13 @@ function ToneControl({
           </span>
         </div>
         <div className="flex items-center gap-2">
+          <Label id={colorLabelId} htmlFor={colorId} className="sr-only">
+            {label} color
+          </Label>
           <Input
+            id={colorId}
             type="color"
+            aria-labelledby={`${labelId} ${colorLabelId}`}
             value={color}
             onChange={(e) => {
               hasChangedRef.current = true;
@@ -221,7 +232,12 @@ function ToneControl({
             disabled={disabled}
             className="h-6 w-10 border-none p-0 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-transparent"
           />
+          <Label id={rangeLabelId} htmlFor={rangeId} className="sr-only">
+            {label} tone range
+          </Label>
           <Slider
+            id={rangeId}
+            aria-labelledby={`${labelId} ${rangeLabelId}`}
             value={[toneRange]}
             min={0}
             max={255}

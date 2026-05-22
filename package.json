@@ -13,7 +13,8 @@
     "build": "next build",
     "start": "next start",
     "lint:eslint": "eslint",
-    "lint:prettier": "prettier . --write"
+    "lint:prettier": "prettier . --write",
+    "test:a11y": "playwright test tests/accessibility.spec.ts"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "1.2.12",
@@ -51,6 +52,8 @@
     "use-debounce": "10.1.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.3",
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "4.3.0",
     "@types/node": "25.9.1",
     "@types/react": "19.2.15",
@@ -58,6 +61,7 @@
     "@types/three": "0.184.1",
     "eslint": "9.39.4",
     "eslint-config-next": "16.2.6",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
     "prettier": "3.8.3",
     "prettier-plugin-tailwindcss": "0.8.0",
     "tailwindcss": "4.3.0",
