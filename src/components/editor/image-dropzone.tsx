@@ -81,7 +81,9 @@ export function ImageDropzone() {
             <span className="font-display text-heading font-medium">
               Drop an image to develop
             </span>
-            <span className="text-paper-dim text-sm">Click to browse</span>
+            <span className="text-paper-dim text-sm">
+              Click to browse, or paste from the clipboard
+            </span>
           </span>
 
           <input

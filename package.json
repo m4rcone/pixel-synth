@@ -17,6 +17,7 @@
     "test": "vitest run && playwright test",
     "test:unit": "vitest run",
     "test:a11y": "playwright test tests/accessibility.spec.ts",
+    "test:e2e": "playwright test",
     "perf:bundles": "node scripts/perf-bundles.mjs"
   },
   "dependencies": {

@@ -29,7 +29,7 @@ export function SaveButton() {
   return (
     <Button variant="outline" onClick={handleSave} disabled={!result}>
       <Download aria-hidden="true" />
-      Save
+      <span className="sr-only sm:not-sr-only">Save</span>
     </Button>
   );
 }

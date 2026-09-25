@@ -20,7 +20,7 @@ import {
 export function ControlPanelActions() {
   const { status } = useEditorState();
   const { applyDither, discard, reset } = useEditorActions();
-  const { resetView, setShowProcessed } = useCanvasContext();
+  const { resetView, setShowProcessed, setSplit } = useCanvasContext();
 
   if (status !== "dithered") {
     return (
@@ -47,6 +47,7 @@ export function ControlPanelActions() {
           discard();
           resetView();
           setShowProcessed(true);
+          setSplit(null);
         }}
       />
       <ConfirmButton
@@ -59,6 +60,7 @@ export function ControlPanelActions() {
           reset();
           resetView();
           setShowProcessed(true);
+          setSplit(null);
         }}
       />
     </div>

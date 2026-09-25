@@ -24,6 +24,9 @@ const LARGE_PAN_STEP = 100;
 const WHEEL_ZOOM = 1.1;
 /** Share of the viewport the image fills at zoom 100%. */
 const FIT_PADDING = 0.92;
+/** Distance in px within which a press grabs the split divider. */
+const DIVIDER_GRAB = 16;
+const SPLIT_STEP = 0.05;
 
 type Size = { width: number; height: number };
 
@@ -37,12 +40,24 @@ export function Canvas({ onStatusChange }: CanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointers = useRef(new Map<number, Point>());
   const pinchDistance = useRef<number | null>(null);
+  const draggingDivider = useRef(false);
   const [view, setView] = useState<Size>({ width: 0, height: 0 });
 
-  const { position, setPosition, zoom, setZoom, resetView, showProcessed } =
-    useCanvasContext();
+  const {
+    position,
+    setPosition,
+    zoom,
+    setZoom,
+    resetView,
+    showProcessed,
+    split,
+    setSplit,
+  } = useCanvasContext();
   const { source, result } = useEditorState();
-  const image = (showProcessed && result) || source?.bitmap || null;
+  const splitting = split !== null && !!result && !!source;
+  const image = splitting
+    ? result
+    : (showProcessed && result) || source?.bitmap || null;
 
   const fit = image
     ? Math.min(view.width / image.width, view.height / image.height) *
@@ -75,16 +90,29 @@ export function Canvas({ onStatusChange }: CanvasProps) {
 
     const width = image.width * scale;
     const height = image.height * scale;
+    const left = (view.width - width) / 2 + position.x;
+    const top = (view.height - height) / 2 + position.y;
     ctx.imageSmoothingEnabled = scale < 1;
     ctx.imageSmoothingQuality = "high";
-    ctx.drawImage(
-      image,
-      (view.width - width) / 2 + position.x,
-      (view.height - height) / 2 + position.y,
-      width,
-      height,
-    );
-  }, [image, view, scale, position]);
+    ctx.drawImage(image, left, top, width, height);
+
+    if (splitting && source) {
+      // Original on the left of the divider, processed on the right.
+      const dividerX = Math.round(view.width * split);
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, 0, dividerX, view.height);
+      ctx.clip();
+      ctx.clearRect(0, 0, dividerX, view.height);
+      ctx.drawImage(source.bitmap, left, top, width, height);
+      ctx.restore();
+      ctx.fillStyle = "rgb(236 228 214 / 0.9)";
+      ctx.fillRect(dividerX - 0.5, 0, 1, view.height);
+      ctx.beginPath();
+      ctx.arc(dividerX, view.height / 2, 6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }, [image, view, scale, position, splitting, split, source]);
 
   /** Zoom by `factor`, keeping the point under (x, y) fixed on screen. */
   function zoomAround(factor: number, x: number, y: number) {
@@ -125,6 +153,10 @@ export function Canvas({ onStatusChange }: CanvasProps) {
 
   function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
     event.currentTarget.setPointerCapture(event.pointerId);
+    const rect = event.currentTarget.getBoundingClientRect();
+    draggingDivider.current =
+      splitting &&
+      Math.abs(event.clientX - rect.left - view.width * split) <= DIVIDER_GRAB;
     pointers.current.set(event.pointerId, {
       x: event.clientX,
       y: event.clientY,
@@ -136,6 +168,12 @@ export function Canvas({ onStatusChange }: CanvasProps) {
     if (!previous) return;
     const current = { x: event.clientX, y: event.clientY };
     pointers.current.set(event.pointerId, current);
+
+    if (draggingDivider.current) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      setSplit(Math.min(1, Math.max(0, (current.x - rect.left) / rect.width)));
+      return;
+    }
 
     if (pointers.current.size === 2) {
       // Pinch to zoom around the midpoint of both fingers.
@@ -162,6 +200,7 @@ export function Canvas({ onStatusChange }: CanvasProps) {
   function handlePointerUp(event: PointerEvent<HTMLDivElement>) {
     pointers.current.delete(event.pointerId);
     pinchDistance.current = null;
+    draggingDivider.current = false;
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
@@ -200,6 +239,17 @@ export function Canvas({ onStatusChange }: CanvasProps) {
         resetView();
         onStatusChange?.("Canvas view reset.");
         break;
+      case "[":
+      case "]": {
+        if (!splitting) return;
+        const next = Math.min(
+          1,
+          Math.max(0, split + (event.key === "]" ? SPLIT_STEP : -SPLIT_STEP)),
+        );
+        setSplit(next);
+        onStatusChange?.(`Divider at ${Math.round(next * 100)}%.`);
+        break;
+      }
       default:
         return;
     }
@@ -216,9 +266,11 @@ export function Canvas({ onStatusChange }: CanvasProps) {
       // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
       tabIndex={0}
       aria-label={
-        showProcessed && result
-          ? "Processed image canvas"
-          : "Original image canvas"
+        splitting
+          ? "Split comparison canvas, original on the left"
+          : showProcessed && result
+            ? "Processed image canvas"
+            : "Original image canvas"
       }
       aria-describedby="canvas-keyboard-instructions"
       onKeyDown={handleKeyDown}
@@ -231,7 +283,8 @@ export function Canvas({ onStatusChange }: CanvasProps) {
       <p id="canvas-keyboard-instructions" className="sr-only">
         Interactive image preview. Use arrow keys to pan, Shift plus arrow keys
         to pan farther, plus or equals to zoom in, minus to zoom out, and 0 to
-        reset the view.
+        reset the view. In split view, the left and right square brackets move
+        the divider.
       </p>
       <canvas
         ref={canvasRef}

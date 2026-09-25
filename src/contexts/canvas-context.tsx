@@ -16,6 +16,9 @@ type CanvasContextValue = {
   setZoom: Dispatch<SetStateAction<number>>;
   showProcessed: boolean;
   setShowProcessed: Dispatch<SetStateAction<boolean>>;
+  /** Split before/after divider position (0–1), or null when off. */
+  split: number | null;
+  setSplit: Dispatch<SetStateAction<number | null>>;
   resetView: () => void;
 };
 
@@ -29,6 +32,7 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
   const [position, setPosition] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [showProcessed, setShowProcessed] = useState(true);
+  const [split, setSplit] = useState<number | null>(null);
 
   const value = useMemo(
     () => ({
@@ -38,12 +42,14 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
       setZoom,
       showProcessed,
       setShowProcessed,
+      split,
+      setSplit,
       resetView: () => {
         setZoom(1);
         setPosition({ x: 0, y: 0 });
       },
     }),
-    [position, zoom, showProcessed],
+    [position, zoom, showProcessed, split],
   );
 
   return (

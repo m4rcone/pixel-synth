@@ -1,17 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { GlobalHeader } from "@/components/global-header";
 import { Canvas } from "@/components/editor/canvas";
 import { CanvasToolbar } from "@/components/editor/canvas-toolbar";
 import { ControlPanel } from "@/components/editor/control-panel";
+import { AlgorithmFromUrl } from "@/components/editor/algorithm-from-url";
 import { ImageDropzone } from "@/components/editor/image-dropzone";
+import { ImageLoadError, loadImageFile } from "@/lib/editor/load-image";
 import { useEditorActions, useEditorState } from "@/contexts/editor-context";
 
 export default function EditorPage() {
   const { status, source, result, isRendering, error } = useEditorState();
-  const { setError } = useEditorActions();
+  const { setError, load } = useEditorActions();
   const [manualAnnouncement, setManualAnnouncement] = useState("");
+
+  // Paste an image from the clipboard to start (never replaces work in progress).
+  useEffect(() => {
+    if (status !== "empty") return;
+    const onPaste = async (event: ClipboardEvent) => {
+      const file = [...(event.clipboardData?.files ?? [])].find((f) =>
+        f.type.startsWith("image/"),
+      );
+      if (!file) return;
+      event.preventDefault();
+      try {
+        load(await loadImageFile(file));
+      } catch (error) {
+        setError(
+          error instanceof ImageLoadError
+            ? error.message
+            : "Could not open the pasted image.",
+        );
+      }
+    };
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+  }, [status, load, setError]);
 
   const announcement = isRendering
     ? "Rendering image."
@@ -24,6 +49,9 @@ export default function EditorPage() {
 
   return (
     <>
+      <Suspense fallback={null}>
+        <AlgorithmFromUrl />
+      </Suspense>
       <GlobalHeader page="Editor" />
       <h1 tabIndex={-1} className="sr-only">
         PixelSynth editor
