@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { BackgroundDitherLoader } from "@/components/background-dither-loader";
+import { DitherBackground } from "@/components/dither-background";
 import { DitherSpecimen } from "@/components/dither-specimen";
 import { StructuredData } from "@/components/structured-data";
 import { ALGORITHMS, ALGORITHM_CATEGORIES } from "@/lib/algorithms";
@@ -80,16 +80,7 @@ export default function HomePage() {
         className="pointer-events-none absolute inset-0 overflow-hidden"
       >
         <div className="absolute inset-0 [mask-image:radial-gradient(120%_90%_at_85%_-10%,black,transparent_70%)] opacity-[0.4]">
-          <BackgroundDitherLoader
-            waveColor={[0.46, 0.46, 0.5]}
-            disableAnimation={false}
-            enableMouseInteraction={false}
-            mouseRadius={0.3}
-            colorNum={4}
-            waveAmplitude={0.28}
-            waveFrequency={3}
-            waveSpeed={0.04}
-          />
+          <DitherBackground />
         </div>
         <div className="lab-grid absolute inset-0 opacity-60" />
         <div className="absolute inset-0 bg-gradient-to-b from-[var(--ink)]/20 via-[var(--ink)]/75 to-[var(--ink)]" />

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { Eye, EyeClosed } from "lucide-react";
+import { PREVIEW_SOURCE } from "@/lib/algorithms";
 
 export function AlgorithmCardPreview({
   algorithm,
@@ -18,15 +19,20 @@ export function AlgorithmCardPreview({
   return (
     <div className="relative aspect-square w-full overflow-hidden border-b border-[var(--line)] bg-[#08080a]">
       <Image
-        src={!showOriginal ? preview : "/250/sphere-250.png"}
+        src={!showOriginal ? preview : PREVIEW_SOURCE}
         alt={
           showOriginal
             ? "Original sphere image before dithering"
             : `${algorithm} dithering preview`
         }
         fill
-        className="object-cover"
-        sizes="(max-width: 768px) 100vw, 250px"
+        // Served as-is: re-encoding would smear the 1-bit dither pattern.
+        unoptimized
+        className={
+          showOriginal
+            ? "object-cover"
+            : "object-cover [image-rendering:pixelated]"
+        }
         preload={preload}
       />
 

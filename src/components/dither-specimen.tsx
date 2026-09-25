@@ -45,6 +45,13 @@ export function DitherSpecimen() {
 
   const current = SPECIMENS[index];
 
+  // Warm the cache so each auto-advance swaps instantly instead of flashing.
+  useEffect(() => {
+    SPECIMENS.forEach(({ image }) => {
+      new Image().src = image;
+    });
+  }, []);
+
   // Auto-advance through algorithms; pause on hover, drag or reduced motion.
   useEffect(() => {
     if (prefersReducedMotion || hovered || dragging) return;
