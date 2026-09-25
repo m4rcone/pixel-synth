@@ -10,7 +10,7 @@ Guidance for Claude Code when working in this repository.
 
 - Next.js (App Router, Turbopack), React 19, TypeScript (strict)
 - Tailwind CSS 4 (tokens in `src/app/globals.css` `@theme`), shadcn/ui on Radix primitives, lucide icons
-- Playwright + axe for end-to-end accessibility tests
+- Vitest for unit tests (engine), Playwright + axe for end-to-end accessibility tests
 - Deployed on Vercel, all routes statically prerendered
 
 ## Commands
@@ -19,8 +19,10 @@ Guidance for Claude Code when working in this repository.
 npm run dev            # dev server on :3000
 npm run build          # production build (also type-checks)
 npm run lint:eslint    # eslint (includes jsx-a11y)
-npm run test:a11y      # playwright + axe (starts the dev server itself)
+npm run test:unit      # vitest: dithering engine and pure logic
+npm run test:a11y      # playwright + axe (starts a dev server; PORT=xxxx reuses a running one)
 npm run perf:bundles   # per-route JS size table, run after `npm run build`
+node scripts/generate-previews.mjs  # re-render public/250 previews after engine changes
 ```
 
 Use the `/verify` command to run the whole gate before committing.
@@ -29,7 +31,7 @@ Use the `/verify` command to run the whole gate before committing.
 
 - `src/app/` — routes. `/` is the landing page; `(studio)/` groups `/editor` and `/algorithms`, which share the studio sidebar and editor providers (state survives navigation between them).
 - `src/lib/algorithms.ts` — single source of truth for the algorithm catalog (slug = id = public anchor). Never hardcode algorithm lists elsewhere; never change an existing slug.
-- `src/lib/editor/` — the image pipeline (filters → dither → tone mapping → rescale) and `settings.ts` (editor settings type + defaults).
+- `src/lib/editor/` — the image pipeline: pure functions over RGBA buffers (`pipeline.ts`: downscale → filters → luminance → dither → tone map → upscale), run in a Web Worker (`render.worker.ts`, `render-client.ts`). `settings.ts` holds the settings type and defaults. Keep it DOM-free so it stays testable and worker-safe.
 - `src/contexts/editor-context.tsx` — reducer-based editor state. Components call `update()` while a control is being dragged and `commit()` when a value settles; the provider renders once per commit and drops stale results.
 - `src/contexts/canvas-context.tsx` — view state (zoom, pan, before/after).
 - `src/components/editor/` — editor UI. The control panel is mounted once and laid out by CSS (no JS breakpoint switching, no duplicate IDs).

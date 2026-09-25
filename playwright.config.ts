@@ -1,16 +1,19 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const port = Number(process.env.PORT ?? 3000);
+const baseURL = `http://127.0.0.1:${port}`;
+
 export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
   reporter: "list",
   use: {
-    baseURL: "http://127.0.0.1:3000",
+    baseURL,
     trace: "on-first-retry",
   },
   webServer: {
-    command: "npm run dev -- --hostname 127.0.0.1 --port 3000",
-    url: "http://127.0.0.1:3000",
+    command: `npm run dev -- --hostname 127.0.0.1 --port ${port}`,
+    url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

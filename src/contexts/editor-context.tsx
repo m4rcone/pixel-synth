@@ -9,6 +9,8 @@ import {
   useRef,
   type ReactNode,
 } from "react";
+import type { SourceImage } from "@/lib/editor/load-image";
+import { RenderClient } from "@/lib/editor/render-client";
 import { DEFAULT_SETTINGS, type EditorSettings } from "@/lib/editor/settings";
 
 /**
@@ -20,8 +22,8 @@ export type EditorStatus = "empty" | "loaded" | "dithered";
 
 type EditorState = {
   status: EditorStatus;
-  source: HTMLImageElement | null;
-  result: HTMLImageElement | null;
+  source: SourceImage | null;
+  result: ImageBitmap | null;
   settings: EditorSettings;
   isRendering: boolean;
   error: string | null;
@@ -34,14 +36,14 @@ type SettingsUpdate =
   | ((settings: EditorSettings) => Partial<EditorSettings>);
 
 type Action =
-  | { type: "load"; source: HTMLImageElement }
+  | { type: "load"; source: SourceImage }
   | { type: "discard" }
   | { type: "reset" }
   | { type: "update"; update: SettingsUpdate; render: boolean }
   | { type: "render" }
   | { type: "applyDither" }
   | { type: "renderStart" }
-  | { type: "renderDone"; result: HTMLImageElement }
+  | { type: "renderDone"; result: ImageBitmap }
   | { type: "renderFailed"; error: string }
   | { type: "setError"; error: string | null };
 
@@ -109,7 +111,7 @@ function reducer(state: EditorState, action: Action): EditorState {
 }
 
 type EditorActions = {
-  load: (source: HTMLImageElement) => void;
+  load: (source: SourceImage) => void;
   discard: () => void;
   reset: () => void;
   /** Change settings without rendering (e.g. while a slider is dragged). */
@@ -128,6 +130,12 @@ const EditorActionsContext = createContext<EditorActions | undefined>(
 export function EditorProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const latestRender = useRef(0);
+  const renderer = useRef<RenderClient | null>(null);
+
+  useEffect(() => {
+    renderer.current = new RenderClient();
+    return () => renderer.current?.dispose();
+  }, []);
 
   const actions = useMemo<EditorActions>(() => {
     // Invalidate in-flight renders so they cannot publish over a new state.
@@ -158,7 +166,16 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const { renderRequest, source, status, settings } = state;
+  const { renderRequest, source, status, settings, result } = state;
+
+  // The worker keeps its own copy of the source pixels.
+  useEffect(() => {
+    if (source) renderer.current?.setSource(source.pixels);
+    return () => source?.bitmap.close();
+  }, [source]);
+
+  // Free the previous result's GPU/bitmap memory once it's replaced.
+  useEffect(() => () => result?.close(), [result]);
 
   // Renders run after the state update that requested them, so they always
   // see the latest settings. Only the most recent render may publish a result.
@@ -168,13 +185,16 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     const id = ++latestRender.current;
     dispatch({ type: "renderStart" });
 
-    import("@/lib/editor/render")
-      .then(({ renderPipeline }) =>
-        renderPipeline(source, settings, { dither: status === "dithered" }),
+    renderer
+      .current!.render(settings, status === "dithered")
+      .then(({ data, width, height }) =>
+        createImageBitmap(new ImageData(data, width, height)),
       )
       .then((result) => {
         if (id === latestRender.current) {
           dispatch({ type: "renderDone", result });
+        } else {
+          result.close();
         }
       })
       .catch((error: unknown) => {

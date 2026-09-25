@@ -25,7 +25,7 @@ export function DitherControls() {
   const apply = status === "dithered" ? commit : update;
 
   const outputSize = source
-    ? `${Math.round(source.width * settings.scale)} × ${Math.round(source.height * settings.scale)} px`
+    ? `${Math.round(source.pixels.width * settings.scale)} × ${Math.round(source.pixels.height * settings.scale)} px`
     : undefined;
 
   return (

@@ -28,7 +28,8 @@ export function Canvas({ onStatusChange }: CanvasProps) {
 
   const { position, setPosition, zoom, setZoom, resetView, showProcessed } =
     useCanvasContext();
-  const { source: baseImage, result: processedImage } = useEditorState();
+  const { source, result: processedImage } = useEditorState();
+  const baseImage = source?.bitmap;
   const displayedImage =
     processedImage && showProcessed ? processedImage : baseImage;
 

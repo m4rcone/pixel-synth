@@ -11,8 +11,8 @@ export function SaveButton() {
     if (!result) return;
 
     const canvas = document.createElement("canvas");
-    canvas.width = result.naturalWidth;
-    canvas.height = result.naturalHeight;
+    canvas.width = result.width;
+    canvas.height = result.height;
     canvas.getContext("2d")?.drawImage(result, 0, 0);
 
     canvas.toBlob((blob) => {

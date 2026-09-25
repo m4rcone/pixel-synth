@@ -1,80 +1,118 @@
-import {
-  Application,
-  BlurFilter,
-  ColorMatrixFilter,
-  Filter,
-  NoiseFilter,
-  Sprite,
-  Texture,
-} from "pixi.js";
+import { createRandom, type Pixels } from "./pixels";
 import { DEFAULT_FILTERS, type Filters } from "./settings";
 
-export async function applyPixiFilters(
-  canvas: HTMLCanvasElement,
-  filters: Filters,
-): Promise<HTMLCanvasElement> {
-  const app = new Application();
+/**
+ * Applies contrast → brightness → noise → blur in place, in that order.
+ * Contrast pivots around mid-gray; brightness is a multiplier (1 = neutral).
+ */
+export function applyFilters(pixels: Pixels, filters: Filters, seed = 1) {
+  const { data } = pixels;
+  const { contrast, brightness, noise, blur } = filters;
 
-  await app.init({
-    width: canvas.width,
-    height: canvas.height,
-    backgroundAlpha: 0,
-    antialias: true,
+  if (
+    contrast !== DEFAULT_FILTERS.contrast ||
+    brightness !== DEFAULT_FILTERS.brightness ||
+    noise > 0
+  ) {
+    const gain = (1 + contrast) * brightness;
+    const offset = -127.5 * contrast * brightness;
+    const random = createRandom(seed);
+    const noiseAmount = noise * 255;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const n = noise > 0 ? (0.5 - random()) * noiseAmount : 0;
+      data[i] = data[i] * gain + offset + n;
+      data[i + 1] = data[i + 1] * gain + offset + n;
+      data[i + 2] = data[i + 2] * gain + offset + n;
+    }
+  }
+
+  if (blur > 0) gaussianBlur(pixels, blur * 0.65);
+}
+
+/**
+ * Gaussian blur approximated by three successive box blurs (separable,
+ * O(n) regardless of radius). Operates on RGB; alpha is left untouched.
+ */
+export function gaussianBlur(pixels: Pixels, sigma: number) {
+  if (sigma < 0.2) return;
+  const { width, height, data } = pixels;
+  const size = width * height;
+  const channels = [0, 1, 2].map((c) => {
+    const channel = new Float32Array(size);
+    for (let p = 0; p < size; p++) channel[p] = data[p * 4 + c];
+    return channel;
   });
+  const scratch = new Float32Array(size);
 
-  const texture = Texture.from(canvas);
-  const sprite = new Sprite(texture);
-
-  app.stage.addChild(sprite);
-
-  const appliedFilters: Filter[] = [];
-
-  if (filters.contrast !== DEFAULT_FILTERS.contrast) {
-    const cm = new ColorMatrixFilter();
-    cm.contrast(filters.contrast, false);
-    appliedFilters.push(cm);
+  for (const radius of boxRadii(sigma)) {
+    for (const channel of channels) {
+      boxBlurHorizontal(channel, scratch, width, height, radius);
+      boxBlurVertical(scratch, channel, width, height, radius);
+    }
   }
 
-  if (filters.brightness !== DEFAULT_FILTERS.brightness) {
-    const cm = new ColorMatrixFilter();
-    cm.brightness(filters.brightness, false);
-    appliedFilters.push(cm);
+  for (let c = 0; c < 3; c++) {
+    const channel = channels[c];
+    for (let p = 0; p < size; p++) data[p * 4 + c] = channel[p];
   }
+}
 
-  if (filters.noise !== DEFAULT_FILTERS.noise) {
-    const noise = new NoiseFilter({ noise: filters.noise });
-    appliedFilters.push(noise);
-  }
-
-  if (filters.blur !== DEFAULT_FILTERS.blur) {
-    const blur = new BlurFilter({ strength: filters.blur, quality: 4 });
-    appliedFilters.push(blur);
-  }
-
-  sprite.filters = appliedFilters;
-
-  app.renderer.render(app.stage);
-
-  const pixiCanvas = app.renderer.extract.canvas(app.stage);
-
-  const processedCanvas = document.createElement("canvas");
-  processedCanvas.width = pixiCanvas.width;
-  processedCanvas.height = pixiCanvas.height;
-
-  const ctx = processedCanvas.getContext("2d", {
-    willReadFrequently: true,
-  })!;
-
-  // Convert pixiCanvas to HTMLCanvasElement
-  const pixels = app.renderer.extract.pixels(sprite);
-  const imageData = new ImageData(
-    new Uint8ClampedArray(pixels.pixels),
-    pixiCanvas.width,
-    pixiCanvas.height,
+/** Radii of 3 box blurs whose composition approximates a Gaussian of `sigma`. */
+function boxRadii(sigma: number) {
+  const n = 3;
+  const ideal = Math.sqrt((12 * sigma * sigma) / n + 1);
+  let lower = Math.floor(ideal);
+  if (lower % 2 === 0) lower--;
+  const upper = lower + 2;
+  const m = Math.round(
+    (12 * sigma * sigma - n * lower * lower - 4 * n * lower - 3 * n) /
+      (-4 * lower - 4),
   );
-  ctx.putImageData(imageData, 0, 0);
+  return Array.from({ length: n }, (_, i) => ((i < m ? lower : upper) - 1) / 2);
+}
 
-  app.destroy(true, { children: true, texture: false });
+function boxBlurHorizontal(
+  src: Float32Array,
+  dst: Float32Array,
+  width: number,
+  height: number,
+  radius: number,
+) {
+  const scale = 1 / (2 * radius + 1);
+  for (let y = 0; y < height; y++) {
+    const row = y * width;
+    let sum = 0;
+    for (let k = -radius; k <= radius; k++) {
+      sum += src[row + Math.min(width - 1, Math.max(0, k))];
+    }
+    for (let x = 0; x < width; x++) {
+      dst[row + x] = sum * scale;
+      const add = Math.min(width - 1, x + radius + 1);
+      const remove = Math.max(0, x - radius);
+      sum += src[row + add] - src[row + remove];
+    }
+  }
+}
 
-  return processedCanvas;
+function boxBlurVertical(
+  src: Float32Array,
+  dst: Float32Array,
+  width: number,
+  height: number,
+  radius: number,
+) {
+  const scale = 1 / (2 * radius + 1);
+  for (let x = 0; x < width; x++) {
+    let sum = 0;
+    for (let k = -radius; k <= radius; k++) {
+      sum += src[Math.min(height - 1, Math.max(0, k)) * width + x];
+    }
+    for (let y = 0; y < height; y++) {
+      dst[y * width + x] = sum * scale;
+      const add = Math.min(height - 1, y + radius + 1);
+      const remove = Math.max(0, y - radius);
+      sum += src[add * width + x] - src[remove * width + x];
+    }
+  }
 }
