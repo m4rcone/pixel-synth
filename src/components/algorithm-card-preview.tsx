@@ -17,7 +17,7 @@ export function AlgorithmCardPreview({
   const [showOriginal, setShowOriginal] = useState(false);
 
   return (
-    <div className="relative aspect-square w-full overflow-hidden border-b border-[var(--line)] bg-[#08080a]">
+    <div className="border-line relative aspect-square w-full overflow-hidden border-b bg-[#08080a]">
       <Image
         src={!showOriginal ? preview : PREVIEW_SOURCE}
         alt={
@@ -37,14 +37,14 @@ export function AlgorithmCardPreview({
       />
 
       {/* state tag */}
-      <span className="pointer-events-none absolute top-2 left-2 rounded-sm border border-[var(--line-strong)] bg-[var(--background)]/70 px-1.5 py-0.5 font-mono text-[9px] tracking-[0.16em] text-[var(--paper-dim)] uppercase backdrop-blur-sm">
+      <span className="border-line-strong bg-ink/70 text-paper-dim pointer-events-none absolute top-2 left-2 rounded-sm border px-1.5 py-0.5 font-mono text-[9px] tracking-[0.16em] uppercase backdrop-blur-sm">
         {showOriginal ? "Source" : "Dithered"}
       </span>
 
       <button
         type="button"
         onClick={() => setShowOriginal((prev) => !prev)}
-        className="text-foreground absolute right-2 bottom-2 rounded-full border border-[var(--line-strong)] bg-[var(--background)]/70 p-1.5 backdrop-blur-sm transition-colors hover:border-[var(--safelight)] hover:text-[var(--safelight)] focus-visible:ring-2 focus-visible:ring-[var(--safelight)] focus-visible:outline-none"
+        className="text-foreground border-line-strong bg-ink/70 hover:border-safelight hover:text-safelight focus-visible:ring-safelight absolute right-2 bottom-2 rounded-full border p-1.5 backdrop-blur-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
         aria-label={
           showOriginal ? "Show algorithm preview" : "Show original image"
         }

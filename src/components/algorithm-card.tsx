@@ -15,10 +15,10 @@ export function AlgorithmCard({
   const titleId = `${algorithmId}-title`;
   const complexityColor =
     data.complexity === "high"
-      ? "border-[var(--safelight)]/40 bg-[var(--safelight)]/10 text-[var(--safelight)]"
+      ? "border-safelight/40 bg-safelight/10 text-safelight"
       : data.complexity === "medium"
-        ? "border-[var(--line-strong)] bg-white/5 text-foreground"
-        : "border-[var(--line)] text-[var(--paper-dim)]";
+        ? "border-line-strong bg-white/5 text-foreground"
+        : "border-line text-paper-dim";
 
   const complexityLabel = `${data.complexity} complexity`;
 
@@ -26,7 +26,7 @@ export function AlgorithmCard({
     <span
       key={i}
       className={`inline-block h-1.5 w-1.5 rounded-full ${
-        i < data.cost ? "bg-[var(--safelight)]" : "bg-[var(--line-strong)]"
+        i < data.cost ? "bg-safelight" : "bg-line-strong"
       }`}
     />
   ));
@@ -36,7 +36,7 @@ export function AlgorithmCard({
       id={algorithmId}
       aria-labelledby={titleId}
       style={{ animationDelay: `${Math.min(index, 8) * 0.05}s` }}
-      className="lab-fade group bg-card relative flex h-full flex-col overflow-hidden rounded-xl border border-[var(--line)] transition-colors hover:border-[var(--line-strong)] hover:bg-[var(--accent)]"
+      className="lab-fade group bg-card border-line hover:border-line-strong hover:bg-accent relative flex h-full flex-col overflow-hidden rounded-xl border transition-colors"
     >
       <AlgorithmCardPreview
         algorithm={data.name}
@@ -46,10 +46,10 @@ export function AlgorithmCard({
 
       <div className="flex flex-1 flex-col p-5">
         <div className="mb-3 flex items-center justify-between font-mono text-[10px] tracking-[0.18em] uppercase">
-          <span className="text-[var(--safelight)]">
+          <span className="text-safelight">
             {String(index + 1).padStart(2, "0")}
           </span>
-          <span className="text-[var(--paper-dim)]">
+          <span className="text-paper-dim">
             {getCategoryName(data.category)} ·{" "}
             <span className="capitalize">{data.era}</span>
           </span>
@@ -62,16 +62,13 @@ export function AlgorithmCard({
           {data.name}
         </h2>
 
-        <p className="mt-2 flex-1 text-sm leading-relaxed text-[var(--paper-dim)]">
+        <p className="text-paper-dim mt-2 flex-1 text-sm leading-relaxed">
           {data.description}
         </p>
 
         <div className="mt-4 flex flex-wrap items-center gap-3 text-xs">
           <div className="flex items-center gap-1.5">
-            <Cpu
-              className="h-3 w-3 text-[var(--paper-dim)]"
-              aria-hidden="true"
-            />
+            <Cpu className="text-paper-dim h-3 w-3" aria-hidden="true" />
             <span
               aria-label={complexityLabel}
               className={`rounded-full border px-2 py-0.5 font-mono text-[10px] tracking-[0.1em] uppercase ${complexityColor}`}
@@ -80,10 +77,7 @@ export function AlgorithmCard({
             </span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Gauge
-              className="h-3 w-3 text-[var(--paper-dim)]"
-              aria-hidden="true"
-            />
+            <Gauge className="text-paper-dim h-3 w-3" aria-hidden="true" />
             <span className="sr-only">Processing cost: {data.cost} of 5</span>
             <div aria-hidden="true" className="flex gap-1">
               {performanceDots}
@@ -91,7 +85,7 @@ export function AlgorithmCard({
           </div>
         </div>
 
-        <div className="mt-4 flex items-center justify-between border-t border-[var(--line)] pt-3 font-mono text-[10px] tracking-[0.12em] text-[var(--paper-dim)] uppercase">
+        <div className="border-line text-paper-dim mt-4 flex items-center justify-between border-t pt-3 font-mono text-[10px] tracking-[0.12em] uppercase">
           <span>{data.author ?? "—"}</span>
           <span>{data.year ?? "—"}</span>
         </div>

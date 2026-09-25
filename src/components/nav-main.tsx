@@ -37,7 +37,7 @@ export function NavMain({
                 asChild
                 tooltip={item.title}
                 data-active={isActive}
-                className="data-[active=true]:bg-[var(--sidebar-accent)]"
+                className="data-[active=true]:bg-sidebar-accent h-9"
               >
                 <Link
                   href={item.url}
@@ -46,23 +46,21 @@ export function NavMain({
                   className={`relative flex items-center gap-2.5 transition-colors ${
                     isActive
                       ? "text-foreground"
-                      : "hover:text-foreground text-[var(--paper-dim)]"
+                      : "hover:text-foreground text-paper-dim"
                   }`}
                 >
                   <span
                     aria-hidden="true"
-                    className={`absolute top-1/2 -left-2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-[var(--safelight)] transition-opacity ${
+                    className={`bg-safelight absolute top-1/2 -left-2 h-4 w-0.5 -translate-y-1/2 rounded-full transition-opacity ${
                       isActive ? "opacity-100" : "opacity-0"
                     }`}
                   />
                   {item.icon && (
                     <item.icon
-                      className={`h-4 w-4 shrink-0 ${isActive ? "text-[var(--safelight)]" : ""}`}
+                      className={`h-4 w-4 shrink-0 ${isActive ? "text-safelight" : ""}`}
                     />
                   )}
-                  <span className="font-mono text-[11px] tracking-[0.16em] uppercase">
-                    {item.title}
-                  </span>
+                  <span className="text-sm">{item.title}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

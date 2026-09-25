@@ -16,10 +16,10 @@ export default function AlgorithmsPage() {
         />
 
         <div className="relative flex flex-col gap-6 px-5 py-8 sm:px-8">
-          <div className="flex flex-col gap-4 border-b border-[var(--line)] pb-6 sm:flex-row sm:items-end sm:justify-between">
+          <div className="border-line flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-end sm:justify-between">
             <div className="max-w-3xl">
-              <p className="mb-3 flex items-center gap-2 font-mono text-[10px] tracking-[0.22em] text-[var(--paper-dim)] uppercase">
-                <span className="text-[var(--safelight)]">✳</span>
+              <p className="text-paper-dim mb-3 flex items-center gap-2 font-mono text-[10px] tracking-[0.22em] uppercase">
+                <span className="text-safelight">✳</span>
                 The catalog — {ALGORITHMS.length} techniques
               </p>
               <h1
@@ -28,7 +28,7 @@ export default function AlgorithmsPage() {
               >
                 Dithering Algorithms
               </h1>
-              <p className="mt-4 max-w-xl leading-relaxed text-[var(--paper-dim)]">
+              <p className="text-paper-dim mt-4 max-w-xl leading-relaxed">
                 Compare error diffusion, ordered dithering, blue-noise, and
                 noise-based techniques before applying them in the editor.
               </p>
@@ -36,7 +36,7 @@ export default function AlgorithmsPage() {
             <Button
               asChild
               variant="outline"
-              className="self-start border-[var(--line-strong)] bg-transparent font-mono text-xs tracking-[0.12em] uppercase hover:bg-white/5 sm:self-auto"
+              className="border-line-strong self-start bg-transparent font-mono text-xs tracking-[0.12em] uppercase hover:bg-white/5 sm:self-auto"
             >
               <Link href="/editor">Open editor ↗</Link>
             </Button>

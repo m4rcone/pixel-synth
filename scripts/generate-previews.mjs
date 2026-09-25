@@ -1,8 +1,9 @@
-// Regenerates the algorithm previews in public/250 with the real pipeline, so
-// the catalog always shows what the editor produces.
+// Regenerates the algorithm previews in public/250 and the dithered type
+// texture in public/textures with the real pipeline, so the site always shows
+// what the editor produces.
 //
 //   node scripts/generate-previews.mjs
-import { readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { deflateSync, inflateSync, crc32 } from "node:zlib";
 import { createServer } from "vite";
@@ -122,6 +123,44 @@ try {
     writeFileSync(file, encodePng(result));
     console.log(`${algorithm.slug.padEnd(32)} → ${algorithm.preview}`);
   }
+
+  // Headline texture: a vertical light-to-mid gradient, Floyd–Steinberg
+  // dithered, "on" pixels in paper white and "off" pixels transparent so the
+  // page shows through (used with background-clip: text).
+  const width = 96;
+  const height = 48;
+  const gradient = {
+    data: new Uint8ClampedArray(width * height * 4),
+    width,
+    height,
+  };
+  for (let y = 0; y < height; y++) {
+    const v = 250 - (y / (height - 1)) * 130;
+    for (let x = 0; x < width; x++) {
+      gradient.data.set([v, v, v, 255], (y * width + x) * 4);
+    }
+  }
+  const texture = renderPixels(
+    gradient,
+    {
+      ...DEFAULT_SETTINGS,
+      algorithm: "floyd-steinberg",
+      tones: {
+        ...DEFAULT_SETTINGS.tones,
+        highlights: { color: "#ece4d6", range: 255 },
+      },
+    },
+    { dither: true },
+  );
+  for (let i = 0; i < texture.data.length; i += 4) {
+    if (texture.data[i] === 0) texture.data[i + 3] = 0;
+  }
+  mkdirSync(join(root, "public", "textures"), { recursive: true });
+  writeFileSync(
+    join(root, "public", "textures", "dithered-type.png"),
+    encodePng(texture),
+  );
+  console.log("texture → /textures/dithered-type.png");
 } finally {
   await server.close();
 }

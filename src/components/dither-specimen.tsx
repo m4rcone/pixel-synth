@@ -77,7 +77,7 @@ export function DitherSpecimen() {
       onMouseLeave={() => setHovered(false)}
     >
       {/* Frame */}
-      <div className="relative rounded-xl border border-[var(--line-strong)] bg-[var(--ink-2)] p-3 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.9)]">
+      <div className="border-line-strong bg-ink-raised relative rounded-xl border p-3 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.9)]">
         {/* Corner registration ticks */}
         <Corner className="top-1.5 left-1.5" />
         <Corner className="top-1.5 right-1.5 rotate-90" />
@@ -85,10 +85,10 @@ export function DitherSpecimen() {
         <Corner className="right-1.5 bottom-1.5 rotate-180" />
 
         {/* Status bar */}
-        <div className="mb-2.5 flex items-center justify-between px-1 font-mono text-[10px] tracking-[0.18em] text-[var(--paper-dim)] uppercase">
+        <div className="text-paper-dim mb-2.5 flex items-center justify-between px-1 font-mono text-[10px] tracking-[0.18em] uppercase">
           <span className="flex items-center gap-1.5">
             <span
-              className="lab-blink inline-block size-1.5 rounded-full bg-[var(--safelight)]"
+              className="lab-blink bg-safelight inline-block size-1.5 rounded-full"
               aria-hidden="true"
             />
             Developing
@@ -191,12 +191,12 @@ export function DitherSpecimen() {
         <div className="mt-3 flex items-end justify-between gap-3 px-1">
           <div className="min-w-0">
             <p
-              className="font-display truncate text-lg leading-tight text-[var(--paper)] italic"
+              className="font-display text-paper truncate text-lg leading-tight italic"
               aria-live="polite"
             >
               {current.algorithm}
             </p>
-            <p className="font-mono text-[10px] tracking-[0.16em] text-[var(--paper-dim)] uppercase">
+            <p className="text-paper-dim font-mono text-[10px] tracking-[0.16em] uppercase">
               {current.category} · {current.year}
             </p>
           </div>
@@ -214,7 +214,7 @@ export function DitherSpecimen() {
                 aria-pressed={i === index}
                 className={`h-1.5 rounded-full transition-all focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none ${
                   i === index
-                    ? "w-5 bg-[var(--safelight)]"
+                    ? "bg-safelight w-5"
                     : "w-1.5 bg-white/25 hover:bg-white/50"
                 }`}
               />
@@ -230,7 +230,7 @@ function Corner({ className }: { className: string }) {
   return (
     <span
       aria-hidden="true"
-      className={`absolute z-10 size-2.5 border-t border-l border-[var(--line-strong)] ${className}`}
+      className={`border-line-strong absolute z-10 size-2.5 border-t border-l ${className}`}
     />
   );
 }

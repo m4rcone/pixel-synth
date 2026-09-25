@@ -70,7 +70,7 @@ export default function HomePage() {
     <main
       id="main-content"
       tabIndex={-1}
-      className="lab lab-grain relative min-h-screen w-full overflow-x-hidden bg-[var(--ink)] font-sans text-[var(--paper)] focus:outline-hidden"
+      className="lab lab-grain bg-ink text-paper relative min-h-screen w-full overflow-x-hidden font-sans focus:outline-hidden"
     >
       <StructuredData data={homeStructuredData} />
 
@@ -83,7 +83,7 @@ export default function HomePage() {
           <DitherBackground />
         </div>
         <div className="lab-grid absolute inset-0 opacity-60" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[var(--ink)]/20 via-[var(--ink)]/75 to-[var(--ink)]" />
+        <div className="from-ink/20 via-ink/75 to-ink absolute inset-0 bg-gradient-to-b" />
       </div>
 
       {/* ------------------------------- CONTENT ------------------------------ */}
@@ -93,7 +93,7 @@ export default function HomePage() {
           <Link href="/" className="group flex items-center gap-2.5">
             <span
               aria-hidden="true"
-              className="lab-dots grid size-7 place-items-center rounded-[5px] border border-[var(--line-strong)] text-white/65"
+              className="lab-dots border-line-strong grid size-7 place-items-center rounded-[5px] border text-white/65"
             />
             <span className="font-display text-lg tracking-tight">
               PixelSynth
@@ -105,13 +105,13 @@ export default function HomePage() {
           >
             <Link
               href="/algorithms"
-              className="rounded px-2.5 py-1.5 text-[var(--paper-dim)] transition-colors hover:text-[var(--paper)] focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
+              className="text-paper-dim hover:text-paper rounded px-2.5 py-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
             >
               Algorithms
             </Link>
             <Link
               href="/editor"
-              className="rounded px-2.5 py-1.5 text-[var(--paper-dim)] transition-colors hover:text-[var(--paper)] focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
+              className="text-paper-dim hover:text-paper rounded px-2.5 py-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
             >
               Editor
             </Link>
@@ -119,7 +119,7 @@ export default function HomePage() {
               href={siteConfig.links.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden rounded px-2.5 py-1.5 text-[var(--paper-dim)] transition-colors hover:text-[var(--paper)] focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none sm:inline-block"
+              className="text-paper-dim hover:text-paper hidden rounded px-2.5 py-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none sm:inline-block"
             >
               GitHub ↗
             </a>
@@ -130,10 +130,10 @@ export default function HomePage() {
         <section className="grid flex-1 items-center gap-12 py-10 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="max-w-xl">
             <p
-              className="lab-fade mb-7 inline-flex items-center gap-2 rounded-full border border-[var(--line-strong)] px-3 py-1.5 font-mono text-[10px] tracking-[0.22em] text-[var(--paper-dim)] uppercase"
+              className="lab-fade border-line-strong text-paper-dim mb-7 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 font-mono text-[10px] tracking-[0.22em] uppercase"
               style={{ animationDelay: "0.05s" }}
             >
-              <span className="lab-blink size-1.5 rounded-full bg-[var(--safelight)]" />
+              <span className="lab-blink bg-safelight size-1.5 rounded-full" />
               In-browser dithering lab
             </p>
 
@@ -142,14 +142,14 @@ export default function HomePage() {
               className="lab-fade font-display text-[clamp(3.25rem,9vw,6.5rem)] leading-[0.9] tracking-[-0.02em] focus:outline-hidden"
               style={{ animationDelay: "0.12s" }}
             >
-              <span className="block text-[var(--paper-dim)]">Smooth in.</span>
+              <span className="text-paper-dim block">Smooth in.</span>
               <span className="block">
-                <em className="text-[var(--paper)] italic">Dither</em> out.
+                <em className="text-paper italic">Dither</em> out.
               </span>
             </h1>
 
             <p
-              className="lab-fade mt-7 max-w-md text-base leading-relaxed text-[var(--paper-dim)] sm:text-lg"
+              className="lab-fade text-paper-dim mt-7 max-w-md text-base leading-relaxed sm:text-lg"
               style={{ animationDelay: "0.22s" }}
             >
               PixelSynth turns photographs into algorithmic grain. Fifteen real
@@ -172,14 +172,14 @@ export default function HomePage() {
                 asChild
                 size="lg"
                 variant="outline"
-                className="border-[var(--line-strong)] bg-transparent font-mono text-xs tracking-[0.12em] text-[var(--paper)] uppercase hover:bg-white/5 hover:text-[var(--paper)]"
+                className="border-line-strong text-paper hover:text-paper bg-transparent font-mono text-xs tracking-[0.12em] uppercase hover:bg-white/5"
               >
                 <Link href="/algorithms">Browse algorithms</Link>
               </Button>
             </div>
 
             <dl
-              className="lab-fade mt-10 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-[10px] tracking-[0.18em] text-[var(--paper-dim)] uppercase"
+              className="lab-fade text-paper-dim mt-10 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-[10px] tracking-[0.18em] uppercase"
               style={{ animationDelay: "0.42s" }}
             >
               <Spec value={String(ALGORITHMS.length)} label="Algorithms" />
@@ -199,7 +199,7 @@ export default function HomePage() {
         {/* MARQUEE */}
         <section
           aria-label="Available dithering algorithms"
-          className="lab-marquee relative -mx-5 overflow-hidden border-y border-[var(--line)] py-4 sm:-mx-8"
+          className="lab-marquee border-line relative -mx-5 overflow-hidden border-y py-4 sm:-mx-8"
         >
           <ul className="sr-only">
             {ALGORITHMS.map((a) => (
@@ -208,18 +208,18 @@ export default function HomePage() {
           </ul>
           <div
             aria-hidden="true"
-            className="lab-marquee-track flex w-max items-center font-mono text-sm tracking-[0.2em] whitespace-nowrap text-[var(--paper-dim)] uppercase"
+            className="lab-marquee-track text-paper-dim flex w-max items-center font-mono text-sm tracking-[0.2em] whitespace-nowrap uppercase"
           >
             {[...ALGORITHMS, ...ALGORITHMS].map((a, i) => (
               <span key={i} className="flex items-center">
                 <span className="px-6">{a.shortName}</span>
-                <span className="text-[var(--safelight)]">✳</span>
+                <span className="text-safelight">✳</span>
               </span>
             ))}
           </div>
           {/* edge fades */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-[var(--ink)] to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-[var(--ink)] to-transparent" />
+          <div className="from-ink pointer-events-none absolute inset-y-0 left-0 w-20 bg-gradient-to-r to-transparent" />
+          <div className="from-ink pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-l to-transparent" />
         </section>
 
         {/* FEATURES */}
@@ -231,25 +231,25 @@ export default function HomePage() {
             >
               A darkroom for pixels
             </h2>
-            <span className="hidden font-mono text-[10px] tracking-[0.2em] text-[var(--paper-dim)] uppercase sm:inline">
+            <span className="text-paper-dim hidden font-mono text-[10px] tracking-[0.2em] uppercase sm:inline">
               / Capabilities
             </span>
           </div>
 
-          <div className="grid gap-px overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--line)] sm:grid-cols-3">
+          <div className="border-line bg-line grid gap-px overflow-hidden rounded-xl border sm:grid-cols-3">
             {FEATURES.map((f) => (
               <article
                 key={f.n}
-                className="group bg-[var(--ink)] p-6 transition-colors hover:bg-[var(--ink-2)] sm:p-8"
+                className="group bg-ink hover:bg-ink-raised p-6 transition-colors sm:p-8"
               >
                 <div className="flex items-center justify-between font-mono text-[10px] tracking-[0.2em] uppercase">
-                  <span className="text-[var(--safelight)]">{f.n}</span>
-                  <span className="text-[var(--paper-dim)]">{f.label}</span>
+                  <span className="text-safelight">{f.n}</span>
+                  <span className="text-paper-dim">{f.label}</span>
                 </div>
-                <h3 className="font-display mt-6 text-xl leading-snug text-[var(--paper)]">
+                <h3 className="font-display text-paper mt-6 text-xl leading-snug">
                   {f.title}
                 </h3>
-                <p className="mt-3 text-sm leading-relaxed text-[var(--paper-dim)]">
+                <p className="text-paper-dim mt-3 text-sm leading-relaxed">
                   {f.desc}
                 </p>
               </article>
@@ -257,12 +257,10 @@ export default function HomePage() {
           </div>
 
           {/* Closing CTA strip */}
-          <div className="mt-12 flex flex-col items-center gap-5 rounded-xl border border-[var(--line)] bg-[var(--ink-2)]/60 px-6 py-10 text-center">
+          <div className="border-line bg-ink-raised/60 mt-12 flex flex-col items-center gap-5 rounded-xl border px-6 py-10 text-center">
             <p className="font-display max-w-lg text-2xl leading-snug sm:text-3xl">
               Drop in an image. Pick an algorithm.{" "}
-              <span className="text-[var(--paper-dim)] italic">
-                Watch it develop.
-              </span>
+              <span className="text-paper-dim italic">Watch it develop.</span>
             </p>
             <Button
               asChild
@@ -275,17 +273,17 @@ export default function HomePage() {
         </section>
 
         {/* FOOTER */}
-        <footer className="mt-auto flex flex-col items-center justify-between gap-3 border-t border-[var(--line)] py-7 text-center sm:flex-row sm:text-left">
-          <p className="font-mono text-[11px] tracking-[0.1em] text-[var(--paper-dim)]">
+        <footer className="border-line mt-auto flex flex-col items-center justify-between gap-3 border-t py-7 text-center sm:flex-row sm:text-left">
+          <p className="text-paper-dim font-mono text-[11px] tracking-[0.1em]">
             © 2026 PixelSynth — a dithering image editor
           </p>
-          <p className="font-mono text-[11px] tracking-[0.1em] text-[var(--paper-dim)]">
+          <p className="text-paper-dim font-mono text-[11px] tracking-[0.1em]">
             Built by{" "}
             <a
               href={siteConfig.links.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[var(--paper)] underline-offset-4 transition-colors hover:underline"
+              className="text-paper underline-offset-4 transition-colors hover:underline"
             >
               m4rcone
             </a>{" "}
@@ -300,9 +298,9 @@ export default function HomePage() {
 function Spec({ value, label }: { value: string; label: string }) {
   // dt must precede dd in the DOM; flex order shows "15 Algorithms ·".
   return (
-    <div className="flex items-center gap-1.5 [&:not(:last-child)]:after:order-3 [&:not(:last-child)]:after:ml-1.5 [&:not(:last-child)]:after:text-[var(--line-strong)] [&:not(:last-child)]:after:content-['·']">
+    <div className="[&:not(:last-child)]:after:text-line-strong flex items-center gap-1.5 [&:not(:last-child)]:after:order-3 [&:not(:last-child)]:after:ml-1.5 [&:not(:last-child)]:after:content-['·']">
       <dt className="order-2">{label}</dt>
-      <dd className="order-1 text-[var(--paper)]">{value}</dd>
+      <dd className="text-paper order-1">{value}</dd>
     </div>
   );
 }

@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { BrainCircuit, Sparkles } from "lucide-react";
+import { Aperture, LayoutGrid } from "lucide-react";
+import { Logo } from "@/components/logo";
 
 import { NavMain } from "@/components/nav-main";
 import {
@@ -19,12 +20,12 @@ const data = {
     {
       title: "Editor",
       url: "/editor",
-      icon: Sparkles,
+      icon: Aperture,
     },
     {
       title: "Algorithms",
       url: "/algorithms",
-      icon: BrainCircuit,
+      icon: LayoutGrid,
     },
   ],
 };
@@ -41,16 +42,10 @@ export function SidebarLeft({
               <SidebarMenuButton
                 size="lg"
                 asChild
-                className="hover:bg-[var(--sidebar-accent)]"
+                className="hover:bg-sidebar-accent"
               >
-                <Link href="/" className="flex items-center gap-2.5">
-                  <span
-                    aria-hidden="true"
-                    className="lab-dots grid size-7 shrink-0 place-items-center rounded-[5px] border border-[var(--line-strong)] text-white/65"
-                  />
-                  <span className="font-display text-lg tracking-tight">
-                    PixelSynth
-                  </span>
+                <Link href="/" aria-label="PixelSynth home">
+                  <Logo className="[&_svg]:size-7" />
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

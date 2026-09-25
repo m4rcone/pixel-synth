@@ -1,7 +1,6 @@
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { ThemeProvider } from "@/components/theme-provider";
+import { Geist, Geist_Mono, Newsreader } from "next/font/google";
 import { RouteFocusManager } from "@/components/route-focus-manager";
 import { siteConfig } from "@/lib/site";
 import { Analytics } from "@vercel/analytics/next";
@@ -14,6 +13,14 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+// Display serif; the optical-size axis keeps large headlines crisp.
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  axes: ["opsz"],
 });
 
 export const metadata: Metadata = {
@@ -67,9 +74,9 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  // Dark-first UI (default theme is dark and the landing page is always dark),
-  // so the browser chrome matches the darkroom background.
-  themeColor: "#0a0a0b",
+  // Dark-only UI: the browser chrome matches the safelit-black page.
+  themeColor: "#120d0c",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({
@@ -78,25 +85,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
+    <html
+      lang="en"
+      className={`dark ${geistSans.variable} ${geistMono.variable} ${newsreader.variable}`}
+    >
+      <body className="font-sans antialiased">
+        <a
+          href="#main-content"
+          className="bg-ink-raised text-paper ring-safelight fixed top-3 left-3 z-50 -translate-y-20 rounded-md border px-4 py-2 text-sm font-medium transition-transform focus:translate-y-0 focus:ring-2 focus:outline-hidden"
         >
-          <a
-            href="#main-content"
-            className="bg-background text-foreground ring-ring fixed top-3 left-3 z-50 -translate-y-20 rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-transform focus:translate-y-0 focus:ring-2 focus:outline-hidden"
-          >
-            Skip to content
-          </a>
-          <RouteFocusManager />
-          {children}
-        </ThemeProvider>
+          Skip to content
+        </a>
+        <RouteFocusManager />
+        {children}
         <Analytics />
       </body>
     </html>

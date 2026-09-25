@@ -3,7 +3,8 @@
 import { RotateCcw, Sparkles, Trash2 } from "lucide-react";
 import { useCanvasContext } from "@/contexts/canvas-context";
 import { useEditorActions, useEditorState } from "@/contexts/editor-context";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -82,7 +83,14 @@ function ConfirmButton({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant={variant} className="flex-1">
+        <Button
+          variant="outline"
+          className={cn(
+            "flex-1",
+            variant === "destructive" &&
+              "border-destructive/60 text-safelight hover:border-destructive hover:text-safelight",
+          )}
+        >
           {icon}
           {label}
         </Button>
@@ -98,7 +106,7 @@ function ConfirmButton({
             onClick={onConfirm}
             className={
               variant === "destructive"
-                ? "bg-destructive hover:bg-destructive/90 text-white"
+                ? buttonVariants({ variant: "destructive" })
                 : undefined
             }
           >

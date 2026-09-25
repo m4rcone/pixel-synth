@@ -51,11 +51,6 @@ export function ImageDropzone() {
 
   return (
     <div className="relative flex h-[300px] items-center justify-center px-6 py-4 md:h-[500px] lg:h-full">
-      <div
-        aria-hidden="true"
-        className="lab-grid pointer-events-none absolute inset-0 [mask-image:radial-gradient(70%_60%_at_50%_50%,black,transparent_75%)] opacity-40"
-      />
-
       <div className="relative w-full max-w-md">
         {/* The label wraps the visually hidden input, so it is the click target. */}
         <label
@@ -75,7 +70,7 @@ export function ImageDropzone() {
           <span
             aria-hidden="true"
             className={cn(
-              "lab-dots border-line-strong group-hover:text-safelight grid size-14 place-items-center rounded-xl border transition-colors",
+              "darkroom-dots border-line-strong group-hover:text-safelight grid size-14 place-items-center rounded-xl border transition-colors",
               isDragging ? "text-safelight" : "text-paper/50",
             )}
           >
@@ -83,10 +78,10 @@ export function ImageDropzone() {
           </span>
 
           <span className="flex flex-col gap-1.5">
-            <span className="font-display text-2xl tracking-tight">
+            <span className="font-display text-heading font-medium">
               Drop an image to develop
             </span>
-            <span className="text-label text-paper-dim">Click to browse</span>
+            <span className="text-paper-dim text-sm">Click to browse</span>
           </span>
 
           <input
@@ -101,7 +96,7 @@ export function ImageDropzone() {
 
         <p
           id="image-upload-description"
-          className="text-label text-paper-dim mt-5 text-center"
+          className="text-paper-dim mt-4 text-center text-sm"
         >
           Any browser-supported format · Processed locally
         </p>

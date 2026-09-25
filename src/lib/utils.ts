@@ -4,7 +4,17 @@ import { extendTailwindMerge } from "tailwind-merge";
 // Teach tailwind-merge about custom utilities so they are not mistaken for
 // text colors and dropped when merged with one.
 const twMerge = extendTailwindMerge({
-  extend: { classGroups: { "font-size": ["text-label"] } },
+  extend: {
+    classGroups: {
+      "font-size": [
+        "text-label",
+        "text-readout",
+        "text-display",
+        "text-title",
+        "text-heading",
+      ],
+    },
+  },
 });
 
 export function cn(...inputs: ClassValue[]) {

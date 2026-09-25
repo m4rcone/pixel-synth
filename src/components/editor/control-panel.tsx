@@ -36,12 +36,8 @@ export function ControlPanel({ className }: { className?: string }) {
       <header className="border-line flex h-14 shrink-0 items-center justify-between border-b px-4">
         <h2
           id="control-panel-heading"
-          className="font-display flex items-center gap-2 text-lg tracking-tight"
+          className="font-display text-xl font-medium tracking-tight"
         >
-          <span
-            aria-hidden="true"
-            className="lab-blink bg-safelight size-1.5 rounded-full"
-          />
           Control panel
         </h2>
         <InfoTooltip />
@@ -61,9 +57,9 @@ export function ControlPanel({ className }: { className?: string }) {
           >
             <h3
               id={`panel-${id}-heading`}
-              className="text-label text-paper-dim flex items-center gap-1.5"
+              className="text-paper flex items-center gap-2 text-sm font-semibold"
             >
-              <Icon className="text-safelight size-3.5" aria-hidden="true" />
+              <Icon className="text-paper-dim size-4" aria-hidden="true" />
               {title}
             </h3>
             <Controls />
