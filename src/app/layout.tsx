@@ -56,20 +56,11 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     locale: "en_US",
     type: "website",
-    images: [
-      {
-        url: siteConfig.previewImage,
-        width: 250,
-        height: 250,
-        alt: "PixelSynth dithering preview",
-      },
-    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: siteConfig.title,
     description: siteConfig.description,
-    images: [siteConfig.previewImage],
   },
 };
 

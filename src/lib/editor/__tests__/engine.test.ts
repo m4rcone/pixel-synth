@@ -69,7 +69,8 @@ describe("error kernels", () => {
   it.each(Object.entries(ERROR_KERNELS))(
     "%s weights sum correctly",
     (name, kernel) => {
-      const total = kernel.reduce((sum, [, , w]) => sum + w, 0);
+      const total =
+        kernel.taps.reduce((sum, [, , w]) => sum + w, 0) / kernel.divisor;
       expect(total).toBeCloseTo(name === "atkinson" ? 6 / 8 : 1, 10);
     },
   );

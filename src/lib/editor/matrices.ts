@@ -1,16 +1,19 @@
 import { createRandom } from "./pixels";
 
-/** Error-diffusion kernel: offsets (dx, dy) from the current pixel and weights. */
-export type ErrorKernel = readonly (readonly [
-  dx: number,
-  dy: number,
-  weight: number,
-])[];
+/**
+ * Error-diffusion kernel as published: integer weights over a divisor, at
+ * offsets (dx, dy) from the current pixel. Kept in this form so the site can
+ * display it exactly as the engine uses it.
+ */
+export type ErrorKernel = {
+  divisor: number;
+  taps: readonly (readonly [dx: number, dy: number, weight: number])[];
+};
 
 const kernel = (
   divisor: number,
   taps: [number, number, number][],
-): ErrorKernel => taps.map(([dx, dy, w]) => [dx, dy, w / divisor] as const);
+): ErrorKernel => ({ divisor, taps });
 
 export const ERROR_KERNELS = {
   floydSteinberg: kernel(16, [

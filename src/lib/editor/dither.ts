@@ -68,6 +68,13 @@ const METHODS: Record<AlgorithmId, Method> = {
   },
 };
 
+export type AlgorithmMethod = Method;
+
+/** How an algorithm works, for documentation pages. */
+export function getMethod(algorithm: AlgorithmId): Method {
+  return METHODS[algorithm];
+}
+
 /**
  * Converts a luminance buffer (0–255) into a 1-bit image (0 or 255 per pixel).
  * Error diffusion works on a float copy, so accumulated error is never
@@ -114,14 +121,14 @@ export function dither(
       const x = reverse ? width - 1 - step : step;
       const p = y * width + x;
       const value = buffer[p] < 128 ? 0 : 255;
-      const error = buffer[p] - value;
+      const unit = (buffer[p] - value) / kernel.divisor;
       out[p] = value;
 
-      for (const [dx, dy, weight] of kernel) {
+      for (const [dx, dy, weight] of kernel.taps) {
         const nx = x + dx * dir;
         const ny = y + dy;
         if (nx >= 0 && nx < width && ny < height) {
-          buffer[ny * width + nx] += error * weight;
+          buffer[ny * width + nx] += unit * weight;
         }
       }
     }

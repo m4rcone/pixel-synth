@@ -22,7 +22,14 @@ async function uploadTinyImage(page: Page) {
 }
 
 test.describe("accessibility", () => {
-  for (const route of ["/", "/editor", "/algorithms"]) {
+  for (const route of [
+    "/",
+    "/editor",
+    "/algorithms",
+    "/algorithms/floyd-steinberg",
+    "/algorithms/blue-noise",
+    "/algorithms/random-dither",
+  ]) {
     test(`has no axe violations on ${route}`, async ({ page }) => {
       await page.goto(route);
       await page.waitForLoadState("networkidle");
@@ -161,7 +168,12 @@ test.describe("accessibility", () => {
 test.describe("accessibility on a phone", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
-  for (const route of ["/", "/editor", "/algorithms"]) {
+  for (const route of [
+    "/",
+    "/editor",
+    "/algorithms",
+    "/algorithms/bayer-4-4",
+  ]) {
     test(`has no axe violations on ${route}`, async ({ page }) => {
       await page.goto(route);
       await page.waitForLoadState("networkidle");

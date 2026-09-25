@@ -1,17 +1,54 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { StructuredData } from "@/components/structured-data";
 import { AlgorithmCard } from "@/components/algorithm-card";
 import { GlobalHeader } from "@/components/global-header";
 import { Button } from "@/components/ui/button";
 import { ALGORITHMS, algorithmsByCategory } from "@/lib/algorithms";
+import {
+  absoluteUrl,
+  breadcrumbStructuredData,
+  pageMetadata,
+  siteConfig,
+} from "@/lib/site";
 
-const FAMILY_NOTES: Record<string, string> = {
-  "error-diffusion":
-    "Each pixel is rounded to black or white and the rounding error is pushed onto the neighbors still to be processed. Organic and detailed.",
-  ordered:
-    "Each pixel is compared with a threshold matrix tiled across the image. Fast, parallel and deliberately textured.",
-  noise:
-    "Thresholds come from noise instead of a fixed pattern, trading structure for grain.",
-};
+const description =
+  "Explore the dithering algorithms available in PixelSynth and preview how each technique transforms an image.";
+
+export const metadata: Metadata = pageMetadata({
+  title: "Dithering Algorithms",
+  description,
+  path: "/algorithms",
+});
+
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: `Dithering Algorithms | ${siteConfig.name}`,
+    url: absoluteUrl("/algorithms"),
+    description,
+    inLanguage: "en",
+    isPartOf: {
+      "@type": "WebSite",
+      name: siteConfig.name,
+      url: siteConfig.url,
+    },
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: ALGORITHMS.length,
+      itemListElement: ALGORITHMS.map((algorithm, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: absoluteUrl(`/algorithms/${algorithm.slug}`),
+        name: algorithm.name,
+        description: algorithm.description,
+        image: absoluteUrl(algorithm.preview),
+      })),
+    },
+  },
+  breadcrumbStructuredData([{ name: "Algorithms", path: "/algorithms" }]),
+];
 
 export default function AlgorithmsPage() {
   const families = algorithmsByCategory();
@@ -20,6 +57,7 @@ export default function AlgorithmsPage() {
 
   return (
     <>
+      <StructuredData data={structuredData} />
       <GlobalHeader page="Algorithms" />
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-4 py-10 sm:px-8">
         <header className="border-line flex flex-col gap-6 border-b pb-8">
@@ -73,7 +111,7 @@ export default function AlgorithmsPage() {
                 {family.name}
               </h2>
               <p className="text-paper-dim leading-relaxed">
-                {FAMILY_NOTES[family.id]}
+                {family.description}
               </p>
             </div>
             <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,17rem),1fr))] gap-4">

@@ -180,7 +180,7 @@ export default function HomePage() {
               {ALGORITHMS.map((algorithm, index) => (
                 <li key={algorithm.slug} className="w-36 shrink-0 snap-start">
                   <Link
-                    href={`/algorithms#algorithm-${algorithm.slug}`}
+                    href={`/algorithms/${algorithm.slug}`}
                     className="group focus-visible:ring-safelight block rounded-sm focus-visible:ring-2 focus-visible:outline-none"
                   >
                     <span className="text-readout text-paper-dim group-hover:text-safelight flex justify-between pb-1.5 transition-colors">

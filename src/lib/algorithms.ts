@@ -7,9 +7,24 @@
  */
 
 export const ALGORITHM_CATEGORIES = [
-  { id: "error-diffusion", name: "Error diffusion" },
-  { id: "ordered", name: "Ordered" },
-  { id: "noise", name: "Noise-based" },
+  {
+    id: "error-diffusion",
+    name: "Error diffusion",
+    description:
+      "Each pixel is rounded to black or white and the rounding error is pushed onto the neighbors still to be processed. Organic and detailed.",
+  },
+  {
+    id: "ordered",
+    name: "Ordered",
+    description:
+      "Each pixel is compared with a threshold matrix tiled across the image. Fast, parallel and deliberately textured.",
+  },
+  {
+    id: "noise",
+    name: "Noise-based",
+    description:
+      "Thresholds come from noise instead of a fixed pattern, trading structure for grain.",
+  },
 ] as const;
 
 export type AlgorithmCategory = (typeof ALGORITHM_CATEGORIES)[number]["id"];
@@ -252,11 +267,13 @@ export const DEFAULT_ALGORITHM: AlgorithmId = "floyd-steinberg";
 /** Sphere render used as the "before" image for every preview. */
 export const PREVIEW_SOURCE = "/250/sphere-250.png";
 
-const bySlug = new Map<string, AlgorithmInfo>(
+export type Algorithm = (typeof ALGORITHMS)[number];
+
+const bySlug = new Map<string, Algorithm>(
   ALGORITHMS.map((algorithm) => [algorithm.slug, algorithm]),
 );
 
-export function getAlgorithm(slug: string): AlgorithmInfo | undefined {
+export function getAlgorithm(slug: string): Algorithm | undefined {
   return bySlug.get(slug);
 }
 
@@ -264,8 +281,12 @@ export function isAlgorithmId(value: string): value is AlgorithmId {
   return bySlug.has(value);
 }
 
+export function getCategory(category: AlgorithmCategory) {
+  return ALGORITHM_CATEGORIES.find((c) => c.id === category)!;
+}
+
 export function getCategoryName(category: AlgorithmCategory) {
-  return ALGORITHM_CATEGORIES.find((c) => c.id === category)!.name;
+  return getCategory(category).name;
 }
 
 export function algorithmsByCategory() {

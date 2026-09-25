@@ -40,7 +40,12 @@ export function AlgorithmCard({
         </p>
 
         <h3 id={titleId} className="font-display text-heading mt-3 font-medium">
-          {algorithm.name}
+          <Link
+            href={`/algorithms/${algorithm.slug}`}
+            className="hover:text-safelight focus-visible:ring-safelight rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
+          >
+            {algorithm.name}
+          </Link>
         </h3>
 
         <p className="text-paper-dim mt-2 flex-1 text-sm leading-relaxed">

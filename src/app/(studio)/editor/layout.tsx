@@ -1,37 +1,21 @@
 import type { Metadata } from "next";
 import { StructuredData } from "@/components/structured-data";
 import { SidebarInset } from "@/components/ui/sidebar";
-import { absoluteUrl, siteConfig } from "@/lib/site";
+import {
+  absoluteUrl,
+  breadcrumbStructuredData,
+  pageMetadata,
+  siteConfig,
+} from "@/lib/site";
 
 const description =
   "Upload an image and transform it with interactive dithering controls, tone mapping, and browser-based rendering.";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Editor",
   description,
-  alternates: {
-    canonical: "/editor",
-  },
-  openGraph: {
-    title: `Editor | ${siteConfig.name}`,
-    description,
-    url: "/editor",
-    images: [
-      {
-        url: siteConfig.previewImage,
-        width: 250,
-        height: 250,
-        alt: "PixelSynth editor preview",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary",
-    title: `Editor | ${siteConfig.name}`,
-    description,
-    images: [siteConfig.previewImage],
-  },
-};
+  path: "/editor",
+});
 
 const editorStructuredData = [
   {
@@ -56,24 +40,7 @@ const editorStructuredData = [
       priceCurrency: "USD",
     },
   },
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: siteConfig.url,
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Editor",
-        item: absoluteUrl("/editor"),
-      },
-    ],
-  },
+  breadcrumbStructuredData([{ name: "Editor", path: "/editor" }]),
 ];
 
 export default function EditorRouteLayout({
