@@ -5,7 +5,7 @@ import { ControlPanelActions } from "./control-panel-actions";
 import { DitherControls } from "./dither-controls";
 import { FilterControls } from "./filter-controls";
 import { HelpPopover } from "./help-popover";
-import { ToneControls } from "./tone-controls";
+import { ColorControls } from "./color-controls";
 
 const SECTIONS: {
   id: string;
@@ -20,7 +20,7 @@ const SECTIONS: {
     icon: SlidersHorizontal,
     Controls: FilterControls,
   },
-  { id: "tone", title: "Tone", icon: Palette, Controls: ToneControls },
+  { id: "color", title: "Color", icon: Palette, Controls: ColorControls },
 ];
 
 /**

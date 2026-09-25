@@ -21,10 +21,17 @@ test("renders a dithered image and offers a download", async ({ page }) => {
     "Rendered image is ready",
   );
 
-  const download = page.waitForEvent("download");
   await page.getByRole("button", { name: "Save" }).click();
+  const dialog = page.getByRole("dialog", { name: "Save image" });
+  // A tiny 4×4 result defaults to the largest factor.
+  await expect(dialog.getByRole("button", { name: /^8x,/ })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  const download = page.waitForEvent("download");
+  await dialog.getByRole("button", { name: "Save PNG" }).click();
   expect((await download).suggestedFilename()).toBe(
-    "pixelsynth-floyd-steinberg.png",
+    "pixelsynth-floyd-steinberg-8x.png",
   );
 });
 
@@ -121,4 +128,89 @@ test("catalog cards open the algorithm page from anywhere on the card", async ({
   const box = await description.boundingBox();
   await page.mouse.click(box!.x + box!.width / 2, box!.y + box!.height / 2);
   await expect(page).toHaveURL(/\/algorithms\/stucki$/);
+});
+
+const SPHERE = "public/250/sphere-250.png";
+
+test("palette mode dithers to a preset and names the export", async ({
+  page,
+}) => {
+  await page.goto("/editor");
+  await page.waitForLoadState("networkidle");
+  await page.getByLabel(/drop an image/i).setInputFiles(SPHERE);
+  await page.getByRole("button", { name: "Apply dither" }).click();
+
+  await page.getByRole("button", { name: "Palette", exact: true }).click();
+  await page.getByRole("combobox", { name: "Palette" }).click();
+  await page.getByRole("option", { name: /Game Boy/ }).click();
+  // Game Boy defaults to matching by brightness.
+  await expect(
+    page.getByRole("button", { name: "Brightness", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByText("4 colors")).toBeVisible();
+
+  await page.getByRole("button", { name: "Save" }).click();
+  const dialog = page.getByRole("dialog", { name: "Save image" });
+  await dialog.getByRole("button", { name: /^1x,/ }).click();
+  const download = page.waitForEvent("download");
+  await dialog.getByRole("button", { name: "Save PNG" }).click();
+  expect((await download).suggestedFilename()).toBe(
+    "pixelsynth-floyd-steinberg-gameboy.png",
+  );
+});
+
+test("pixel art preset shrinks to 128 px with PICO-8 and Bayer 2×2", async ({
+  page,
+}) => {
+  await page.goto("/editor");
+  await page.waitForLoadState("networkidle");
+  await page.getByLabel(/drop an image/i).setInputFiles(SPHERE);
+  await page.getByRole("button", { name: "Pixel art preset" }).click();
+
+  await expect(
+    page.getByRole("button", { name: "Reset", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Output size")).toHaveValue("128");
+  await expect(page.getByRole("combobox", { name: "Algorithm" })).toHaveText(
+    "Bayer 2×2",
+  );
+  await expect(page.getByRole("combobox", { name: "Palette" })).toContainText(
+    "PICO-8",
+  );
+});
+
+test("output width field sets the processing scale", async ({ page }) => {
+  await page.goto("/editor");
+  await page.waitForLoadState("networkidle");
+  await page.getByLabel(/drop an image/i).setInputFiles(SPHERE);
+
+  const width = page.getByLabel("Output size");
+  await width.fill("100");
+  await width.press("Enter");
+  await expect(
+    page.getByRole("slider", { name: "Processing scale" }),
+  ).toHaveAttribute("aria-valuetext", "40%");
+});
+
+test("custom palette colors can be added and removed", async ({ page }) => {
+  await page.goto("/editor");
+  await upload(page);
+  await page.getByRole("button", { name: "Palette", exact: true }).click();
+  await page.getByRole("button", { name: "Edit colors" }).click();
+
+  await expect(page.getByLabel(/^Color \d+$/)).toHaveCount(16);
+  await page.getByRole("button", { name: "Remove color 16" }).click();
+  await expect(page.getByLabel(/^Color \d+$/)).toHaveCount(15);
+  await page.getByRole("button", { name: "Add color" }).click();
+  await expect(page.getByLabel(/^Color \d+$/)).toHaveCount(16);
+});
+
+test("'None' is offered as a no-dithering choice", async ({ page }) => {
+  await page.goto("/editor");
+  await upload(page);
+  await page.getByRole("combobox", { name: "Algorithm" }).click();
+  await page.getByRole("option", { name: "None (nearest color)" }).click();
+  await expect(page.getByRole("combobox", { name: "Algorithm" })).toHaveText(
+    "None (nearest color)",
+  );
 });

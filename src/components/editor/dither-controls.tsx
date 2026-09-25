@@ -1,8 +1,15 @@
 "use client";
 
+import { useState } from "react";
+import { Grid2x2 } from "lucide-react";
 import { useEditorActions, useEditorState } from "@/contexts/editor-context";
 import { algorithmsByCategory, isAlgorithmId } from "@/lib/algorithms";
-import { DEFAULT_SETTINGS } from "@/lib/editor/settings";
+import {
+  DEFAULT_SETTINGS,
+  type DitherChoice,
+  type EditorSettings,
+} from "@/lib/editor/settings";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -16,28 +23,70 @@ import {
 import { SliderField } from "./slider-field";
 
 const CATEGORIES = algorithmsByCategory();
+const MIN_SCALE = 0.05;
+
+/** One click to the classic pixel-art look; every value stays adjustable. */
+const PIXEL_ART = {
+  width: 128,
+  algorithm: "bayer-2-2",
+  palette: "pico8",
+} as const;
+
+const isDitherChoice = (value: string): value is DitherChoice =>
+  value === "none" || isAlgorithmId(value);
 
 export function DitherControls() {
   const { status, source, settings } = useEditorState();
-  const { update, commit } = useEditorActions();
+  const { update, commit, applyDither } = useEditorActions();
   const disabled = status === "empty";
   // Algorithm and scale only affect the output once dithering is applied.
   const apply = status === "dithered" ? commit : update;
+  const sourceWidth = source?.pixels.width ?? 0;
+  const sourceHeight = source?.pixels.height ?? 0;
 
-  const outputSize = source
-    ? `${Math.round(source.pixels.width * settings.scale)} × ${Math.round(source.pixels.height * settings.scale)} px`
-    : undefined;
+  function applyPixelArt() {
+    const preset = (s: EditorSettings): Partial<EditorSettings> => ({
+      algorithm: PIXEL_ART.algorithm,
+      scale: sourceWidth
+        ? Math.min(1, Math.max(MIN_SCALE, PIXEL_ART.width / sourceWidth))
+        : s.scale,
+      color: {
+        ...s.color,
+        mode: "palette",
+        palette: PIXEL_ART.palette,
+        match: "color",
+      },
+    });
+    if (status === "dithered") {
+      commit(preset);
+    } else {
+      update(preset);
+      applyDither();
+    }
+  }
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
-        <Label htmlFor="algorithm" className="text-label text-paper-dim">
-          Algorithm
-        </Label>
+        <div className="flex items-center justify-between gap-2">
+          <Label htmlFor="algorithm" className="text-label text-paper-dim">
+            Algorithm
+          </Label>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="-mr-2 h-7 px-2 text-xs"
+            disabled={disabled}
+            onClick={applyPixelArt}
+          >
+            <Grid2x2 aria-hidden="true" />
+            Pixel art preset
+          </Button>
+        </div>
         <Select
           value={settings.algorithm}
           onValueChange={(value) => {
-            if (isAlgorithmId(value)) apply({ algorithm: value });
+            if (isDitherChoice(value)) apply({ algorithm: value });
           }}
           disabled={disabled}
         >
@@ -55,6 +104,10 @@ export function DitherControls() {
                 ))}
               </SelectGroup>
             ))}
+            <SelectGroup>
+              <SelectLabel>No dithering</SelectLabel>
+              <SelectItem value="none">None (nearest color)</SelectItem>
+            </SelectGroup>
           </SelectContent>
         </Select>
       </div>
@@ -64,15 +117,89 @@ export function DitherControls() {
         label="Processing scale"
         value={settings.scale}
         defaultValue={DEFAULT_SETTINGS.scale}
-        min={0.05}
+        min={MIN_SCALE}
         max={1}
         step={0.01}
         disabled={disabled}
         format={(v) => `${Math.round(v * 100)}%`}
-        hint={disabled ? undefined : outputSize}
         onChange={(scale) => update({ scale })}
         onCommit={(scale) => apply({ scale })}
       />
+
+      {source && (
+        <WidthField
+          // Remount when the scale changes elsewhere so the draft resyncs.
+          key={`${sourceWidth}-${settings.scale}`}
+          width={Math.max(1, Math.round(sourceWidth * settings.scale))}
+          height={Math.max(1, Math.round(sourceHeight * settings.scale))}
+          maxWidth={sourceWidth}
+          disabled={disabled}
+          onCommit={(width) =>
+            apply({
+              scale: Math.min(1, Math.max(MIN_SCALE, width / sourceWidth)),
+            })
+          }
+        />
+      )}
+    </div>
+  );
+}
+
+/** Output size in pixels; typing a width sets the processing scale. */
+function WidthField({
+  width,
+  height,
+  maxWidth,
+  disabled,
+  onCommit,
+}: {
+  width: number;
+  height: number;
+  maxWidth: number;
+  disabled: boolean;
+  onCommit: (width: number) => void;
+}) {
+  const [draft, setDraft] = useState(String(width));
+  const minWidth = Math.max(1, Math.ceil(maxWidth * MIN_SCALE));
+
+  function submit() {
+    const value = Number.parseInt(draft, 10);
+    if (!Number.isFinite(value)) {
+      setDraft(String(width));
+      return;
+    }
+    const clamped = Math.min(maxWidth, Math.max(minWidth, value));
+    setDraft(String(clamped));
+    if (clamped !== width) onCommit(clamped);
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <Label
+        htmlFor="output-width"
+        className="text-label text-paper-dim mr-auto"
+      >
+        Output size
+      </Label>
+      <input
+        id="output-width"
+        type="number"
+        inputMode="numeric"
+        min={minWidth}
+        max={maxWidth}
+        value={draft}
+        disabled={disabled}
+        onChange={(event) => setDraft(event.target.value)}
+        onBlur={submit}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") submit();
+        }}
+        aria-describedby="output-height"
+        className="border-input text-readout focus-visible:ring-safelight h-8 w-20 rounded-md border bg-transparent px-2 text-right focus-visible:ring-2 focus-visible:outline-none"
+      />
+      <span id="output-height" className="text-readout text-paper-dim">
+        × {height} px
+      </span>
     </div>
   );
 }

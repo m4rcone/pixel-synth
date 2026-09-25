@@ -13,6 +13,14 @@ const TIPS = [
     body: "Dithers a smaller copy of the image, then scales it back up to the original size. Lower values give bigger, chunkier grain.",
   },
   {
+    title: "Palette",
+    body: "Dithers straight to a set of colors. “Match by color” suits many-hued palettes; “Match by brightness” suits single-hue ones like Game Boy or sepia.",
+  },
+  {
+    title: "Pixel art preset",
+    body: "Shrinks the image to 128 px wide, applies the PICO-8 palette with a 2×2 Bayer pattern. Save it ×4 or ×8 to share.",
+  },
+  {
     title: "Luminance",
     body: "Applies each tone color while preserving the original brightness of the pixel.",
   },

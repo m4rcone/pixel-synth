@@ -195,7 +195,9 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   // Restore and persist the custom palette (per browser, best effort).
   useEffect(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem(CUSTOM_PALETTE_KEY) ?? "null");
+      const saved = JSON.parse(
+        localStorage.getItem(CUSTOM_PALETTE_KEY) ?? "null",
+      );
       if (
         Array.isArray(saved) &&
         saved.length >= 2 &&

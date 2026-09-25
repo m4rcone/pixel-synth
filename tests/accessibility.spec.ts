@@ -127,6 +127,25 @@ test.describe("accessibility", () => {
     await expectNoAccessibilityViolations(page);
   });
 
+  test("palette controls and the save dialog have no axe violations", async ({
+    page,
+  }) => {
+    await page.goto("/editor");
+    await uploadTinyImage(page);
+    await page.getByRole("button", { name: "Apply dither" }).click();
+    await page.getByRole("button", { name: "Palette", exact: true }).click();
+    await page.getByRole("button", { name: "Edit colors" }).click();
+    await expectNoAccessibilityViolations(page);
+
+    await page.getByRole("button", { name: "Save" }).click();
+    await expect(
+      page.getByRole("dialog", { name: "Save image" }),
+    ).toBeVisible();
+    // Let the open animation finish so contrast is measured at rest.
+    await page.waitForTimeout(400);
+    await expectNoAccessibilityViolations(page);
+  });
+
   test("slider values can be reset from the keyboard", async ({ page }) => {
     await page.goto("/editor");
     await uploadTinyImage(page);
