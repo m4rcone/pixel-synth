@@ -50,20 +50,20 @@ export function SliderField({
         <span id={labelId} className="text-label text-paper-dim">
           {label}
         </span>
-        <div className="flex items-center gap-1">
+        <div className="-mr-1 flex items-center gap-0.5">
           {!disabled && !locked && !isDefault && (
             <button
               type="button"
               onClick={() => onCommit(defaultValue)}
               aria-label={`Reset ${label.toLowerCase()} to default`}
-              className="text-paper-dim hover:text-paper focus-visible:ring-ring grid size-6 place-items-center rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-hidden"
+              className="text-paper-dim hover:text-paper hover:bg-accent focus-visible:ring-safelight grid size-6 place-items-center rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-hidden"
             >
-              <RotateCcw className="size-3" aria-hidden="true" />
+              <RotateCcw className="size-3.5" aria-hidden="true" />
             </button>
           )}
           <output
             htmlFor={id}
-            className="text-paper-dim min-w-12 text-right font-mono text-xs tabular-nums"
+            className="text-readout text-paper-dim pr-1 text-right"
           >
             {disabled ? (
               "–"

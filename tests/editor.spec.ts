@@ -96,3 +96,29 @@ test("unsupported files show an actionable error", async ({ page }) => {
     page.getByRole("alert").filter({ hasText: "is not an image" }),
   ).toBeVisible();
 });
+
+test("SVG files are rejected with a specific message", async ({ page }) => {
+  await page.goto("/editor");
+  await page.waitForLoadState("networkidle");
+  await page.getByLabel(/drop an image/i).setInputFiles({
+    name: "logo.svg",
+    mimeType: "image/svg+xml",
+    buffer: Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"/>'),
+  });
+  await expect(
+    page.getByRole("alert").filter({ hasText: "SVG files aren’t supported" }),
+  ).toBeVisible();
+});
+
+test("catalog cards open the algorithm page from anywhere on the card", async ({
+  page,
+}) => {
+  await page.goto("/algorithms");
+  await page.waitForLoadState("networkidle");
+  // Click where the card's description is, not its title.
+  const description = page.getByText("An optimized version of JJN");
+  await description.scrollIntoViewIfNeeded();
+  const box = await description.boundingBox();
+  await page.mouse.click(box!.x + box!.width / 2, box!.y + box!.height / 2);
+  await expect(page).toHaveURL(/\/algorithms\/stucki$/);
+});

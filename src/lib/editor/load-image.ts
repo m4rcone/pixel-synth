@@ -11,6 +11,18 @@ export type SourceImage = {
   name: string;
 };
 
+/** Raster formats every current browser decodes with createImageBitmap. */
+export const SUPPORTED_IMAGE_TYPES = [
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "image/gif",
+  "image/avif",
+  "image/bmp",
+] as const;
+
+export const SUPPORTED_FORMATS_LABEL = "PNG, JPEG, WebP, GIF, AVIF or BMP";
+
 export class ImageLoadError extends Error {}
 
 /**
@@ -19,9 +31,14 @@ export class ImageLoadError extends Error {}
  * {@link ImageLoadError} with a user-facing message when the file can't be used.
  */
 export async function loadImageFile(file: File): Promise<SourceImage> {
+  if (file.type === "image/svg+xml") {
+    throw new ImageLoadError(
+      `SVG files aren’t supported. Export “${file.name}” as PNG and try again.`,
+    );
+  }
   if (!file.type.startsWith("image/")) {
     throw new ImageLoadError(
-      `“${file.name}” is not an image. Choose a PNG, JPEG, WebP or GIF file.`,
+      `“${file.name}” is not an image. Choose a ${SUPPORTED_FORMATS_LABEL} file.`,
     );
   }
 
@@ -30,7 +47,7 @@ export async function loadImageFile(file: File): Promise<SourceImage> {
     decoded = await createImageBitmap(file);
   } catch {
     throw new ImageLoadError(
-      `Your browser can’t read “${file.name}”. Try converting it to PNG or JPEG.`,
+      `Your browser can’t read “${file.name}”. Convert it to PNG or JPEG and try again.`,
     );
   }
 

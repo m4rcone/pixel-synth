@@ -11,7 +11,10 @@ export const siteConfig = {
   /** Last meaningful content update, used by the sitemap. */
   updated: "2026-09-25",
   links: {
+    /** Author profile (structured data). */
     github: "https://github.com/m4rcone",
+    /** Source code (site navigation). */
+    repository: "https://github.com/m4rcone/pixel-synth",
   },
 };
 

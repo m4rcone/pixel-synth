@@ -20,7 +20,9 @@ export function AlgorithmCard({
     <article
       id={id}
       aria-labelledby={titleId}
-      className="border-line bg-ink-raised hover:border-line-strong target:border-safelight flex h-full scroll-mt-20 flex-col overflow-hidden rounded-md border transition-colors"
+      // The title link is stretched over the whole card; the source toggle and
+      // the editor link sit above it (z-10) and stay independently clickable.
+      className="group border-line bg-ink-raised hover:border-line-strong target:border-safelight relative flex h-full scroll-mt-20 flex-col overflow-hidden rounded-md border transition-colors"
     >
       <AlgorithmCardPreview
         algorithm={algorithm.name}
@@ -42,7 +44,7 @@ export function AlgorithmCard({
         <h3 id={titleId} className="font-display text-heading mt-3 font-medium">
           <Link
             href={`/algorithms/${algorithm.slug}`}
-            className="hover:text-safelight focus-visible:ring-safelight rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
+            className="group-hover:text-safelight focus-visible:after:ring-safelight transition-colors after:absolute after:inset-0 after:rounded-md after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset"
           >
             {algorithm.name}
           </Link>
@@ -76,13 +78,21 @@ export function AlgorithmCard({
           </Meta>
         </dl>
 
-        <Link
-          href={`/editor?algorithm=${algorithm.slug}`}
-          className="text-paper hover:text-safelight focus-visible:ring-safelight decoration-line-strong mt-5 self-start rounded-sm text-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
-        >
-          Use in the editor
-          <span className="sr-only">: {algorithm.name}</span>
-        </Link>
+        <div className="mt-5 flex items-center justify-between gap-3">
+          <span
+            aria-hidden="true"
+            className="text-paper-dim group-hover:text-paper text-sm transition-colors"
+          >
+            How it works
+          </span>
+          <Link
+            href={`/editor?algorithm=${algorithm.slug}`}
+            className="text-paper hover:text-safelight focus-visible:ring-safelight decoration-line-strong relative z-10 rounded-sm text-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
+          >
+            Use in the editor
+            <span className="sr-only">: {algorithm.name}</span>
+          </Link>
+        </div>
       </div>
     </article>
   );

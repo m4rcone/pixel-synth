@@ -3,7 +3,12 @@
 import { type ChangeEvent, type DragEvent, useRef, useState } from "react";
 import { ImageUp } from "lucide-react";
 import { useEditorActions } from "@/contexts/editor-context";
-import { ImageLoadError, loadImageFile } from "@/lib/editor/load-image";
+import {
+  ImageLoadError,
+  loadImageFile,
+  SUPPORTED_FORMATS_LABEL,
+  SUPPORTED_IMAGE_TYPES,
+} from "@/lib/editor/load-image";
 import { cn } from "@/lib/utils";
 
 export function ImageDropzone() {
@@ -89,7 +94,7 @@ export function ImageDropzone() {
           <input
             id="image-upload"
             type="file"
-            accept="image/*"
+            accept={SUPPORTED_IMAGE_TYPES.join(",")}
             aria-describedby="image-upload-description"
             onChange={handleChange}
             className="sr-only"
@@ -100,7 +105,7 @@ export function ImageDropzone() {
           id="image-upload-description"
           className="text-paper-dim mt-4 text-center text-sm"
         >
-          Any browser-supported format · Processed locally
+          {SUPPORTED_FORMATS_LABEL} · Processed locally
         </p>
       </div>
     </div>

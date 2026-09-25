@@ -1,15 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 import { DitherBackground } from "@/components/dither-background";
 import { DitherSpecimen } from "@/components/dither-specimen";
 import { Logo } from "@/components/logo";
 import { StructuredData } from "@/components/structured-data";
 import { Button } from "@/components/ui/button";
-import {
-  ALGORITHM_CATEGORIES,
-  ALGORITHMS,
-  getCategoryName,
-} from "@/lib/algorithms";
+import { ALGORITHM_CATEGORIES, ALGORITHMS } from "@/lib/algorithms";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
 const FEATURES = [
@@ -103,7 +98,7 @@ export default function HomePage() {
               Editor
             </Link>
             <a
-              href={siteConfig.links.github}
+              href={siteConfig.links.repository}
               target="_blank"
               rel="noopener noreferrer"
               className={`${navLink} hidden sm:inline-block`}
@@ -161,52 +156,6 @@ export default function HomePage() {
             </div>
           </section>
 
-          <section aria-labelledby="contact-sheet-heading" className="pb-20">
-            <div className="mb-5 flex items-end justify-between gap-4">
-              <h2
-                id="contact-sheet-heading"
-                className="font-display text-heading font-medium"
-              >
-                One sphere, fifteen prints
-              </h2>
-              <Link
-                href="/algorithms"
-                className="text-paper-dim hover:text-paper focus-visible:ring-safelight shrink-0 rounded-sm text-sm whitespace-nowrap underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:outline-none"
-              >
-                See the catalog
-              </Link>
-            </div>
-            <ol className="border-line bg-ink-sunken -mx-4 flex snap-x scroll-px-4 gap-3 overflow-x-auto border-y px-4 py-4 sm:mx-0 sm:rounded-md sm:border">
-              {ALGORITHMS.map((algorithm, index) => (
-                <li key={algorithm.slug} className="w-36 shrink-0 snap-start">
-                  <Link
-                    href={`/algorithms/${algorithm.slug}`}
-                    className="group focus-visible:ring-safelight block rounded-sm focus-visible:ring-2 focus-visible:outline-none"
-                  >
-                    <span className="text-readout text-paper-dim group-hover:text-safelight flex justify-between pb-1.5 transition-colors">
-                      <span>{String(index + 1).padStart(2, "0")}</span>
-                      <span aria-hidden="true">▸</span>
-                    </span>
-                    <Image
-                      src={algorithm.preview}
-                      alt=""
-                      width={144}
-                      height={144}
-                      unoptimized
-                      className="border-line aspect-square w-full rounded-xs border"
-                    />
-                    <span className="text-paper mt-2 block truncate text-sm">
-                      {algorithm.shortName}
-                    </span>
-                    <span className="text-paper-dim block text-xs">
-                      {getCategoryName(algorithm.category)}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ol>
-          </section>
-
           <section aria-labelledby="features-heading" className="pb-20">
             <h2
               id="features-heading"
@@ -251,19 +200,7 @@ export default function HomePage() {
 
         <footer className="border-line text-paper-dim flex flex-col gap-2 border-t py-7 text-sm sm:flex-row sm:justify-between">
           <p>© 2026 PixelSynth — a dithering image editor</p>
-          <p>
-            Built by{" "}
-            <a
-              href={siteConfig.links.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-paper decoration-line-strong hover:decoration-paper focus-visible:ring-safelight rounded-sm underline underline-offset-4 focus-visible:ring-2 focus-visible:outline-none"
-            >
-              m4rcone
-              <span className="sr-only"> (opens in a new tab)</span>
-            </a>
-            . Runs entirely in your browser.
-          </p>
+          <p>Runs entirely in your browser.</p>
         </footer>
       </div>
     </div>

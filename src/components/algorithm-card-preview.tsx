@@ -41,7 +41,7 @@ export function AlgorithmCardPreview({
         onClick={() => setShowOriginal((prev) => !prev)}
         aria-pressed={showOriginal}
         className={cn(
-          "text-label focus-visible:ring-safelight absolute right-2 bottom-2 rounded-full border px-3 py-1.5 backdrop-blur-sm transition-colors focus-visible:ring-2 focus-visible:outline-none",
+          "text-label focus-visible:ring-safelight absolute right-2 bottom-2 z-10 rounded-full border px-3 py-1.5 backdrop-blur-sm transition-colors focus-visible:ring-2 focus-visible:outline-none",
           showOriginal
             ? "border-paper bg-paper text-ink"
             : "border-white/25 bg-black/65 text-white hover:bg-black/80",
