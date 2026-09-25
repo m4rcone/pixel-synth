@@ -13,6 +13,7 @@ function Slider({
   max = 100,
   "aria-label": ariaLabelProp,
   "aria-labelledby": ariaLabelledByProp,
+  "aria-valuetext": ariaValueText,
   ...props
 }: React.ComponentProps<typeof SliderPrimitive.Root>) {
   const ariaLabel =
@@ -61,6 +62,7 @@ function Slider({
           key={index}
           aria-label={ariaLabel}
           aria-labelledby={ariaLabel ? undefined : ariaLabelledBy}
+          aria-valuetext={ariaValueText}
           className="border-primary ring-ring/50 block size-4 shrink-0 rounded-full border bg-white shadow-sm transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
         />
       ))}

@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useImageContext } from "@/contexts/image-context";
-import { EditorState } from "@/lib/enum/editor-state";
+import { useEditorState } from "@/contexts/editor-context";
 
 /**
  * Warns before the page is unloaded (reload, tab close, external navigation)
@@ -14,8 +13,8 @@ import { EditorState } from "@/lib/enum/editor-state";
  * `returnValue` is still required for the prompt to appear cross-browser.
  */
 export function UnsavedChangesGuard() {
-  const { editorState } = useImageContext();
-  const hasWork = editorState !== EditorState.Initial;
+  const { status } = useEditorState();
+  const hasWork = status !== "empty";
 
   useEffect(() => {
     if (!hasWork) return;

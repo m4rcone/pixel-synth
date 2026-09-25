@@ -8,6 +8,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 export function NavMain({
@@ -21,6 +22,7 @@ export function NavMain({
   }[];
 }) {
   const pathname = usePathname();
+  const { setOpenMobile } = useSidebar();
 
   return (
     <SidebarGroup>
@@ -40,10 +42,11 @@ export function NavMain({
                 <Link
                   href={item.url}
                   aria-current={isActive ? "page" : undefined}
+                  onClick={() => setOpenMobile(false)}
                   className={`relative flex items-center gap-2.5 transition-colors ${
                     isActive
                       ? "text-foreground"
-                      : "text-[var(--paper-dim)] hover:text-foreground"
+                      : "hover:text-foreground text-[var(--paper-dim)]"
                   }`}
                 >
                   <span

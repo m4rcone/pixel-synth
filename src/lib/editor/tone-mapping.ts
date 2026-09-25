@@ -1,5 +1,3 @@
-import { DEFAULT_TONE_RANGE } from "./default-values";
-
 type ToneMappingColors = {
   highlights: { r: number; g: number; b: number };
   midtones: { r: number; g: number; b: number };
@@ -24,8 +22,8 @@ export async function applyToneMapping(
   const imageData = ctx.getImageData(0, 0, width, height);
   const data = imageData.data;
 
-  const midtoneMax = thresholds.midtones ?? DEFAULT_TONE_RANGE.midtones;
-  const shadowMax = thresholds.shadows ?? DEFAULT_TONE_RANGE.shadows;
+  const midtoneMax = thresholds.midtones;
+  const shadowMax = thresholds.shadows;
 
   for (let i = 0; i < data.length; i += 4) {
     const [r, g, b] = [data[i], data[i + 1], data[i + 2]];

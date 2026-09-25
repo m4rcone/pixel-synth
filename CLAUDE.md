@@ -28,9 +28,12 @@ Use the `/verify` command to run the whole gate before committing.
 ## Layout
 
 - `src/app/` — routes. `/` is the landing page; `(studio)/` groups `/editor` and `/algorithms`, which share the studio sidebar and editor providers (state survives navigation between them).
-- `src/lib/editor/` — the image pipeline (filters → dither → tone mapping → rescale).
-- `src/contexts/` — editor/image/canvas state.
-- `src/components/ui/` — shadcn primitives. `src/components/` — app components.
+- `src/lib/algorithms.ts` — single source of truth for the algorithm catalog (slug = id = public anchor). Never hardcode algorithm lists elsewhere; never change an existing slug.
+- `src/lib/editor/` — the image pipeline (filters → dither → tone mapping → rescale) and `settings.ts` (editor settings type + defaults).
+- `src/contexts/editor-context.tsx` — reducer-based editor state. Components call `update()` while a control is being dragged and `commit()` when a value settles; the provider renders once per commit and drops stale results.
+- `src/contexts/canvas-context.tsx` — view state (zoom, pan, before/after).
+- `src/components/editor/` — editor UI. The control panel is mounted once and laid out by CSS (no JS breakpoint switching, no duplicate IDs).
+- `src/components/ui/` — shadcn primitives. `src/components/` — shared app components.
 
 ## Conventions
 

@@ -1,4 +1,4 @@
-import { DitherAlgorithm } from "@/lib/enum/dither-algorithm";
+import type { AlgorithmId } from "@/lib/algorithms";
 import { DITHER_MATRICES, ERROR_PATTERNS } from "@/lib/editor/dither-presets";
 
 type ErrorPattern = { x: number; y: number; factor: number }[];
@@ -13,7 +13,7 @@ interface DitherOptions {
 
 /**
  * Função base universal para aplicar dithering de forma assíncrona.
- * Compatível com Ordered, Error Diffusion, Random e Halftone.
+ * Compatível com Ordered, Error Diffusion e Random.
  */
 export async function runDither(
   sourceCanvas: HTMLCanvasElement,
@@ -97,224 +97,108 @@ export async function runDither(
   return sourceCanvas;
 }
 
-/* Halftone Dithering */
-interface HalftoneCircularOptions {
-  cellSize?: number; // tamanho da célula (px). Quanto maior, mais "grão" grande. padrão: 6
-  angleDeg?: number; // ângulo da tela (em graus). clássico: 45°. padrão: 45
-  minDot?: number; // raio mínimo do ponto (px). padrão: 0
-  maxDot?: number; // raio máximo do ponto (px). padrão: cellSize * 0.5
-  invert?: boolean; // inverte (fundo preto / pontos brancos). padrão: false
-  background?: string; // cor de fundo. padrão: "#fff"
-  foreground?: string; // cor dos pontos. padrão: "#000"
-}
-
-export async function runHalftoneCircularDither(
-  sourceCanvas: HTMLCanvasElement,
-  {
-    cellSize = 6,
-    angleDeg = 45,
-    minDot = 0,
-    maxDot, // default calculado abaixo
-    invert = false,
-    background = "#fff",
-    foreground = "#000",
-  }: HalftoneCircularOptions = {},
-): Promise<HTMLCanvasElement> {
-  const w = sourceCanvas.width;
-  const h = sourceCanvas.height;
-
-  const srcCtx = sourceCanvas.getContext("2d")!;
-  const srcData = srcCtx.getImageData(0, 0, w, h).data;
-
-  const out = document.createElement("canvas");
-  out.width = w;
-  out.height = h;
-  const ctx = out.getContext("2d")!;
-
-  // fundo
-  ctx.fillStyle = invert ? "#000" : background;
-  ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = invert ? "#fff" : foreground;
-
-  const CHUNK_ROWS = 8; // processa 8 linhas de células por tick para não travar a UI
-  const toRad = (angleDeg * Math.PI) / 180;
-  const cosA = Math.cos(toRad);
-  const sinA = Math.sin(toRad);
-
-  const maxR = maxDot ?? cellSize * 0.5;
-  const minR = Math.max(0, Math.min(minDot, maxR));
-
-  // utilitários
-  const clamp = (v: number, lo: number, hi: number) =>
-    v < lo ? lo : v > hi ? hi : v;
-
-  const grayAt = (x: number, y: number) => {
-    const xi = clamp(Math.floor(x), 0, w - 1);
-    const yi = clamp(Math.floor(y), 0, h - 1);
-    const i = (yi * w + xi) * 4;
-    const r = srcData[i],
-      g = srcData[i + 1],
-      b = srcData[i + 2];
-    return 0.299 * r + 0.587 * g + 0.114 * b; // 0..255
-  };
-
-  // cobrimos toda a tela mesmo após rotação: iteramos no "grid rotacionado"
-  // e transformamos de volta para coordenadas da tela
-  const pad = cellSize; // margem para garantir cobertura nas bordas
-  const gridMinX = -pad;
-  const gridMinY = -pad;
-  const gridMaxX = Math.max(w, h) + pad;
-  const gridMaxY = Math.max(w, h) + pad;
-
-  let processedRowCount = 0;
-
-  for (let gy = gridMinY; gy <= gridMaxY; gy += cellSize) {
-    for (let gx = gridMinX; gx <= gridMaxX; gx += cellSize) {
-      // (gx, gy) no grid → (cx, cy) na tela (rotação)
-      const cx = gx * cosA - gy * sinA;
-      const cy = gx * sinA + gy * cosA;
-
-      if (
-        cx < -cellSize ||
-        cx > w + cellSize ||
-        cy < -cellSize ||
-        cy > h + cellSize
-      ) {
-        continue; // fora da tela
-      }
-
-      const g = grayAt(cx, cy) / 255; // 0..1
-      const t = invert ? g : 1 - g; // intensidade do ponto
-      const r = minR + t * (maxR - minR);
-      if (r <= 0.001) continue;
-
-      ctx.beginPath();
-      ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    processedRowCount++;
-    if (processedRowCount % CHUNK_ROWS === 0) {
-      await new Promise((res) => setTimeout(res, 0));
-    }
-  }
-
-  return out;
-}
-
 export async function applyDither(
   canvas: HTMLCanvasElement,
-  algorithm: DitherAlgorithm,
+  algorithm: AlgorithmId,
 ): Promise<HTMLCanvasElement> {
   let result: HTMLCanvasElement;
 
   switch (algorithm) {
     // 🔹 Error Diffusion Dithering
-    case DitherAlgorithm.FloydSteinberg:
+    case "floyd-steinberg":
       result = await runDither(canvas, {
         errorPattern: ERROR_PATTERNS.floydSteinberg,
         serpentine: true,
       });
       break;
 
-    case DitherAlgorithm.JarvisJudiceNinke:
+    case "jarvis-judice-and-ninke-jjn":
       result = await runDither(canvas, {
         errorPattern: ERROR_PATTERNS.jarvisJudiceNinke,
         serpentine: true,
       });
       break;
 
-    case DitherAlgorithm.Stucki:
+    case "stucki":
       result = await runDither(canvas, {
         errorPattern: ERROR_PATTERNS.stucki,
         serpentine: true,
       });
       break;
 
-    case DitherAlgorithm.Burkes:
+    case "burkes":
       result = await runDither(canvas, {
         errorPattern: ERROR_PATTERNS.burkes,
         serpentine: true,
       });
       break;
 
-    case DitherAlgorithm.Sierra:
+    case "sierra":
       result = await runDither(canvas, {
         errorPattern: ERROR_PATTERNS.sierra,
         serpentine: true,
       });
       break;
 
-    case DitherAlgorithm.TwoRowSierra:
+    case "two-row-sierra":
       result = await runDither(canvas, {
         errorPattern: ERROR_PATTERNS.sierraTwoRow,
         serpentine: true,
       });
       break;
 
-    case DitherAlgorithm.SierraLite:
+    case "sierra-lite":
       result = await runDither(canvas, {
         errorPattern: ERROR_PATTERNS.sierraLite,
         serpentine: true,
       });
       break;
 
-    case DitherAlgorithm.Atkinson:
+    case "atkinson":
       result = await runDither(canvas, {
         errorPattern: ERROR_PATTERNS.atkinson,
       });
       break;
 
     // 🔹 Ordered Dithering
-    case DitherAlgorithm.Bayer2x2:
+    case "bayer-2-2":
       result = await runDither(canvas, {
         matrix: DITHER_MATRICES.bayer2x2,
       });
       break;
 
-    case DitherAlgorithm.Bayer4x4:
+    case "bayer-4-4":
       result = await runDither(canvas, {
         matrix: DITHER_MATRICES.bayer4x4,
       });
       break;
 
-    case DitherAlgorithm.Bayer8x8:
+    case "bayer-8-8":
       result = await runDither(canvas, {
         matrix: DITHER_MATRICES.bayer8x8,
       });
       break;
 
-    case DitherAlgorithm.ClusteredDot:
+    case "clustered-dot-halftone-ordered":
       result = await runDither(canvas, {
         matrix: DITHER_MATRICES.clustered4x4,
       });
       break;
 
-    case DitherAlgorithm.BlueNoise:
+    case "blue-noise":
       result = await runDither(canvas, {
         matrix: DITHER_MATRICES.blueNoise8x8,
       });
       break;
 
     // 🔹 Random / Noise-Based
-    case DitherAlgorithm.Random:
+    case "random-dither":
       result = await runDither(canvas, {});
       break;
 
-    case DitherAlgorithm.VoidandCluster:
+    case "void-and-cluster":
       result = await runDither(canvas, {
         matrix: DITHER_MATRICES.voidCluster8x8,
-      });
-      break;
-
-    // 🔹 Halftone Dithering
-    case DitherAlgorithm.HalftoneCircular:
-      result = await runHalftoneCircularDither(canvas, {
-        cellSize: 6,
-        angleDeg: 0,
-        minDot: 0,
-        // maxDot: 3, // 0.5 * cellSize é um bom início (6 * 0.5 = 3)
-        invert: false,
       });
       break;
 

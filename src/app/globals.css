@@ -42,13 +42,31 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* Darkroom palette */
+  --color-ink: var(--background);
+  --color-ink-raised: var(--card);
+  --color-paper: var(--foreground);
+  --color-paper-dim: var(--paper-dim);
+  --color-safelight: var(--safelight);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+}
+
+/* Mono uppercase technical label (controls, captions, metadata). */
+@utility text-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 :root {
   color-scheme: light;
   --radius: 0.625rem;
-  --font-display-serif: "Iowan Old Style", "Palatino Linotype", Palatino,
-    Georgia, serif;
+  --font-display-serif:
+    "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);

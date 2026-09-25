@@ -1,8 +1,8 @@
 import type { MetadataRoute } from "next";
-import algorithms from "@/data/algorithms.json";
+import { ALGORITHMS } from "@/lib/algorithms";
 import { absoluteUrl } from "@/lib/site";
 
-const algorithmPreviewImages = algorithms.map((algorithm) =>
+const algorithmPreviewImages = ALGORITHMS.map((algorithm) =>
   absoluteUrl(algorithm.preview),
 );
 

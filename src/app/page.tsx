@@ -3,25 +3,8 @@ import { Button } from "@/components/ui/button";
 import { BackgroundDitherLoader } from "@/components/background-dither-loader";
 import { DitherSpecimen } from "@/components/dither-specimen";
 import { StructuredData } from "@/components/structured-data";
+import { ALGORITHMS, ALGORITHM_CATEGORIES } from "@/lib/algorithms";
 import { absoluteUrl, siteConfig } from "@/lib/site";
-
-const ALGORITHMS = [
-  "Floyd–Steinberg",
-  "Jarvis–Judice–Ninke",
-  "Stucki",
-  "Burkes",
-  "Sierra",
-  "Two-Row Sierra",
-  "Sierra Lite",
-  "Atkinson",
-  "Bayer 2×2",
-  "Bayer 4×4",
-  "Bayer 8×8",
-  "Clustered Dot",
-  "Blue Noise",
-  "Random",
-  "Void-and-Cluster",
-];
 
 const FEATURES = [
   {
@@ -208,8 +191,11 @@ export default function HomePage() {
               className="lab-fade mt-10 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-[10px] tracking-[0.18em] text-[var(--paper-dim)] uppercase"
               style={{ animationDelay: "0.42s" }}
             >
-              <Spec value="15" label="Algorithms" />
-              <Spec value="3" label="Categories" />
+              <Spec value={String(ALGORITHMS.length)} label="Algorithms" />
+              <Spec
+                value={String(ALGORITHM_CATEGORIES.length)}
+                label="Categories"
+              />
               <Spec value="100%" label="Local" />
             </dl>
           </div>
@@ -226,7 +212,7 @@ export default function HomePage() {
         >
           <ul className="sr-only">
             {ALGORITHMS.map((a) => (
-              <li key={a}>{a}</li>
+              <li key={a.slug}>{a.shortName}</li>
             ))}
           </ul>
           <div
@@ -235,7 +221,7 @@ export default function HomePage() {
           >
             {[...ALGORITHMS, ...ALGORITHMS].map((a, i) => (
               <span key={i} className="flex items-center">
-                <span className="px-6">{a}</span>
+                <span className="px-6">{a.shortName}</span>
                 <span className="text-[var(--safelight)]">✳</span>
               </span>
             ))}

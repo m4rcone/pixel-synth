@@ -1,29 +1,17 @@
 import { Cpu, Gauge } from "lucide-react";
 import { AlgorithmCardPreview } from "@/components/algorithm-card-preview";
-import { slugify } from "@/lib/slugify";
-
-type Algorithm = {
-  category: string;
-  type: string;
-  algorithm: string;
-  description: string;
-  complexity: string;
-  year: number | string;
-  author: string;
-  performance: number;
-  preview: string;
-};
+import { getCategoryName, type AlgorithmInfo } from "@/lib/algorithms";
 
 export function AlgorithmCard({
-  data,
+  algorithm: data,
   index = 0,
   preloadPreview = false,
 }: {
-  data: Algorithm;
+  algorithm: AlgorithmInfo;
   index?: number;
   preloadPreview?: boolean;
 }) {
-  const algorithmId = `algorithm-${slugify(data.algorithm)}`;
+  const algorithmId = `algorithm-${data.slug}`;
   const titleId = `${algorithmId}-title`;
   const complexityColor =
     data.complexity === "high"
@@ -38,7 +26,7 @@ export function AlgorithmCard({
     <span
       key={i}
       className={`inline-block h-1.5 w-1.5 rounded-full ${
-        i < data.performance ? "bg-[var(--safelight)]" : "bg-[var(--line-strong)]"
+        i < data.cost ? "bg-[var(--safelight)]" : "bg-[var(--line-strong)]"
       }`}
     />
   ));
@@ -51,18 +39,19 @@ export function AlgorithmCard({
       className="lab-fade group bg-card relative flex h-full flex-col overflow-hidden rounded-xl border border-[var(--line)] transition-colors hover:border-[var(--line-strong)] hover:bg-[var(--accent)]"
     >
       <AlgorithmCardPreview
-        algorithm={data.algorithm}
+        algorithm={data.name}
         preview={data.preview}
         preload={preloadPreview}
       />
 
       <div className="flex flex-1 flex-col p-5">
-        <div className="font-mono mb-3 flex items-center justify-between text-[10px] tracking-[0.18em] uppercase">
+        <div className="mb-3 flex items-center justify-between font-mono text-[10px] tracking-[0.18em] uppercase">
           <span className="text-[var(--safelight)]">
             {String(index + 1).padStart(2, "0")}
           </span>
           <span className="text-[var(--paper-dim)]">
-            {data.category} · <span className="capitalize">{data.type}</span>
+            {getCategoryName(data.category)} ·{" "}
+            <span className="capitalize">{data.era}</span>
           </span>
         </div>
 
@@ -70,7 +59,7 @@ export function AlgorithmCard({
           id={titleId}
           className="font-display text-xl leading-tight tracking-tight"
         >
-          {data.algorithm}
+          {data.name}
         </h2>
 
         <p className="mt-2 flex-1 text-sm leading-relaxed text-[var(--paper-dim)]">
@@ -79,10 +68,13 @@ export function AlgorithmCard({
 
         <div className="mt-4 flex flex-wrap items-center gap-3 text-xs">
           <div className="flex items-center gap-1.5">
-            <Cpu className="h-3 w-3 text-[var(--paper-dim)]" aria-hidden="true" />
+            <Cpu
+              className="h-3 w-3 text-[var(--paper-dim)]"
+              aria-hidden="true"
+            />
             <span
               aria-label={complexityLabel}
-              className={`font-mono rounded-full border px-2 py-0.5 text-[10px] tracking-[0.1em] uppercase ${complexityColor}`}
+              className={`rounded-full border px-2 py-0.5 font-mono text-[10px] tracking-[0.1em] uppercase ${complexityColor}`}
             >
               {data.complexity}
             </span>
@@ -92,18 +84,16 @@ export function AlgorithmCard({
               className="h-3 w-3 text-[var(--paper-dim)]"
               aria-hidden="true"
             />
-            <span className="sr-only">
-              Performance: {data.performance} of 5
-            </span>
+            <span className="sr-only">Processing cost: {data.cost} of 5</span>
             <div aria-hidden="true" className="flex gap-1">
               {performanceDots}
             </div>
           </div>
         </div>
 
-        <div className="font-mono mt-4 flex items-center justify-between border-t border-[var(--line)] pt-3 text-[10px] tracking-[0.12em] text-[var(--paper-dim)] uppercase">
-          <span>{data.author}</span>
-          {data.year && <span>{data.year}</span>}
+        <div className="mt-4 flex items-center justify-between border-t border-[var(--line)] pt-3 font-mono text-[10px] tracking-[0.12em] text-[var(--paper-dim)] uppercase">
+          <span>{data.author ?? "—"}</span>
+          <span>{data.year ?? "—"}</span>
         </div>
       </div>
     </article>

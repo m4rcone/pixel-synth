@@ -112,10 +112,7 @@ function AlertDialogDescription({
   return (
     <AlertDialogPrimitive.Description
       data-slot="alert-dialog-description"
-      className={cn(
-        "text-muted-foreground text-sm leading-relaxed",
-        className,
-      )}
+      className={cn("text-muted-foreground text-sm leading-relaxed", className)}
       {...props}
     />
   );
@@ -145,7 +142,7 @@ function AlertDialogCancel({
     <AlertDialogPrimitive.Cancel
       className={cn(
         buttonVariants({ variant: "outline" }),
-        "font-mono border-[var(--line-strong)] bg-transparent text-xs tracking-[0.12em] uppercase hover:bg-white/5",
+        "border-[var(--line-strong)] bg-transparent font-mono text-xs tracking-[0.12em] uppercase hover:bg-white/5",
         className,
       )}
       {...props}

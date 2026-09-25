@@ -2,29 +2,38 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
+import {
+  getAlgorithm,
+  getCategoryName,
+  PREVIEW_SOURCE,
+  type AlgorithmId,
+} from "@/lib/algorithms";
 
-type Specimen = {
-  algorithm: string;
-  category: string;
-  year: string;
-  image: string;
-};
+// Each render is the same source sphere processed by a real PixelSynth
+// algorithm, taken from the catalog.
+const SPECIMENS = (
+  [
+    "floyd-steinberg",
+    "jarvis-judice-and-ninke-jjn",
+    "stucki",
+    "atkinson",
+    "bayer-4-4",
+    "bayer-8-8",
+    "clustered-dot-halftone-ordered",
+    "blue-noise",
+    "void-and-cluster",
+  ] satisfies AlgorithmId[]
+).map((slug) => {
+  const algorithm = getAlgorithm(slug)!;
+  return {
+    algorithm: algorithm.shortName,
+    category: getCategoryName(algorithm.category),
+    year: algorithm.year ?? "",
+    image: algorithm.preview,
+  };
+});
 
-// Each render below is the same source sphere processed by a real PixelSynth
-// algorithm. Order and mappings mirror src/data/algorithms.json.
-const SPECIMENS: Specimen[] = [
-  { algorithm: "Floyd–Steinberg", category: "Error Diffusion", year: "1976", image: "/250/pixel-synth.png" },
-  { algorithm: "Jarvis–Judice–Ninke", category: "Error Diffusion", year: "1976", image: "/250/pixel-synth-1.png" },
-  { algorithm: "Stucki", category: "Error Diffusion", year: "1981", image: "/250/pixel-synth-2.png" },
-  { algorithm: "Atkinson", category: "Error Diffusion", year: "1984", image: "/250/pixel-synth-7.png" },
-  { algorithm: "Bayer 4×4", category: "Ordered", year: "1973", image: "/250/pixel-synth-9.png" },
-  { algorithm: "Bayer 8×8", category: "Ordered", year: "1973", image: "/250/pixel-synth-10.png" },
-  { algorithm: "Clustered Dot", category: "Ordered", year: "1980s", image: "/250/pixel-synth-11.png" },
-  { algorithm: "Blue Noise", category: "Ordered", year: "1993", image: "/250/pixel-synth-12.png" },
-  { algorithm: "Void-and-Cluster", category: "Noise-Based", year: "1993", image: "/250/pixel-synth-14.png" },
-];
-
-const ORIGINAL = "/250/sphere-250.png";
+const ORIGINAL = PREVIEW_SOURCE;
 
 export function DitherSpecimen() {
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -66,7 +75,7 @@ export function DitherSpecimen() {
         <Corner className="top-1.5 left-1.5" />
         <Corner className="top-1.5 right-1.5 rotate-90" />
         <Corner className="bottom-1.5 left-1.5 -rotate-90" />
-        <Corner className="bottom-1.5 right-1.5 rotate-180" />
+        <Corner className="right-1.5 bottom-1.5 rotate-180" />
 
         {/* Status bar */}
         <div className="mb-2.5 flex items-center justify-between px-1 font-mono text-[10px] tracking-[0.18em] text-[var(--paper-dim)] uppercase">
@@ -78,7 +87,8 @@ export function DitherSpecimen() {
             Developing
           </span>
           <span aria-hidden="true">
-            {String(index + 1).padStart(2, "0")} / {String(SPECIMENS.length).padStart(2, "0")}
+            {String(index + 1).padStart(2, "0")} /{" "}
+            {String(SPECIMENS.length).padStart(2, "0")}
           </span>
         </div>
 
@@ -153,13 +163,17 @@ export function DitherSpecimen() {
               aria-valuetext={`${Math.round(reveal)}% original`}
               onKeyDown={(e) => {
                 if (e.key === "ArrowLeft") setReveal((r) => Math.max(0, r - 4));
-                if (e.key === "ArrowRight") setReveal((r) => Math.min(100, r + 4));
+                if (e.key === "ArrowRight")
+                  setReveal((r) => Math.min(100, r + 4));
                 if (e.key === "Home") setReveal(0);
                 if (e.key === "End") setReveal(100);
               }}
               className="pointer-events-auto absolute top-1/2 left-1/2 grid size-8 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize place-items-center rounded-full border border-white/30 bg-black/60 text-white backdrop-blur-sm transition-colors hover:bg-black/80 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
             >
-              <span aria-hidden="true" className="font-mono text-[11px] leading-none tracking-tighter">
+              <span
+                aria-hidden="true"
+                className="font-mono text-[11px] leading-none tracking-tighter"
+              >
                 {"<>"}
               </span>
             </button>
@@ -179,7 +193,11 @@ export function DitherSpecimen() {
               {current.category} · {current.year}
             </p>
           </div>
-          <div className="flex shrink-0 items-center gap-1.5" role="group" aria-label="Choose algorithm">
+          <div
+            className="flex shrink-0 items-center gap-1.5"
+            role="group"
+            aria-label="Choose algorithm"
+          >
             {SPECIMENS.map((s, i) => (
               <button
                 key={s.image}

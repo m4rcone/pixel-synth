@@ -1,4 +1,3 @@
-import { Filters } from "@/lib/types/filters";
 import {
   Application,
   BlurFilter,
@@ -8,7 +7,7 @@ import {
   Sprite,
   Texture,
 } from "pixi.js";
-import { DEFAULT_FILTERS } from "./default-values";
+import { DEFAULT_FILTERS, type Filters } from "./settings";
 
 export async function applyPixiFilters(
   canvas: HTMLCanvasElement,

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { StructuredData } from "@/components/structured-data";
-import { SidebarRight } from "@/components/sidebar-right";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
@@ -88,13 +87,10 @@ export default function EditorRouteLayout({
       <SidebarInset
         id="main-content"
         tabIndex={-1}
-        className="relative h-full overflow-hidden focus:outline-hidden lg:pr-80"
+        className="relative min-h-svh focus:outline-hidden lg:h-svh lg:overflow-hidden"
       >
         {children}
       </SidebarInset>
-      <aside aria-label="Editor controls">
-        <SidebarRight />
-      </aside>
     </>
   );
 }

@@ -3,16 +3,17 @@
 import Konva from "konva";
 import { KeyboardEvent, useEffect, useRef, useState } from "react";
 import { Stage, Layer, Image as ImageKonva } from "react-konva";
-import { useCanvasContext } from "@/contexts/canvas-context";
-import { useImageContext } from "@/contexts/image-context";
+import {
+  clampZoom,
+  useCanvasContext,
+  ZOOM_STEP,
+} from "@/contexts/canvas-context";
+import { useEditorState } from "@/contexts/editor-context";
 
 type CanvasProps = {
   onStatusChange?: (message: string) => void;
 };
 
-const MIN_ZOOM = 0.1;
-const MAX_ZOOM = 10;
-const ZOOM_STEP = 1.2;
 const PAN_STEP = 25;
 const LARGE_PAN_STEP = 100;
 
@@ -25,9 +26,9 @@ export function Canvas({ onStatusChange }: CanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<Konva.Image>(null);
 
-  const { position, setPosition, scaleZoom, setScaleZoom, showProcessed } =
+  const { position, setPosition, zoom, setZoom, resetView, showProcessed } =
     useCanvasContext();
-  const { baseImage, processedImage } = useImageContext();
+  const { source: baseImage, result: processedImage } = useEditorState();
   const displayedImage =
     processedImage && showProcessed ? processedImage : baseImage;
 
@@ -74,12 +75,11 @@ export function Canvas({ onStatusChange }: CanvasProps) {
       y: (pointer.y - stage.y()) / oldScale,
     };
 
-    const newScale =
-      e.evt.deltaY > 0
-        ? Math.max(oldScale / 1.1, MIN_ZOOM)
-        : Math.min(oldScale * 1.1, MAX_ZOOM);
+    const newScale = clampZoom(
+      e.evt.deltaY > 0 ? oldScale / 1.1 : oldScale * 1.1,
+    );
 
-    setScaleZoom(newScale);
+    setZoom(newScale);
     setPosition({
       x: pointer.x - mouseTo.x * newScale,
       y: pointer.y - mouseTo.y * newScale,
@@ -110,21 +110,20 @@ export function Canvas({ onStatusChange }: CanvasProps) {
       case "+":
       case "=":
         {
-          const newScale = Math.min(scaleZoom * ZOOM_STEP, MAX_ZOOM);
-          setScaleZoom(newScale);
+          const newScale = clampZoom(zoom * ZOOM_STEP);
+          setZoom(newScale);
           onStatusChange?.(`Zoom ${(newScale * 100).toFixed()}%.`);
         }
         break;
       case "-":
         {
-          const newScale = Math.max(scaleZoom / ZOOM_STEP, MIN_ZOOM);
-          setScaleZoom(newScale);
+          const newScale = clampZoom(zoom / ZOOM_STEP);
+          setZoom(newScale);
           onStatusChange?.(`Zoom ${(newScale * 100).toFixed()}%.`);
         }
         break;
       case "0":
-        setScaleZoom(1);
-        setPosition({ x: 0, y: 0 });
+        resetView();
         onStatusChange?.("Canvas view reset.");
         break;
       default:
@@ -163,8 +162,8 @@ export function Canvas({ onStatusChange }: CanvasProps) {
           <Stage
             width={canvasDimensions.width}
             height={canvasDimensions.height}
-            scaleX={scaleZoom}
-            scaleY={scaleZoom}
+            scaleX={zoom}
+            scaleY={zoom}
             x={position.x}
             y={position.y}
             onWheel={handleWheel}

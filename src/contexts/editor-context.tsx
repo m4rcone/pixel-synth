@@ -1,164 +1,216 @@
 "use client";
 
-import type { Dispatch, SetStateAction, ReactNode } from "react";
-import { createContext, useContext, useState } from "react";
-import { DitherAlgorithm } from "@/lib/enum/dither-algorithm";
-import { useImageContext } from "./image-context";
-import { Filters } from "@/lib/types/filters";
-import { EditorState } from "@/lib/enum/editor-state";
 import {
-  DEFAULT_COLOR_COUNT,
-  DEFAULT_COLORS,
-  DEFAULT_DITHER_SCALE,
-  DEFAULT_FILTERS,
-  DEFAULT_TONE_RANGE,
-} from "@/lib/editor/default-values";
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  type ReactNode,
+} from "react";
+import { DEFAULT_SETTINGS, type EditorSettings } from "@/lib/editor/settings";
 
-type EditorContextValue = {
+/**
+ * - `empty`: no image loaded.
+ * - `loaded`: image loaded; filter changes preview without dithering.
+ * - `dithered`: dithering applied; every setting change re-renders.
+ */
+export type EditorStatus = "empty" | "loaded" | "dithered";
+
+type EditorState = {
+  status: EditorStatus;
+  source: HTMLImageElement | null;
+  result: HTMLImageElement | null;
+  settings: EditorSettings;
   isRendering: boolean;
-  setIsRendering: Dispatch<SetStateAction<boolean>>;
-
-  ditherScale: number;
-  setDitherScale: Dispatch<SetStateAction<number>>;
-
-  ditherAlgorithm: DitherAlgorithm;
-  setDitherAlgorithm: Dispatch<SetStateAction<DitherAlgorithm>>;
-
-  filters: Filters;
-  setFilters: Dispatch<SetStateAction<Filters>>;
-
-  colorCount: number;
-  setcolorCount: Dispatch<SetStateAction<number>>;
-
-  luminance: boolean;
-  setLuminance: Dispatch<SetStateAction<boolean>>;
-
-  highlightsColor: string;
-  setHighlightsColor: Dispatch<SetStateAction<string>>;
-  highlightsToneRange: number;
-  setHighlightsToneRange: Dispatch<SetStateAction<number>>;
-
-  midtonesColor: string;
-  setMidtonesColor: Dispatch<SetStateAction<string>>;
-  midtonesToneRange: number;
-  setMidtonesToneRange: Dispatch<SetStateAction<number>>;
-
-  shadowsColor: string;
-  setShadowsColor: Dispatch<SetStateAction<string>>;
-  shadowsToneRange: number;
-  setShadowsToneRange: Dispatch<SetStateAction<number>>;
-
-  handleRender: (hasDither: boolean) => Promise<void>;
+  error: string | null;
+  /** Incremented to ask the provider to render with the current settings. */
+  renderRequest: number;
 };
 
-const EditorContext = createContext<EditorContextValue | undefined>(undefined);
+type SettingsUpdate =
+  | Partial<EditorSettings>
+  | ((settings: EditorSettings) => Partial<EditorSettings>);
+
+type Action =
+  | { type: "load"; source: HTMLImageElement }
+  | { type: "discard" }
+  | { type: "reset" }
+  | { type: "update"; update: SettingsUpdate; render: boolean }
+  | { type: "render" }
+  | { type: "applyDither" }
+  | { type: "renderStart" }
+  | { type: "renderDone"; result: HTMLImageElement }
+  | { type: "renderFailed"; error: string }
+  | { type: "setError"; error: string | null };
+
+const initialState: EditorState = {
+  status: "empty",
+  source: null,
+  result: null,
+  settings: DEFAULT_SETTINGS,
+  isRendering: false,
+  error: null,
+  renderRequest: 0,
+};
+
+function reducer(state: EditorState, action: Action): EditorState {
+  switch (action.type) {
+    case "load":
+      return {
+        ...initialState,
+        settings: state.settings,
+        status: "loaded",
+        source: action.source,
+        renderRequest: state.renderRequest,
+      };
+    case "discard":
+      return { ...initialState, renderRequest: state.renderRequest };
+    case "reset":
+      return {
+        ...state,
+        status: state.source ? "loaded" : "empty",
+        result: null,
+        settings: DEFAULT_SETTINGS,
+        isRendering: false,
+        error: null,
+      };
+    case "update": {
+      const partial =
+        typeof action.update === "function"
+          ? action.update(state.settings)
+          : action.update;
+      return {
+        ...state,
+        settings: { ...state.settings, ...partial },
+        renderRequest: action.render
+          ? state.renderRequest + 1
+          : state.renderRequest,
+      };
+    }
+    case "render":
+      return { ...state, renderRequest: state.renderRequest + 1 };
+    case "applyDither":
+      return {
+        ...state,
+        status: "dithered",
+        renderRequest: state.renderRequest + 1,
+      };
+    case "renderStart":
+      return { ...state, isRendering: true, error: null };
+    case "renderDone":
+      return { ...state, isRendering: false, result: action.result };
+    case "renderFailed":
+      return { ...state, isRendering: false, error: action.error };
+    case "setError":
+      return { ...state, error: action.error };
+  }
+}
+
+type EditorActions = {
+  load: (source: HTMLImageElement) => void;
+  discard: () => void;
+  reset: () => void;
+  /** Change settings without rendering (e.g. while a slider is dragged). */
+  update: (update: SettingsUpdate) => void;
+  /** Change settings and render the result. */
+  commit: (update?: SettingsUpdate) => void;
+  applyDither: () => void;
+  setError: (error: string | null) => void;
+};
+
+const EditorStateContext = createContext<EditorState | undefined>(undefined);
+const EditorActionsContext = createContext<EditorActions | undefined>(
+  undefined,
+);
 
 export function EditorProvider({ children }: { children: ReactNode }) {
-  const [isRendering, setIsRendering] = useState(false);
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const latestRender = useRef(0);
 
-  const [ditherScale, setDitherScale] = useState(DEFAULT_DITHER_SCALE);
+  const actions = useMemo<EditorActions>(() => {
+    // Invalidate in-flight renders so they cannot publish over a new state.
+    const cancelRenders = () => {
+      latestRender.current += 1;
+    };
 
-  const [ditherAlgorithm, setDitherAlgorithm] = useState(
-    DitherAlgorithm.FloydSteinberg,
-  );
-  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+    return {
+      load: (source) => {
+        cancelRenders();
+        dispatch({ type: "load", source });
+      },
+      discard: () => {
+        cancelRenders();
+        dispatch({ type: "discard" });
+      },
+      reset: () => {
+        cancelRenders();
+        dispatch({ type: "reset" });
+      },
+      update: (update) => dispatch({ type: "update", update, render: false }),
+      commit: (update) =>
+        update
+          ? dispatch({ type: "update", update, render: true })
+          : dispatch({ type: "render" }),
+      applyDither: () => dispatch({ type: "applyDither" }),
+      setError: (error) => dispatch({ type: "setError", error }),
+    };
+  }, []);
 
-  const [colorCount, setcolorCount] = useState(DEFAULT_COLOR_COUNT);
+  const { renderRequest, source, status, settings } = state;
 
-  const [luminance, setLuminance] = useState(false);
+  // Renders run after the state update that requested them, so they always
+  // see the latest settings. Only the most recent render may publish a result.
+  useEffect(() => {
+    if (renderRequest === 0 || !source || status === "empty") return;
 
-  const [highlightsColor, setHighlightsColor] = useState(
-    DEFAULT_COLORS.highlights,
-  );
-  const [highlightsToneRange, setHighlightsToneRange] = useState(
-    DEFAULT_TONE_RANGE.highlights,
-  );
+    const id = ++latestRender.current;
+    dispatch({ type: "renderStart" });
 
-  const [midtonesColor, setMidtonesColor] = useState(DEFAULT_COLORS.midtones);
-  const [midtonesToneRange, setMidtonesToneRange] = useState(
-    DEFAULT_TONE_RANGE.midtones,
-  );
-
-  const [shadowsColor, setShadowsColor] = useState(DEFAULT_COLORS.shadows);
-  const [shadowsToneRange, setShadowsToneRange] = useState(
-    DEFAULT_TONE_RANGE.shadows,
-  );
-
-  const { baseImage, setProcessedImage, setEditorState } = useImageContext();
-
-  async function handleRender(hasDither: boolean) {
-    if (!baseImage) return;
-
-    setIsRendering(true);
-
-    if (hasDither) {
-      setEditorState(EditorState.Rendered);
-    }
-
-    try {
-      const { renderPipeline } = await import("@/lib/editor/render");
-      const result = await renderPipeline({
-        baseImage,
-        hasDither,
-        ditherScale,
-        ditherAlgorithm,
-        filters,
-        colorCount,
-        luminance,
-        colors: {
-          shadows: { hex: shadowsColor, range: shadowsToneRange },
-          midtones: { hex: midtonesColor, range: midtonesToneRange },
-          highlights: { hex: highlightsColor, range: highlightsToneRange },
-        },
+    import("@/lib/editor/render")
+      .then(({ renderPipeline }) =>
+        renderPipeline(source, settings, { dither: status === "dithered" }),
+      )
+      .then((result) => {
+        if (id === latestRender.current) {
+          dispatch({ type: "renderDone", result });
+        }
+      })
+      .catch((error: unknown) => {
+        console.error(error);
+        if (id === latestRender.current) {
+          dispatch({
+            type: "renderFailed",
+            error: "Rendering failed. Try a smaller image or another setting.",
+          });
+        }
       });
-      setProcessedImage(result);
-      setIsRendering(false);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsRendering(false);
-    }
-  }
+    // Only an explicit render request triggers a render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [renderRequest]);
 
   return (
-    <EditorContext.Provider
-      value={{
-        isRendering,
-        setIsRendering,
-        ditherScale,
-        setDitherScale,
-        ditherAlgorithm,
-        setDitherAlgorithm,
-        filters,
-        setFilters,
-        colorCount,
-        setcolorCount,
-        luminance,
-        setLuminance,
-        highlightsColor,
-        setHighlightsColor,
-        highlightsToneRange,
-        setHighlightsToneRange,
-        midtonesColor,
-        setMidtonesColor,
-        midtonesToneRange,
-        setMidtonesToneRange,
-        shadowsColor,
-        setShadowsColor,
-        shadowsToneRange,
-        setShadowsToneRange,
-        handleRender,
-      }}
-    >
-      {children}
-    </EditorContext.Provider>
+    <EditorActionsContext.Provider value={actions}>
+      <EditorStateContext.Provider value={state}>
+        {children}
+      </EditorStateContext.Provider>
+    </EditorActionsContext.Provider>
   );
 }
 
-export function useEditorContext() {
-  const context = useContext(EditorContext);
+export function useEditorState() {
+  const context = useContext(EditorStateContext);
   if (!context) {
-    throw new Error("useEditorContext must be used within an EditorProvider");
+    throw new Error("useEditorState must be used within an EditorProvider");
+  }
+  return context;
+}
+
+export function useEditorActions() {
+  const context = useContext(EditorActionsContext);
+  if (!context) {
+    throw new Error("useEditorActions must be used within an EditorProvider");
   }
   return context;
 }

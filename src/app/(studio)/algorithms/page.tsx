@@ -1,7 +1,7 @@
 import { AlgorithmCard } from "@/components/algorithm-card";
 import { GlobalHeader } from "@/components/global-header";
 import { Button } from "@/components/ui/button";
-import algorithms from "@/data/algorithms.json";
+import { ALGORITHMS } from "@/lib/algorithms";
 import Link from "next/link";
 
 export default function AlgorithmsPage() {
@@ -20,7 +20,7 @@ export default function AlgorithmsPage() {
             <div className="max-w-3xl">
               <p className="mb-3 flex items-center gap-2 font-mono text-[10px] tracking-[0.22em] text-[var(--paper-dim)] uppercase">
                 <span className="text-[var(--safelight)]">✳</span>
-                The catalog — {algorithms.length} techniques
+                The catalog — {ALGORITHMS.length} techniques
               </p>
               <h1
                 tabIndex={-1}
@@ -49,10 +49,10 @@ export default function AlgorithmsPage() {
               gridTemplateColumns: "repeat(auto-fit, minmax(290px, 1fr))",
             }}
           >
-            {algorithms.map((alg, index) => (
+            {ALGORITHMS.map((alg, index) => (
               <AlgorithmCard
-                key={alg.algorithm}
-                data={alg}
+                key={alg.slug}
+                algorithm={alg}
                 index={index}
                 preloadPreview={index < 4}
               />

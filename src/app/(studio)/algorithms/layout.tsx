@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { StructuredData } from "@/components/structured-data";
 import { SidebarInset } from "@/components/ui/sidebar";
-import algorithms from "@/data/algorithms.json";
+import { ALGORITHMS } from "@/lib/algorithms";
 import { absoluteUrl, siteConfig } from "@/lib/site";
-import { slugify } from "@/lib/slugify";
 
 const description =
   "Explore the dithering algorithms available in PixelSynth and preview how each technique transforms an image.";
@@ -50,14 +49,12 @@ const algorithmsStructuredData = [
     },
     mainEntity: {
       "@type": "ItemList",
-      numberOfItems: algorithms.length,
-      itemListElement: algorithms.map((algorithm, index) => ({
+      numberOfItems: ALGORITHMS.length,
+      itemListElement: ALGORITHMS.map((algorithm, index) => ({
         "@type": "ListItem",
         position: index + 1,
-        url: absoluteUrl(
-          `/algorithms#algorithm-${slugify(algorithm.algorithm)}`,
-        ),
-        name: algorithm.algorithm,
+        url: absoluteUrl(`/algorithms#algorithm-${algorithm.slug}`),
+        name: algorithm.name,
         description: algorithm.description,
         image: absoluteUrl(algorithm.preview),
       })),
