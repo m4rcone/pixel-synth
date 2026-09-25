@@ -41,3 +41,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local agent tooling (CLAUDE.md and .claude/commands are versioned)
+docs/
+.claude/settings.local.json
+.claude/skills/
+.agents/

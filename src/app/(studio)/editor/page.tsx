@@ -9,8 +9,6 @@ import { CanvasController } from "@/components/canvas-controller";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { MobileEditorPanel } from "@/components/mobile-editor-panel";
 import { GlobalHeader } from "@/components/global-header";
-import { BreadcrumbProvider } from "@/contexts/breadcrumb-context";
-import { BreadcrumbItem, BreadcrumbLink } from "@/components/ui/breadcrumb";
 import { useEditorContext } from "@/contexts/editor-context";
 
 export default function EditorPage() {
@@ -28,14 +26,8 @@ export default function EditorPage() {
           : "");
 
   return (
-    <BreadcrumbProvider
-      extra={
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/editor">Editor</BreadcrumbLink>
-        </BreadcrumbItem>
-      }
-    >
-      <GlobalHeader />
+    <>
+      <GlobalHeader page="Editor" />
       <div className="overflow-hidden pb-4 lg:h-[calc(100vh-3.5rem)] lg:pb-0">
         <h1 tabIndex={-1} className="sr-only">
           PixelSynth editor
@@ -68,6 +60,6 @@ export default function EditorPage() {
           )}
         </section>
       </div>
-    </BreadcrumbProvider>
+    </>
   );
 }

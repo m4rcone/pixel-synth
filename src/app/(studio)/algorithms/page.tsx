@@ -1,32 +1,24 @@
 import { AlgorithmCard } from "@/components/algorithm-card";
 import { GlobalHeader } from "@/components/global-header";
 import { Button } from "@/components/ui/button";
-import { BreadcrumbItem, BreadcrumbLink } from "@/components/ui/breadcrumb";
-import { BreadcrumbProvider } from "@/contexts/breadcrumb-context";
 import algorithms from "@/data/algorithms.json";
 import Link from "next/link";
 
 export default function AlgorithmsPage() {
   return (
-    <BreadcrumbProvider
-      extra={
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/algorithms">Algorithms</BreadcrumbLink>
-        </BreadcrumbItem>
-      }
-    >
-      <GlobalHeader />
+    <>
+      <GlobalHeader page="Algorithms" />
       <div className="relative">
         {/* Atmospheric backdrop */}
         <div
           aria-hidden="true"
-          className="lab-grid pointer-events-none absolute inset-0 opacity-50 [mask-image:radial-gradient(120%_80%_at_50%_-10%,black,transparent_75%)]"
+          className="lab-grid pointer-events-none absolute inset-0 [mask-image:radial-gradient(120%_80%_at_50%_-10%,black,transparent_75%)] opacity-50"
         />
 
         <div className="relative flex flex-col gap-6 px-5 py-8 sm:px-8">
           <div className="flex flex-col gap-4 border-b border-[var(--line)] pb-6 sm:flex-row sm:items-end sm:justify-between">
             <div className="max-w-3xl">
-              <p className="font-mono mb-3 flex items-center gap-2 text-[10px] tracking-[0.22em] text-[var(--paper-dim)] uppercase">
+              <p className="mb-3 flex items-center gap-2 font-mono text-[10px] tracking-[0.22em] text-[var(--paper-dim)] uppercase">
                 <span className="text-[var(--safelight)]">✳</span>
                 The catalog — {algorithms.length} techniques
               </p>
@@ -44,7 +36,7 @@ export default function AlgorithmsPage() {
             <Button
               asChild
               variant="outline"
-              className="font-mono self-start border-[var(--line-strong)] bg-transparent text-xs tracking-[0.12em] uppercase hover:bg-white/5 sm:self-auto"
+              className="self-start border-[var(--line-strong)] bg-transparent font-mono text-xs tracking-[0.12em] uppercase hover:bg-white/5 sm:self-auto"
             >
               <Link href="/editor">Open editor ↗</Link>
             </Button>
@@ -68,6 +60,6 @@ export default function AlgorithmsPage() {
           </section>
         </div>
       </div>
-    </BreadcrumbProvider>
+    </>
   );
 }

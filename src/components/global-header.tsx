@@ -1,21 +1,21 @@
-"use client";
-
 import Link from "next/link";
-import { useBreadcrumb } from "@/contexts/breadcrumb-context";
-import { siteConfig } from "@/lib/site";
 import {
   Breadcrumb,
   BreadcrumbList,
   BreadcrumbItem,
   BreadcrumbLink,
+  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "./ui/breadcrumb";
 import { SidebarTrigger } from "./ui/sidebar";
 import { Separator } from "./ui/separator";
 
-export function GlobalHeader() {
-  const { extra } = useBreadcrumb();
+type GlobalHeaderProps = {
+  /** Current studio page, rendered as the last breadcrumb item. */
+  page: string;
+};
 
+export function GlobalHeader({ page }: GlobalHeaderProps) {
   return (
     <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b border-[var(--line)] bg-[var(--background)]/80 backdrop-blur-sm">
       <div className="flex flex-1 items-center gap-2 px-3">
@@ -34,14 +34,10 @@ export function GlobalHeader() {
                 <Link href="/">Home</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
-            {extra && (
-              <>
-                <BreadcrumbSeparator className="text-[var(--line-strong)] [&>svg]:size-3" />
-                <span className="[&_a]:text-foreground [&_a]:transition-colors [&_a]:hover:text-[var(--safelight)]">
-                  {extra}
-                </span>
-              </>
-            )}
+            <BreadcrumbSeparator className="text-[var(--line-strong)] [&>svg]:size-3" />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{page}</BreadcrumbPage>
+            </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </div>

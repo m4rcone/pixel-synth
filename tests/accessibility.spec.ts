@@ -12,7 +12,7 @@ async function expectNoAccessibilityViolations(page: Page) {
 }
 
 async function uploadTinyImage(page: Page) {
-  await page.getByLabel("Click to start").setInputFiles({
+  await page.getByLabel(/drop an image/i).setInputFiles({
     name: "tiny.png",
     mimeType: "image/png",
     buffer: TINY_PNG,
@@ -74,10 +74,10 @@ test.describe("accessibility", () => {
     await canvas.focus();
 
     await page.keyboard.press("=");
-    await expect(page.getByText("Zoom: 120%")).toBeVisible();
+    await expect(page.getByText("Zoom 120%", { exact: true })).toBeVisible();
 
     await page.keyboard.press("-");
-    await expect(page.getByText("Zoom: 100%")).toBeVisible();
+    await expect(page.getByText("Zoom 100%", { exact: true })).toBeVisible();
 
     await page.keyboard.press("ArrowRight");
     await expect(page.locator('[aria-live="polite"]')).toContainText(
@@ -99,6 +99,8 @@ test.describe("accessibility", () => {
     ).toBeVisible();
     await expect(page.getByRole("button", { name: "Zoom in" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Zoom out" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Reset view" })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Reset view" }),
+    ).toBeVisible();
   });
 });

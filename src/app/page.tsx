@@ -209,9 +209,7 @@ export default function HomePage() {
               style={{ animationDelay: "0.42s" }}
             >
               <Spec value="15" label="Algorithms" />
-              <Dot />
               <Spec value="3" label="Categories" />
-              <Dot />
               <Spec value="100%" label="Local" />
             </dl>
           </div>
@@ -323,19 +321,11 @@ export default function HomePage() {
 }
 
 function Spec({ value, label }: { value: string; label: string }) {
+  // dt must precede dd in the DOM; flex order shows "15 Algorithms ·".
   return (
-    <div className="flex items-center gap-1.5">
-      <dt className="sr-only">{label || value}</dt>
-      <dd className="text-[var(--paper)]">{value}</dd>
-      {label ? <span>{label}</span> : null}
+    <div className="flex items-center gap-1.5 [&:not(:last-child)]:after:order-3 [&:not(:last-child)]:after:ml-1.5 [&:not(:last-child)]:after:text-[var(--line-strong)] [&:not(:last-child)]:after:content-['·']">
+      <dt className="order-2">{label}</dt>
+      <dd className="order-1 text-[var(--paper)]">{value}</dd>
     </div>
-  );
-}
-
-function Dot() {
-  return (
-    <span aria-hidden="true" className="text-[var(--line-strong)]">
-      ·
-    </span>
   );
 }
