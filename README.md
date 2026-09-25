@@ -2,8 +2,7 @@
 
 Turn any image into algorithmic art using real dithering techniques — right in your browser. Upload a photo, pick from 15 dithering algorithms, tune the look, and export the result. No server uploads, no accounts.
 
-🌐 **Live:** https://pixelsynth.art
-💻 **Repo:** https://github.com/m4rcone/pixel-synth
+**Live:** https://pixelsynth.art
 
 ## Features
 
@@ -45,7 +44,3 @@ Then open http://localhost:3000.
 - `npm run test:unit` — engine tests (Vitest)
 - `npm run test:e2e` — end-to-end and accessibility tests (Playwright)
 - `node scripts/generate-previews.mjs` — re-render the algorithm previews with the current engine
-
-## Status
-
-A personal project by [m4rcone](https://github.com/m4rcone), focused on graphics experimentation, performance and modern front-end practices.
