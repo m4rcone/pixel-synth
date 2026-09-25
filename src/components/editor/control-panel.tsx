@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { ControlPanelActions } from "./control-panel-actions";
 import { DitherControls } from "./dither-controls";
 import { FilterControls } from "./filter-controls";
-import { InfoTooltip } from "./info-tooltip";
+import { HelpPopover } from "./help-popover";
 import { ToneControls } from "./tone-controls";
 
 const SECTIONS: {
@@ -40,7 +40,7 @@ export function ControlPanel({ className }: { className?: string }) {
         >
           Control panel
         </h2>
-        <InfoTooltip />
+        <HelpPopover />
       </header>
 
       {/* Scrollable on large screens; focusable so keyboard users can scroll it. */}

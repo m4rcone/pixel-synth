@@ -40,9 +40,9 @@
   --muted-foreground: var(--paper-dim);
   --accent: #2a201c;
   --accent-foreground: var(--paper);
-  --destructive: #c8372a;
+  --destructive: #b8321f; /* paper text 4.7:1 */
   --border: var(--line);
-  --input: var(--line-strong);
+  --input: rgb(236 228 214 / 0.4); /* control borders ≥ 3:1 (WCAG 1.4.11) */
   --ring: var(--safelight);
   --sidebar: #0f0b0a;
   --sidebar-foreground: var(--paper);

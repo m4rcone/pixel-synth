@@ -1,6 +1,13 @@
 "use client";
 
-import { Eye, EyeClosed, RotateCcw, ZoomIn, ZoomOut } from "lucide-react";
+import {
+  Eye,
+  EyeClosed,
+  LoaderCircle,
+  RotateCcw,
+  ZoomIn,
+  ZoomOut,
+} from "lucide-react";
 import {
   clampZoom,
   useCanvasContext,
@@ -15,7 +22,7 @@ type CanvasToolbarProps = {
 };
 
 export function CanvasToolbar({ onStatusChange }: CanvasToolbarProps) {
-  const { status, result } = useEditorState();
+  const { status, result, isRendering } = useEditorState();
   const { zoom, setZoom, showProcessed, setShowProcessed, resetView } =
     useCanvasContext();
   const isEmpty = status === "empty";
@@ -28,9 +35,21 @@ export function CanvasToolbar({ onStatusChange }: CanvasToolbarProps) {
 
   return (
     <div className="border-line flex min-h-14 items-center justify-between gap-2 border-t px-4 lg:px-3">
-      <span className="text-label text-paper-dim tabular-nums">
-        Zoom {Math.round(zoom * 100)}%
-      </span>
+      <div className="flex items-center gap-3">
+        <span className="text-readout text-paper-dim">
+          Zoom {Math.round(zoom * 100)}%
+        </span>
+        {/* Announced separately by the page's live region. */}
+        {isRendering && (
+          <span
+            aria-hidden="true"
+            className="text-label text-safelight flex items-center gap-1.5"
+          >
+            <LoaderCircle className="size-3.5 animate-spin" />
+            <span className="hidden sm:inline">Developing</span>
+          </span>
+        )}
+      </div>
       <div className="flex items-center gap-2">
         <SaveButton />
         <Button

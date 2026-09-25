@@ -13,6 +13,7 @@ async function expectNoAccessibilityViolations(page: Page) {
 }
 
 async function uploadTinyImage(page: Page) {
+  await page.waitForLoadState("networkidle");
   await page.getByLabel(/drop an image/i).setInputFiles({
     name: "tiny.png",
     mimeType: "image/png",
@@ -42,15 +43,16 @@ test.describe("accessibility", () => {
     await expect(page.locator("#main-content")).toBeFocused();
   });
 
-  test("help tooltip opens from keyboard focus", async ({ page }) => {
+  test("help popover opens from the keyboard", async ({ page }) => {
     await page.goto("/editor");
+    await page.waitForLoadState("networkidle");
 
-    const helpButton = page.getByRole("button", {
-      name: "Show dither control help",
-    });
-    await helpButton.focus();
+    await page.getByRole("button", { name: "Editor help" }).focus();
+    await page.keyboard.press("Enter");
 
-    await expect(page.getByRole("tooltip")).toContainText("Dither Controls");
+    await expect(
+      page.getByRole("dialog", { name: "Editor help" }),
+    ).toContainText("Processing scale");
   });
 
   test("upload exposes the canvas and live status", async ({ page }) => {
@@ -104,4 +106,66 @@ test.describe("accessibility", () => {
       page.getByRole("button", { name: "Reset view" }),
     ).toBeVisible();
   });
+
+  test("dithered editor with every control enabled has no axe violations", async ({
+    page,
+  }) => {
+    await page.goto("/editor");
+    await uploadTinyImage(page);
+    await page.getByRole("button", { name: "Apply dither" }).click();
+    await expect(
+      page.getByRole("button", { name: "Reset", exact: true }),
+    ).toBeVisible();
+
+    await expectNoAccessibilityViolations(page);
+  });
+
+  test("slider values can be reset from the keyboard", async ({ page }) => {
+    await page.goto("/editor");
+    await uploadTinyImage(page);
+
+    const contrast = page.getByRole("slider", { name: "Contrast" });
+    await contrast.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(contrast).toHaveAttribute("aria-valuetext", "0.01");
+
+    await page
+      .getByRole("button", { name: "Reset contrast to default" })
+      .click();
+    await expect(contrast).toHaveAttribute("aria-valuetext", "0.00");
+  });
+
+  test("landing specimen is operable without a pointer", async ({ page }) => {
+    await page.goto("/");
+
+    const divider = page.getByRole("slider", {
+      name: "Before and after divider",
+    });
+    await divider.focus();
+    await page.keyboard.press("Home");
+    await expect(divider).toHaveAttribute("aria-valuenow", "0");
+
+    const pause = page.getByRole("button", { name: "Pause slideshow" });
+    await pause.click();
+    await expect(
+      page.getByRole("button", { name: "Play slideshow" }),
+    ).toBeVisible();
+
+    await page.getByRole("button", { name: "Bayer 8×8" }).click();
+    await expect(
+      page.getByRole("button", { name: "Bayer 8×8" }),
+    ).toHaveAttribute("aria-pressed", "true");
+  });
+});
+
+test.describe("accessibility on a phone", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  for (const route of ["/", "/editor", "/algorithms"]) {
+    test(`has no axe violations on ${route}`, async ({ page }) => {
+      await page.goto(route);
+      await page.waitForLoadState("networkidle");
+      await expectNoAccessibilityViolations(page);
+    });
+  }
 });
