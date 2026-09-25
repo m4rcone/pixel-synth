@@ -17,6 +17,12 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Local, unversioned agent tooling and test artifacts:
+    ".agents/**",
+    ".claude/**",
+    "docs/**",
+    "test-results/**",
+    "playwright-report/**",
   ]),
 ]);
 
