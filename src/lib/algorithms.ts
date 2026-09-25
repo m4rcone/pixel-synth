@@ -7,9 +7,9 @@
  */
 
 export const ALGORITHM_CATEGORIES = [
-  { id: "error-diffusion", name: "Error Diffusion" },
+  { id: "error-diffusion", name: "Error diffusion" },
   { id: "ordered", name: "Ordered" },
-  { id: "noise", name: "Noise-Based" },
+  { id: "noise", name: "Noise-based" },
 ] as const;
 
 export type AlgorithmCategory = (typeof ALGORITHM_CATEGORIES)[number]["id"];

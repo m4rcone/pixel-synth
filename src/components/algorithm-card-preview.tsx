@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Eye, EyeClosed } from "lucide-react";
 import { PREVIEW_SOURCE } from "@/lib/algorithms";
+import { cn } from "@/lib/utils";
 
 export function AlgorithmCardPreview({
   algorithm,
@@ -17,43 +17,38 @@ export function AlgorithmCardPreview({
   const [showOriginal, setShowOriginal] = useState(false);
 
   return (
-    <div className="border-line relative aspect-square w-full overflow-hidden border-b bg-[#08080a]">
+    <div className="border-line bg-ink-sunken relative aspect-square w-full overflow-hidden border-b">
       <Image
-        src={!showOriginal ? preview : PREVIEW_SOURCE}
+        src={showOriginal ? PREVIEW_SOURCE : preview}
         alt={
           showOriginal
-            ? "Original sphere image before dithering"
-            : `${algorithm} dithering preview`
+            ? "Original sphere before dithering"
+            : `Sphere dithered with ${algorithm}`
         }
         fill
+        sizes="(max-width: 640px) 100vw, 320px"
         // Served as-is: re-encoding would smear the 1-bit dither pattern.
         unoptimized
-        className={
-          showOriginal
-            ? "object-cover"
-            : "object-cover [image-rendering:pixelated]"
-        }
         preload={preload}
+        className={cn(
+          "object-cover",
+          !showOriginal && "[image-rendering:pixelated]",
+        )}
       />
-
-      {/* state tag */}
-      <span className="border-line-strong bg-ink/70 text-paper-dim pointer-events-none absolute top-2 left-2 rounded-sm border px-1.5 py-0.5 font-mono text-[9px] tracking-[0.16em] uppercase backdrop-blur-sm">
-        {showOriginal ? "Source" : "Dithered"}
-      </span>
 
       <button
         type="button"
         onClick={() => setShowOriginal((prev) => !prev)}
-        className="text-foreground border-line-strong bg-ink/70 hover:border-safelight hover:text-safelight focus-visible:ring-safelight absolute right-2 bottom-2 rounded-full border p-1.5 backdrop-blur-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
-        aria-label={
-          showOriginal ? "Show algorithm preview" : "Show original image"
-        }
-      >
-        {showOriginal ? (
-          <EyeClosed width={15} height={15} aria-hidden="true" />
-        ) : (
-          <Eye width={15} height={15} aria-hidden="true" />
+        aria-pressed={showOriginal}
+        className={cn(
+          "text-label focus-visible:ring-safelight absolute right-2 bottom-2 rounded-full border px-3 py-1.5 backdrop-blur-sm transition-colors focus-visible:ring-2 focus-visible:outline-none",
+          showOriginal
+            ? "border-paper bg-paper text-ink"
+            : "border-white/25 bg-black/65 text-white hover:bg-black/80",
         )}
+      >
+        Show source
+        <span className="sr-only"> for {algorithm}</span>
       </button>
     </div>
   );

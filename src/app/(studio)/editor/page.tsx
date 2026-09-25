@@ -52,7 +52,7 @@ export default function EditorPage() {
               </button>
             </div>
           )}
-          <div className="relative min-h-0 flex-1">
+          <div className="bg-ink-sunken relative min-h-0 flex-1">
             {status === "empty" ? (
               <ImageDropzone />
             ) : (
