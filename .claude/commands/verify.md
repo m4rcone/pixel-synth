@@ -1,5 +1,5 @@
 ---
-description: Run the full quality gate (lint, types, unit tests, build, a11y)
+description: Run the full quality gate (lint, types, unit tests, build, e2e + a11y)
 ---
 
 Run these in order from the repository root and stop at the first failure, reporting the failing output verbatim:
@@ -9,6 +9,6 @@ Run these in order from the repository root and stop at the first failure, repor
 3. `npm run test:unit`
 4. `npm run build`
 5. `npm run perf:bundles` — include the table in the report
-6. `npm run test:a11y`
+6. `npm run test:e2e`
 
 Summarize: which steps passed, bundle sizes per route, and any failures with file:line.

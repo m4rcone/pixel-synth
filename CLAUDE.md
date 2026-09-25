@@ -20,7 +20,8 @@ npm run dev            # dev server on :3000
 npm run build          # production build (also type-checks)
 npm run lint:eslint    # eslint (includes jsx-a11y)
 npm run test:unit      # vitest: dithering engine and pure logic
-npm run test:a11y      # playwright + axe (starts a dev server; PORT=xxxx reuses a running one)
+npm run test:e2e       # all playwright tests: editor flows + axe (starts a dev server; PORT=xxxx reuses a running one)
+npm run test:a11y      # only the accessibility spec
 npm run perf:bundles   # per-route JS size table, run after `npm run build`
 node scripts/generate-previews.mjs  # re-render public/250 previews after engine changes
 ```
@@ -29,7 +30,7 @@ Use the `/verify` command to run the whole gate before committing.
 
 ## Layout
 
-- `src/app/` — routes. `/` is the landing page; `(studio)/` groups `/editor` and `/algorithms`, which share the studio sidebar and editor providers (state survives navigation between them).
+- `src/app/` — routes. `/` is the landing page; `(studio)/` groups `/editor`, `/algorithms` and `/algorithms/[slug]`, which share the studio sidebar and editor providers (state survives navigation between them). `/editor?algorithm=<slug>` preselects an algorithm. Each route has an `opengraph-image.tsx` built on `src/lib/og-image.tsx`; use `pageMetadata()` from `src/lib/site.ts` for page metadata.
 - `src/lib/algorithms.ts` — single source of truth for the algorithm catalog (slug = id = public anchor). Never hardcode algorithm lists elsewhere; never change an existing slug.
 - `src/lib/editor/` — the image pipeline: pure functions over RGBA buffers (`pipeline.ts`: downscale → filters → luminance → dither → tone map → upscale), run in a Web Worker (`render.worker.ts`, `render-client.ts`). `settings.ts` holds the settings type and defaults. Keep it DOM-free so it stays testable and worker-safe.
 - `src/contexts/editor-context.tsx` — reducer-based editor state. Components call `update()` while a control is being dragged and `commit()` when a value settles; the provider renders once per commit and drops stale results.
