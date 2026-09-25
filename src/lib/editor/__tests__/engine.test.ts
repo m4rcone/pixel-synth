@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { ALGORITHMS } from "@/lib/algorithms";
+import { PALETTE_PRESETS } from "@/lib/palettes";
 import { dither } from "../dither";
 import { applyFilters } from "../filters";
 import { bayerMatrix, ERROR_KERNELS, voidAndCluster } from "../matrices";
+import { ditherToPalette, extractPalette } from "../palette-dither";
 import { renderPixels } from "../pipeline";
 import { createPixels, type Pixels } from "../pixels";
 import { resizeArea, resizeNearest } from "../resize";
@@ -158,19 +160,19 @@ describe("filters", () => {
 });
 
 describe("renderPixels", () => {
-  it("returns the source size, even with a processing scale", () => {
+  it("returns the native processing resolution", () => {
     const src = gradient(40, 20);
-    const out = renderPixels(
+    const { pixels } = renderPixels(
       src,
       { ...DEFAULT_SETTINGS, scale: 0.25 },
       { dither: true },
     );
-    expect([out.width, out.height]).toEqual([40, 20]);
+    expect([pixels.width, pixels.height]).toEqual([10, 5]);
   });
 
   it("maps tones by luminance band", () => {
     const src = gradient(256, 1);
-    const out = renderPixels(
+    const { pixels: out } = renderPixels(
       src,
       { ...DEFAULT_SETTINGS, algorithm: "bayer-2-2", colorCount: 3 },
       { dither: true },
@@ -197,5 +199,150 @@ describe("renderPixels", () => {
       { dither: true },
     );
     expect(src.data).toEqual(copy);
+  });
+});
+
+function colorGradient(width: number, height: number): Pixels {
+  const pixels = createPixels(width, height);
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const u = x / (width - 1);
+      const v = y / (height - 1);
+      pixels.data.set(
+        [u * 255, v * 255, (1 - u) * 200, 255],
+        (y * width + x) * 4,
+      );
+    }
+  }
+  return pixels;
+}
+
+function usedColors({ data }: Pixels) {
+  const set = new Set<string>();
+  for (let i = 0; i < data.length; i += 4) {
+    set.add(
+      "#" +
+        [data[i], data[i + 1], data[i + 2]]
+          .map((v) => v.toString(16).padStart(2, "0"))
+          .join(""),
+    );
+  }
+  return set;
+}
+
+describe("palette dithering", () => {
+  const methods = [
+    "floyd-steinberg",
+    "bayer-4-4",
+    "random-dither",
+    "none",
+  ] as const;
+
+  it.each(
+    PALETTE_PRESETS.flatMap((p) => methods.map((m) => [p.id, m] as const)),
+  )("%s with %s outputs only palette colors", (id, method) => {
+    const preset = PALETTE_PRESETS.find((p) => p.id === id)!;
+    const out = ditherToPalette(
+      colorGradient(48, 32),
+      method,
+      preset.colors,
+      preset.match,
+    );
+    for (const color of usedColors(out)) {
+      expect(preset.colors).toContain(color);
+    }
+  });
+
+  it("brightness matching spans the whole ramp, even for one-hue palettes", () => {
+    const gameboy = PALETTE_PRESETS.find((p) => p.id === "gameboy")!;
+    const out = ditherToPalette(
+      gradient(64, 8),
+      "none",
+      gameboy.colors,
+      "brightness",
+    );
+    expect(usedColors(out).size).toBe(4);
+  });
+
+  it("color matching keeps saturated colors", () => {
+    const red = createPixels(4, 4);
+    for (let i = 0; i < red.data.length; i += 4)
+      red.data.set([250, 10, 20, 255], i);
+    const pico = PALETTE_PRESETS.find((p) => p.id === "pico8")!;
+    const out = ditherToPalette(red, "none", pico.colors, "color");
+    expect([...usedColors(out)]).toEqual(["#ff004d"]);
+  });
+
+  it("error diffusion reproduces the average color", () => {
+    const gray = createPixels(64, 64);
+    for (let i = 0; i < gray.data.length; i += 4)
+      gray.data.set([128, 128, 128, 255], i);
+    const out = ditherToPalette(
+      gray,
+      "floyd-steinberg",
+      ["#000000", "#ffffff"],
+      "color",
+    );
+    let sum = 0;
+    for (let i = 0; i < out.data.length; i += 4) sum += out.data[i];
+    expect(sum / (out.data.length / 4) / 255).toBeCloseTo(0.5, 1);
+  });
+
+  it("copies alpha from the source", () => {
+    const src = colorGradient(8, 8);
+    src.data[3] = 0;
+    const out = ditherToPalette(
+      src,
+      "floyd-steinberg",
+      ["#000000", "#ffffff"],
+      "color",
+    );
+    expect(out.data[3]).toBe(0);
+    expect(out.data[7]).toBe(255);
+  });
+
+  it("extracts the requested number of colors, dark to light", () => {
+    const colors = extractPalette(colorGradient(64, 64), 8);
+    expect(colors).toHaveLength(8);
+    expect(new Set(colors).size).toBe(8);
+    const luma = (hex: string) => {
+      const n = parseInt(hex.slice(1), 16);
+      return 0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255);
+    };
+    for (let i = 1; i < colors.length; i++) {
+      expect(luma(colors[i])).toBeGreaterThanOrEqual(luma(colors[i - 1]));
+    }
+  });
+
+  it("stops early when the image has fewer colors than requested", () => {
+    const flat = createPixels(8, 8);
+    for (let i = 0; i < flat.data.length; i += 4)
+      flat.data.set([10, 20, 30, 255], i);
+    expect(extractPalette(flat, 8)).toEqual(["#0a141e"]);
+  });
+
+  it("renderPixels uses the extracted palette and reports it", () => {
+    const { pixels, palette } = renderPixels(
+      colorGradient(32, 32),
+      {
+        ...DEFAULT_SETTINGS,
+        color: {
+          ...DEFAULT_SETTINGS.color,
+          mode: "palette",
+          palette: "extracted",
+          extractCount: 4,
+        },
+      },
+      { dither: true },
+    );
+    expect(palette).toHaveLength(4);
+    for (const color of usedColors(pixels)) expect(palette).toContain(color);
+  });
+});
+
+describe("no dithering", () => {
+  it("mono 'none' is a plain threshold at mid-gray", () => {
+    const g = new Float32Array([0, 127, 128, 255]);
+    expect([...dither(g, 4, 1, "none")]).toEqual([0, 0, 255, 255]);
   });
 });

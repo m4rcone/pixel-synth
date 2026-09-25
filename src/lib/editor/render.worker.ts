@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 
-import { renderPixels } from "./pipeline";
+import { renderPixels, type RenderResult } from "./pipeline";
 import type { Pixels } from "./pixels";
 import type { EditorSettings } from "./settings";
 
@@ -9,7 +9,7 @@ export type WorkerRequest =
   | { type: "render"; id: number; settings: EditorSettings; dither: boolean };
 
 export type WorkerResponse =
-  | { type: "done"; id: number; result: Pixels }
+  | { type: "done"; id: number; result: RenderResult }
   | { type: "error"; id: number; message: string };
 
 // The source image lives in the worker, so each render only sends settings.
@@ -29,7 +29,7 @@ self.onmessage = (event: MessageEvent<WorkerRequest>) => {
       dither: message.dither,
     });
     const response: WorkerResponse = { type: "done", id: message.id, result };
-    self.postMessage(response, [result.data.buffer]);
+    self.postMessage(response, [result.pixels.data.buffer]);
   } catch (error) {
     const response: WorkerResponse = {
       type: "error",

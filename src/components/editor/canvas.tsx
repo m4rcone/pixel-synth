@@ -59,8 +59,14 @@ export function Canvas({ onStatusChange }: CanvasProps) {
     ? result
     : (showProcessed && result) || source?.bitmap || null;
 
-  const fit = image
-    ? Math.min(view.width / image.width, view.height / image.height) *
+  // Layout always uses the source's size: a result rendered at a lower
+  // processing scale is stretched over the same rectangle, so toggling and
+  // the split view line up exactly.
+  const frame = source
+    ? { width: source.pixels.width, height: source.pixels.height }
+    : null;
+  const fit = frame
+    ? Math.min(view.width / frame.width, view.height / frame.height) *
       FIT_PADDING
     : 1;
   const scale = fit * zoom;
@@ -86,15 +92,19 @@ export function Canvas({ onStatusChange }: CanvasProps) {
     canvas.height = Math.round(view.height * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, view.width, view.height);
-    if (!image) return;
+    if (!image || !frame) return;
 
-    const width = image.width * scale;
-    const height = image.height * scale;
+    const width = frame.width * scale;
+    const height = frame.height * scale;
     const left = (view.width - width) / 2 + position.x;
     const top = (view.height - height) / 2 + position.y;
-    ctx.imageSmoothingEnabled = scale < 1;
-    ctx.imageSmoothingQuality = "high";
-    ctx.drawImage(image, left, top, width, height);
+    // Smooth only when shrinking; enlarged pixels stay crisp.
+    const draw = (bitmap: ImageBitmap) => {
+      ctx.imageSmoothingEnabled = width < bitmap.width;
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(bitmap, left, top, width, height);
+    };
+    draw(image);
 
     if (splitting && source) {
       // Original on the left of the divider, processed on the right.
@@ -104,7 +114,7 @@ export function Canvas({ onStatusChange }: CanvasProps) {
       ctx.rect(0, 0, dividerX, view.height);
       ctx.clip();
       ctx.clearRect(0, 0, dividerX, view.height);
-      ctx.drawImage(source.bitmap, left, top, width, height);
+      draw(source.bitmap);
       ctx.restore();
       ctx.fillStyle = "rgb(236 228 214 / 0.9)";
       ctx.fillRect(dividerX - 0.5, 0, 1, view.height);
@@ -112,21 +122,23 @@ export function Canvas({ onStatusChange }: CanvasProps) {
       ctx.arc(dividerX, view.height / 2, 6, 0, Math.PI * 2);
       ctx.fill();
     }
+    // frame is derived from source.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [image, view, scale, position, splitting, split, source]);
 
   /** Zoom by `factor`, keeping the point under (x, y) fixed on screen. */
   function zoomAround(factor: number, x: number, y: number) {
-    if (!image) return;
+    if (!frame) return;
     const next = clampZoom(zoom * factor);
     const nextScale = fit * next;
-    const left = (view.width - image.width * scale) / 2 + position.x;
-    const top = (view.height - image.height * scale) / 2 + position.y;
+    const left = (view.width - frame.width * scale) / 2 + position.x;
+    const top = (view.height - frame.height * scale) / 2 + position.y;
     const u = (x - left) / scale;
     const v = (y - top) / scale;
     setZoom(next);
     setPosition({
-      x: x - u * nextScale - (view.width - image.width * nextScale) / 2,
-      y: y - v * nextScale - (view.height - image.height * nextScale) / 2,
+      x: x - u * nextScale - (view.width - frame.width * nextScale) / 2,
+      y: y - v * nextScale - (view.height - frame.height * nextScale) / 2,
     });
   }
 

@@ -1,9 +1,10 @@
+import type { RenderResult } from "./pipeline";
 import type { Pixels } from "./pixels";
 import type { EditorSettings } from "./settings";
 import type { WorkerRequest, WorkerResponse } from "./render.worker";
 
 type Pending = {
-  resolve: (pixels: Pixels) => void;
+  resolve: (result: RenderResult) => void;
   reject: (error: Error) => void;
 };
 
@@ -37,7 +38,10 @@ export class RenderClient {
     this.post({ type: "source", source });
   }
 
-  async render(settings: EditorSettings, dither: boolean): Promise<Pixels> {
+  async render(
+    settings: EditorSettings,
+    dither: boolean,
+  ): Promise<RenderResult> {
     if (!this.worker) {
       if (!this.source) throw new Error("No source image");
       const { renderPixels } = await import("./pipeline");

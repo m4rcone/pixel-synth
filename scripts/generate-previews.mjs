@@ -114,7 +114,7 @@ try {
   );
 
   for (const algorithm of ALGORITHMS) {
-    const result = renderPixels(
+    const { pixels: result } = renderPixels(
       source,
       { ...DEFAULT_SETTINGS, algorithm: algorithm.slug },
       { dither: true },
@@ -140,7 +140,7 @@ try {
       gradient.data.set([v, v, v, 255], (y * width + x) * 4);
     }
   }
-  const texture = renderPixels(
+  const { pixels: texture } = renderPixels(
     gradient,
     {
       ...DEFAULT_SETTINGS,

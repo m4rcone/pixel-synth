@@ -1,5 +1,6 @@
 import type { AlgorithmId } from "@/lib/algorithms";
 import { createRandom } from "./pixels";
+import type { DitherChoice } from "./settings";
 import {
   bayerMatrix,
   CLUSTERED_DOT_4,
@@ -12,7 +13,8 @@ import {
 type Method =
   | { kind: "diffusion"; kernel: ErrorKernel; serpentine: boolean }
   | { kind: "ordered"; matrix: () => ThresholdMatrix }
-  | { kind: "random" };
+  | { kind: "random" }
+  | { kind: "none" };
 
 const lazy = <T>(make: () => T) => {
   let value: T | undefined;
@@ -70,10 +72,13 @@ const METHODS: Record<AlgorithmId, Method> = {
 
 export type AlgorithmMethod = Method;
 
-/** How an algorithm works, for documentation pages. */
-export function getMethod(algorithm: AlgorithmId): Method {
-  return METHODS[algorithm];
+/** How an algorithm works: for the engine and for documentation pages. */
+export function getMethod(algorithm: DitherChoice): Method {
+  return algorithm === "none" ? { kind: "none" } : METHODS[algorithm];
 }
+
+/** Seed shared by every random dither so grain is stable across renders. */
+export const RANDOM_SEED = 0x5eed;
 
 /**
  * Converts a luminance buffer (0–255) into a 1-bit image (0 or 255 per pixel).
@@ -84,10 +89,15 @@ export function dither(
   gray: Float32Array,
   width: number,
   height: number,
-  algorithm: AlgorithmId,
+  algorithm: DitherChoice,
 ): Uint8Array {
-  const method = METHODS[algorithm];
+  const method = getMethod(algorithm);
   const out = new Uint8Array(width * height);
+
+  if (method.kind === "none") {
+    for (let p = 0; p < out.length; p++) out[p] = gray[p] < 128 ? 0 : 255;
+    return out;
+  }
 
   if (method.kind === "ordered") {
     const { size, ranks } = method.matrix();
@@ -104,7 +114,7 @@ export function dither(
 
   if (method.kind === "random") {
     // Seeded, so tweaking another setting doesn't reshuffle the grain.
-    const random = createRandom(0x5eed);
+    const random = createRandom(RANDOM_SEED);
     for (let p = 0; p < out.length; p++) {
       out[p] = gray[p] < random() * 255 ? 0 : 255;
     }

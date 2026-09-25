@@ -23,7 +23,10 @@ export type EditorStatus = "empty" | "loaded" | "dithered";
 type EditorState = {
   status: EditorStatus;
   source: SourceImage | null;
+  /** Rendered image at native resolution (smaller than the source when scaled). */
   result: ImageBitmap | null;
+  /** Colors the last palette render used (resolves "From image"). */
+  resultPalette: string[] | null;
   settings: EditorSettings;
   isRendering: boolean;
   error: string | null;
@@ -43,7 +46,7 @@ type Action =
   | { type: "render" }
   | { type: "applyDither" }
   | { type: "renderStart" }
-  | { type: "renderDone"; result: ImageBitmap }
+  | { type: "renderDone"; result: ImageBitmap; palette: string[] | null }
   | { type: "renderFailed"; error: string }
   | { type: "setError"; error: string | null };
 
@@ -51,11 +54,22 @@ const initialState: EditorState = {
   status: "empty",
   source: null,
   result: null,
+  resultPalette: null,
   settings: DEFAULT_SETTINGS,
   isRendering: false,
   error: null,
   renderRequest: 0,
 };
+
+/** The user's own palette survives resets; it's saved like a document. */
+function keepCustomPalette(
+  next: EditorSettings,
+  current: EditorSettings,
+): EditorSettings {
+  return { ...next, color: { ...next.color, custom: current.color.custom } };
+}
+
+const CUSTOM_PALETTE_KEY = "pixelsynth:custom-palette";
 
 function reducer(state: EditorState, action: Action): EditorState {
   switch (action.type) {
@@ -68,13 +82,18 @@ function reducer(state: EditorState, action: Action): EditorState {
         renderRequest: state.renderRequest,
       };
     case "discard":
-      return { ...initialState, renderRequest: state.renderRequest };
+      return {
+        ...initialState,
+        settings: keepCustomPalette(DEFAULT_SETTINGS, state.settings),
+        renderRequest: state.renderRequest,
+      };
     case "reset":
       return {
         ...state,
         status: state.source ? "loaded" : "empty",
         result: null,
-        settings: DEFAULT_SETTINGS,
+        resultPalette: null,
+        settings: keepCustomPalette(DEFAULT_SETTINGS, state.settings),
         isRendering: false,
         error: null,
       };
@@ -102,7 +121,12 @@ function reducer(state: EditorState, action: Action): EditorState {
     case "renderStart":
       return { ...state, isRendering: true, error: null };
     case "renderDone":
-      return { ...state, isRendering: false, result: action.result };
+      return {
+        ...state,
+        isRendering: false,
+        result: action.result,
+        resultPalette: action.palette,
+      };
     case "renderFailed":
       return { ...state, isRendering: false, error: action.error };
     case "setError":
@@ -168,6 +192,34 @@ export function EditorProvider({ children }: { children: ReactNode }) {
 
   const { renderRequest, source, status, settings, result } = state;
 
+  // Restore and persist the custom palette (per browser, best effort).
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(CUSTOM_PALETTE_KEY) ?? "null");
+      if (
+        Array.isArray(saved) &&
+        saved.length >= 2 &&
+        saved.every((c) => typeof c === "string" && /^#[0-9a-f]{6}$/i.test(c))
+      ) {
+        dispatch({
+          type: "update",
+          update: (s) => ({ color: { ...s.color, custom: saved } }),
+          render: false,
+        });
+      }
+    } catch {
+      // Storage unavailable: keep the default custom palette.
+    }
+  }, []);
+  const customPalette = settings.color.custom;
+  useEffect(() => {
+    try {
+      localStorage.setItem(CUSTOM_PALETTE_KEY, JSON.stringify(customPalette));
+    } catch {
+      // Storage unavailable or full: the palette just won't persist.
+    }
+  }, [customPalette]);
+
   // The worker keeps its own copy of the source pixels.
   useEffect(() => {
     if (source) renderer.current?.setSource(source.pixels);
@@ -187,14 +239,15 @@ export function EditorProvider({ children }: { children: ReactNode }) {
 
     renderer
       .current!.render(settings, status === "dithered")
-      .then(({ data, width, height }) =>
-        createImageBitmap(new ImageData(data, width, height)),
-      )
-      .then((result) => {
+      .then(async ({ pixels: { data, width, height }, palette }) => ({
+        bitmap: await createImageBitmap(new ImageData(data, width, height)),
+        palette,
+      }))
+      .then(({ bitmap, palette }) => {
         if (id === latestRender.current) {
-          dispatch({ type: "renderDone", result });
+          dispatch({ type: "renderDone", result: bitmap, palette });
         } else {
-          result.close();
+          bitmap.close();
         }
       })
       .catch((error: unknown) => {
