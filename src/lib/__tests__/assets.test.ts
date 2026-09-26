@@ -6,8 +6,14 @@ import { ALGORITHMS } from "@/lib/algorithms";
 import { readGifInfo } from "@/lib/editor/gif/decode";
 import { PALETTE_PRESETS } from "@/lib/palettes";
 import {
+  ANIMATED_DITHER,
   ANIMATED_SAMPLE,
   EXTRACTED_PREVIEW_COLORS,
+  HERO_ALGORITHMS,
+  HERO_ORIGINAL,
+  HERO_PALETTES,
+  HERO_SIZE,
+  heroVariant,
   PALETTE_PREVIEW_SIZE,
   palettePreview,
   PIXEL_ART_PREVIEW,
@@ -67,4 +73,32 @@ describe("generated assets", () => {
       expect(existsSync(publicFile(preview))).toBe(true);
     },
   );
+
+  it.each(
+    HERO_ALGORITHMS.flatMap((algorithm) =>
+      HERO_PALETTES.map((palette) => [algorithm, palette] as const),
+    ),
+  )("has the %s × %s hero variant", (algorithm, palette) => {
+    expect(pngSize(heroVariant(algorithm, palette))).toEqual(HERO_SIZE);
+  });
+
+  it("has the hero original at its declared size", () => {
+    expect(pngSize(HERO_ORIGINAL.src)).toEqual({
+      width: HERO_ORIGINAL.width,
+      height: HERO_ORIGINAL.height,
+    });
+  });
+
+  it("has the dithered animated sample and its still", () => {
+    const size = {
+      width: ANIMATED_DITHER.width,
+      height: ANIMATED_DITHER.height,
+    };
+    const file = readFileSync(publicFile(ANIMATED_DITHER.src));
+    expect(readGifInfo(new Uint8Array(file))).toEqual({
+      ...size,
+      frames: ANIMATED_SAMPLE.frames,
+    });
+    expect(pngSize(ANIMATED_DITHER.still)).toEqual(size);
+  });
 });

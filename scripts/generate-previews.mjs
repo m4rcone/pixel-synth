@@ -1,14 +1,15 @@
 // Regenerates every derived image with the real pipeline, so the site always
 // shows what the editor produces:
 //   public/250/            algorithm previews (sphere)
-//   public/textures/       dithered headline texture
 //   public/samples/        sample image (procedural sunset + calibration strip)
 //                          and its animated version (GIF)
 //   public/palettes/       palette previews of the sample, pixel art preset
+//   public/landing/        hero variants (algorithm × palette), the dithered
+//                          animated sample
 //   src/data/sample-extracted-palette.json  colors of the "From image" preview
 //
 //   node scripts/generate-previews.mjs
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { deflateSync, inflateSync, crc32 } from "node:zlib";
 import { createServer } from "vite";
@@ -131,44 +132,6 @@ try {
     console.log(`${algorithm.slug.padEnd(32)} → ${algorithm.preview}`);
   }
 
-  // Headline texture: a vertical light-to-mid gradient, Floyd–Steinberg
-  // dithered, "on" pixels in paper white and "off" pixels transparent so the
-  // page shows through (used with background-clip: text).
-  const width = 96;
-  const height = 48;
-  const gradient = {
-    data: new Uint8ClampedArray(width * height * 4),
-    width,
-    height,
-  };
-  for (let y = 0; y < height; y++) {
-    const v = 250 - (y / (height - 1)) * 130;
-    for (let x = 0; x < width; x++) {
-      gradient.data.set([v, v, v, 255], (y * width + x) * 4);
-    }
-  }
-  const { pixels: texture } = renderPixels(
-    gradient,
-    {
-      ...DEFAULT_SETTINGS,
-      algorithm: "floyd-steinberg",
-      tones: {
-        ...DEFAULT_SETTINGS.tones,
-        highlights: { color: "#ece4d6", range: 255 },
-      },
-    },
-    { dither: true },
-  );
-  for (let i = 0; i < texture.data.length; i += 4) {
-    if (texture.data[i] === 0) texture.data[i + 3] = 0;
-  }
-  mkdirSync(join(root, "public", "textures"), { recursive: true });
-  writeFileSync(
-    join(root, "public", "textures", "dithered-type.png"),
-    encodePng(texture),
-  );
-  console.log("texture → /textures/dithered-type.png");
-
   // Sample image and palette previews.
   const {
     SAMPLE_IMAGE,
@@ -279,6 +242,71 @@ try {
       PIXEL_ART_PREVIEW.scale,
     ).pixels,
   );
+  // Landing hero: every algorithm × palette pair at 240×160, and the
+  // undithered original for the "before" side.
+  const {
+    HERO_ALGORITHMS,
+    HERO_PALETTES,
+    HERO_SIZE,
+    HERO_ORIGINAL,
+    ANIMATED_DITHER,
+    heroVariant,
+  } = await server.ssrLoadModule("/src/lib/samples.ts");
+  rmSync(join(root, "public", "landing"), { recursive: true, force: true });
+  write(
+    HERO_ORIGINAL.src,
+    makeSampleScene(HERO_ORIGINAL.width, HERO_ORIGINAL.height),
+  );
+  const heroScale = HERO_SIZE.width / SAMPLE_IMAGE.width;
+  for (const algorithm of HERO_ALGORITHMS) {
+    for (const palette of HERO_PALETTES) {
+      const preset = PALETTE_PRESETS.find((p) => p.id === palette);
+      const settings = { ...DEFAULT_SETTINGS, algorithm, scale: heroScale };
+      if (preset) {
+        settings.color = {
+          ...DEFAULT_SETTINGS.color,
+          mode: "palette",
+          palette: preset.id,
+          match: preset.match,
+        };
+      }
+      write(
+        heroVariant(algorithm, palette),
+        renderPixels(sample, settings, { dither: true }).pixels,
+      );
+    }
+  }
+
+  // The animated sample dithered at half size (one palette for every frame,
+  // ordered dithering so the pattern holds still), and its first frame.
+  const animatedPreset = PALETTE_PRESETS.find(
+    (p) => p.id === ANIMATED_DITHER.palette,
+  );
+  const dithered = renderAnimation(
+    sunFrames,
+    {
+      ...DEFAULT_SETTINGS,
+      algorithm: ANIMATED_DITHER.algorithm,
+      scale: ANIMATED_DITHER.width / ANIMATED_SAMPLE.width,
+      color: {
+        ...DEFAULT_SETTINGS.color,
+        mode: "palette",
+        palette: animatedPreset.id,
+        match: animatedPreset.match,
+      },
+    },
+    { dither: true },
+  );
+  writeFileSync(
+    join(root, "public", ANIMATED_DITHER.src.slice(1)),
+    encodeAnimation(
+      dithered.frames,
+      dithered.frames.map(() => ANIMATED_SAMPLE.delay),
+      0,
+    ),
+  );
+  console.log(`→ ${ANIMATED_DITHER.src}`);
+  write(ANIMATED_DITHER.still, dithered.frames[0]);
 } finally {
   await server.close();
 }

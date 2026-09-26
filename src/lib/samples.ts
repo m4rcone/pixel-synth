@@ -50,3 +50,44 @@ export const PIXEL_ART_PREVIEW = {
 /** Preview settings shared by the generator and the page copy. */
 export const PALETTE_PREVIEW_ALGORITHM = "floyd-steinberg" as const;
 export const EXTRACTED_PREVIEW_COLORS = 8;
+
+/**
+ * Landing hero: the sample at 240×160, one image per algorithm × palette
+ * pair (1-bit is the editor's default black-and-white mode, not a palette),
+ * plus the undithered original at twice that size for the "before" side.
+ */
+export const HERO_ALGORITHMS = [
+  "atkinson",
+  "floyd-steinberg",
+  "bayer-8-8",
+  "bayer-2-2",
+] as const;
+export const HERO_PALETTES = [
+  "gameboy",
+  "cga-cyan-magenta",
+  "cyanotype",
+  "1-bit",
+] as const;
+export type HeroAlgorithm = (typeof HERO_ALGORITHMS)[number];
+export type HeroPalette = (typeof HERO_PALETTES)[number];
+export const HERO_SIZE = { width: 240, height: 160 } as const;
+
+export function heroVariant(algorithm: HeroAlgorithm, palette: HeroPalette) {
+  return `/landing/sunset-${algorithm}-${palette}.png`;
+}
+
+export const HERO_ORIGINAL = {
+  src: "/landing/sunset-original.png",
+  width: 480,
+  height: 320,
+} as const;
+
+/** The animated sample dithered, and its first frame for when it's paused. */
+export const ANIMATED_DITHER = {
+  src: "/landing/sunset-animated-bayer-4-4-pico8.gif",
+  still: "/landing/sunset-animated-bayer-4-4-pico8.png",
+  algorithm: "bayer-4-4",
+  palette: "pico8",
+  width: ANIMATED_SAMPLE.width / 2,
+  height: ANIMATED_SAMPLE.height / 2,
+} as const;
