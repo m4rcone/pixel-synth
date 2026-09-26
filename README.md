@@ -1,6 +1,6 @@
 # PixelSynth
 
-A free online dithering and pixel art tool. Turn any photo into dithered, 1-bit or pixel art images right in your browser: pick one of 17 dithering algorithms, dither to a classic palette like Game Boy, NES or PICO-8, tune the look, share it as a link and export a crisp PNG or animated GIF. No uploads, no accounts, no watermark.
+A free online dithering and pixel art tool. Turn any photo into dithered, 1-bit or pixel art images right in your browser: pick one of 17 dithering algorithms, dither to a classic palette like Game Boy, NES or PICO-8, separate it into CMYK inks, tune the look, share it as a link and export a crisp PNG or animated GIF. No uploads, no accounts, no watermark.
 
 **Live:** https://pixelsynth.art
 
@@ -8,6 +8,8 @@ A free online dithering and pixel art tool. Turn any photo into dithered, 1-bit 
 
 - **17 dithering algorithms**: error diffusion (Floyd–Steinberg, Stucki, Atkinson…), ordered (Bayer, clustered dot, void-and-cluster, blue noise), noise-based and halftone screens (round, square or diamond dots, or lines, at any size and angle; lines can be lifted by the light or waved). Each has its own page showing its kernel or threshold matrix, with a before/after comparison.
 - **Color palettes**: dither straight to 17 classic palettes (Game Boy, Game Boy Pocket, PICO-8, NES, CGA, EGA, ZX Spectrum, C64, MSX, Apple II, sepia, cyanotype, riso…), a palette extracted from your image (2 to 64 colors) or your own custom colors. Match by color or by brightness.
+- **Palette import**: paste a list of hex codes or open a palette file (Lospec's HEX, GPL, PAL or Paint.NET TXT) to fill the custom palette.
+- **CMYK**: separate the image into cyan, magenta, yellow and black, dither each ink on its own and overprint them on white paper, like a four-color press. With the halftone and line screens, each ink takes its classic angle and the screens form rosettes; "Black ink" sets how much of the shared gray prints in black.
 - **Palette gallery**: every palette previewed on the same sample image at `/palettes`, one click from the editor.
 - **Pixel art preset**: one click shrinks any image to about 128 × 96 pixels' worth of detail, whatever its shape, and applies PICO-8 with a 2×2 Bayer pattern. Set the output width in pixels, or pick the nearest-color "None" option to skip dithering.
 - **1-bit dot colors**: tint the dots of a classic 1-bit dither by brightness band (shadows, midtones, highlights), blended where bands meet, on a background of any color (dots darker than it print like ink) or a transparent one to lay the dither over other artwork.
