@@ -74,7 +74,7 @@ test.describe("accessibility", () => {
       page.getByRole("application", { name: "Original image canvas" }),
     ).toBeVisible();
     await expect(page.locator('[aria-live="polite"]')).toContainText(
-      "Image uploaded",
+      "Image loaded",
     );
   });
 

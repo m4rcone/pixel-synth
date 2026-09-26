@@ -162,11 +162,10 @@ export function Canvas({ onStatusChange }: CanvasProps) {
       ctx.clearRect(0, 0, dividerX, view.height);
       draw(original!);
       ctx.restore();
-      ctx.fillStyle = "rgb(236 228 214 / 0.9)";
+      // Paper divider with a square grip: the console has no round shapes.
+      ctx.fillStyle = "rgb(207 230 255 / 0.9)";
       ctx.fillRect(dividerX - 0.5, 0, 1, view.height);
-      ctx.beginPath();
-      ctx.arc(dividerX, view.height / 2, 6, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.fillRect(dividerX - 5, view.height / 2 - 5, 10, 10);
     }
     // frame is derived from source.
     // eslint-disable-next-line react-hooks/exhaustive-deps

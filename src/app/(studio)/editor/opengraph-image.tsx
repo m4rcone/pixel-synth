@@ -8,8 +8,8 @@ export const contentType = "image/png";
 export default function OpengraphImage() {
   return renderOgImage({
     eyebrow: "Editor",
-    title: "Develop any image",
-    subtitle: `Upload a photo, pick one of ${ALGORITHMS.length} dithering algorithms, tune it and export a PNG. Nothing leaves your device.`,
+    title: "Dither any image",
+    subtitle: `Open a photo or GIF, pick one of ${ALGORITHMS.length} dithering algorithms, tune it and export a PNG or GIF. Nothing leaves your device.`,
     image: "/specimens/blue-noise.png",
   });
 }

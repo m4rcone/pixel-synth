@@ -51,7 +51,7 @@ export default function EditorPage() {
           ? "Animation ready."
           : "Rendered image is ready."
         : source
-          ? `${frames ? `Animated GIF loaded: ${frames} frames.` : "Image uploaded."} Editor controls are now available.`
+          ? `${frames ? `Animated GIF loaded: ${frames} frames.` : "Image loaded."} Editor controls are now available.`
           : "");
 
   return (
@@ -75,13 +75,13 @@ export default function EditorPage() {
           {error && (
             <div
               role="alert"
-              className="border-danger/40 bg-danger/10 text-paper m-4 mb-0 flex items-start justify-between gap-3 rounded-lg border px-4 py-3 text-sm"
+              className="border-danger/40 bg-danger/10 text-paper m-4 mb-0 flex items-start justify-between gap-3 border px-4 py-3 text-sm"
             >
               <p>{error}</p>
               <button
                 type="button"
                 onClick={() => setError(null)}
-                className="text-label text-paper-dim hover:text-paper focus-visible:ring-ring shrink-0 rounded-sm focus-visible:ring-2 focus-visible:outline-hidden"
+                className="text-label text-paper-dim hover:text-paper focus-visible:ring-ring shrink-0 focus-visible:ring-2 focus-visible:outline-hidden"
               >
                 Dismiss
               </button>
@@ -117,7 +117,7 @@ function RenderProgress({ done, total }: { done: number; total: number }) {
         aria-valuemax={total}
         aria-valuenow={done}
         aria-valuetext={label}
-        className="bg-paper/15 h-0.5 overflow-hidden rounded-full"
+        className="bg-paper/15 h-0.5 overflow-hidden"
       >
         <div
           className="bg-safelight h-full origin-left"

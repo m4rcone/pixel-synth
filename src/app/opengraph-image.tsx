@@ -9,7 +9,7 @@ export const contentType = "image/png";
 
 export default function OpengraphImage() {
   return renderOgImage({
-    eyebrow: "In-browser dithering lab",
+    eyebrow: "Online dithering & pixel art",
     title: "Smooth in. Dither out.",
     subtitle: `Dither images · Pixel art · ${PALETTE_PRESETS.length} palettes`,
     image: palettePreview("gameboy"),

@@ -67,7 +67,7 @@ export function ImageDropzone() {
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           className={cn(
-            "group flex cursor-pointer flex-col items-center gap-5 rounded-2xl border border-dashed px-8 py-12 text-center transition-colors",
+            "group flex cursor-pointer flex-col items-center gap-5 border border-dashed px-8 py-12 text-center transition-colors",
             "focus-within:border-safelight focus-within:ring-safelight focus-within:ring-2",
             isDragging
               ? "border-safelight bg-ink-raised/80"
@@ -77,7 +77,7 @@ export function ImageDropzone() {
           <span
             aria-hidden="true"
             className={cn(
-              "border-line-strong group-hover:text-paper-hot grid size-14 place-items-center rounded-xl border transition-colors",
+              "border-line-strong group-hover:text-paper-hot grid size-14 place-items-center border transition-colors",
               isDragging ? "text-safelight" : "text-paper/50",
             )}
           >
@@ -86,7 +86,7 @@ export function ImageDropzone() {
 
           <span className="flex flex-col gap-1.5">
             <span className="text-heading font-semibold">
-              Drop an image to develop
+              Drop an image to dither
             </span>
             <span className="text-paper-dim text-sm">
               Click to browse, or paste from the clipboard
