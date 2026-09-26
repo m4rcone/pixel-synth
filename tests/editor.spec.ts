@@ -303,3 +303,27 @@ test("1-bit mode names its dot colors and shading", async ({ page }) => {
     page.getByRole("checkbox", { name: "Shade by brightness" }),
   ).toBeChecked();
 });
+
+test("?sample=1 opens the editor on the sample image", async ({ page }) => {
+  await page.goto("/editor?sample=1");
+
+  await expect(
+    page.getByRole("application", { name: "Original image canvas" }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Output size")).toHaveValue("1800");
+});
+
+test("?sample=1&preset=pixel-art opens on the pixelated sample", async ({
+  page,
+}) => {
+  await page.goto("/editor?sample=1&preset=pixel-art");
+
+  // Sample 1800×1200 → 136×91, dithered right away.
+  await expect(
+    page.getByRole("button", { name: "Reset", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Output size")).toHaveValue("136");
+  await expect(page.getByRole("combobox", { name: "Palette" })).toContainText(
+    "PICO-8",
+  );
+});

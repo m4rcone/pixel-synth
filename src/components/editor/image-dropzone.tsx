@@ -9,15 +9,15 @@ import {
   SUPPORTED_FORMATS_LABEL,
   SUPPORTED_IMAGE_TYPES,
 } from "@/lib/editor/load-image";
-import { SAMPLE_IMAGE } from "@/lib/samples";
 import { cn } from "@/lib/utils";
+import { useLoadSample } from "@/hooks/use-load-sample";
 import { Button } from "@/components/ui/button";
 
 export function ImageDropzone() {
   const { load, setError } = useEditorActions();
   const dragDepth = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
-  const [loadingSample, setLoadingSample] = useState(false);
+  const { loadSample, loading: loadingSample } = useLoadSample();
 
   async function openFile(file: File) {
     try {
@@ -28,25 +28,6 @@ export function ImageDropzone() {
           ? error.message
           : "Could not open that image.",
       );
-    }
-  }
-
-  /** Loads the bundled sample through the same path as an upload. */
-  async function openSample() {
-    setLoadingSample(true);
-    try {
-      const response = await fetch(SAMPLE_IMAGE.src);
-      if (!response.ok) throw new Error(String(response.status));
-      const blob = await response.blob();
-      await openFile(
-        new File([blob], SAMPLE_IMAGE.name, { type: blob.type || "image/png" }),
-      );
-    } catch {
-      setError(
-        "Couldn’t load the sample image. Check your connection and try again.",
-      );
-    } finally {
-      setLoadingSample(false);
     }
   }
 
@@ -134,7 +115,7 @@ export function ImageDropzone() {
           <span className="text-paper-dim text-sm">or</span>
           <Button
             variant="outline"
-            onClick={openSample}
+            onClick={loadSample}
             disabled={loadingSample}
           >
             {loadingSample ? (
