@@ -24,10 +24,12 @@ import { SUPPORTED_IMAGE_TYPES } from "@/lib/editor/load-image";
 import { PIXEL_ART_PRESET } from "@/lib/editor/pixel-art";
 import { DEFAULT_SETTINGS } from "@/lib/editor/settings";
 import { encodeSettings, SHARE_PARAM } from "@/lib/editor/share";
+import extractedColors from "@/data/sample-extracted-palette.json";
 import { faqStructuredData, HOME_FAQ, type FaqPart } from "@/lib/home-faq";
 import {
   getPalettePreset,
-  PALETTE_GROUPS,
+  MAX_PALETTE_COLORS,
+  MIN_PALETTE_COLORS,
   PALETTE_PRESETS,
 } from "@/lib/palettes";
 import {
@@ -398,30 +400,43 @@ export default function HomePage() {
             <SectionHead
               id="palettes-heading"
               title="Retro palettes: Game Boy, NES, PICO-8, CGA"
-              link={{
-                label: `All ${PALETTE_PRESETS.length} palettes`,
-                href: "/palettes",
-              }}
             >
               Dither straight to the colors of a console, a print process or
               your own image. Each palette matches by color or by brightness.
             </SectionHead>
-            <div className="flex flex-col gap-10">
-              {PALETTE_GROUPS.filter((group) =>
-                PALETTE_PRESETS.some((palette) => palette.group === group),
-              ).map((group) => (
-                <div key={group} className="flex flex-col gap-4">
-                  <h3 className="text-caps text-paper">{group}</h3>
-                  <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                    {PALETTE_PRESETS.filter(
-                      (palette) => palette.group === group,
-                    ).map((palette) => (
-                      <PaletteCartridge key={palette.id} id={palette.id} />
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
+            <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {FEATURED_PALETTES.map((id) => {
+                const palette = getPalettePreset(id);
+                return (
+                  palette && (
+                    <Cartridge
+                      key={id}
+                      name={palette.name}
+                      href={`/palettes#palette-${id}`}
+                      colors={palette.colors}
+                      detail={
+                        palette.colors.length <= HEX_LIST_MAX
+                          ? palette.colors.join(" ").toUpperCase()
+                          : `Matches by ${palette.match}`
+                      }
+                    />
+                  )
+                );
+              })}
+              <Cartridge
+                name="Your own colors"
+                href="/palettes#group-dynamic"
+                colors={extractedColors}
+                count={`${MIN_PALETTE_COLORS}–${MAX_PALETTE_COLORS} colors`}
+                detail="Taken from your image, or picked by hand"
+              />
+            </ul>
+            <Link
+              href="/palettes"
+              className={`${textLink} mt-4 inline-block text-sm`}
+            >
+              +{PALETTE_PRESETS.length - FEATURED_PALETTES.length} more palettes
+            </Link>
           </section>
 
           <section
@@ -701,15 +716,33 @@ function FamilyCard({ category }: { category: AlgorithmCategory }) {
   );
 }
 
+/** The best-known palettes; the title names the first four. */
+const FEATURED_PALETTES = [
+  "gameboy",
+  "nes",
+  "pico8",
+  "cga-cyan-magenta",
+  "c64",
+  "riso",
+  "cyanotype",
+];
+
 /** Up to this many colors, a cartridge lists every hex value as text. */
 const HEX_LIST_MAX = 8;
 
-function PaletteCartridge({ id }: { id: string }) {
-  const palette = getPalettePreset(id);
-  if (!palette) return null;
-  const titleId = `cartridge-${id}`;
-  const { colors } = palette;
-
+function Cartridge({
+  name,
+  href,
+  colors,
+  count = `${colors.length} colors`,
+  detail,
+}: {
+  name: string;
+  href: string;
+  colors: readonly string[];
+  count?: string;
+  detail: string;
+}) {
   return (
     <li className="group border-line-strong bg-ink-raised hover:border-paper relative flex flex-col border transition-colors">
       <div aria-hidden="true" className="flex h-10">
@@ -723,28 +756,18 @@ function PaletteCartridge({ id }: { id: string }) {
       </div>
       <div className="border-line flex flex-1 flex-col gap-2 border-t p-3">
         <div className="flex items-baseline justify-between gap-2">
-          <h4 id={titleId} className="text-sm font-semibold">
+          <h3 className="text-sm font-semibold">
             {/* Stretched over the whole cartridge. */}
             <Link
-              href={`/palettes#palette-${id}`}
+              href={href}
               className={`group-hover:text-paper-hot after:absolute after:inset-0 ${focusRing}`}
             >
-              {palette.name}
+              {name}
             </Link>
-          </h4>
-          <span className="text-caps text-paper-dim shrink-0">
-            {colors.length} colors
-          </span>
+          </h3>
+          <span className="text-caps text-paper-dim shrink-0">{count}</span>
         </div>
-        {colors.length <= HEX_LIST_MAX ? (
-          <p className="text-readout text-paper-dim uppercase">
-            {colors.join(" ")}
-          </p>
-        ) : (
-          <p className="text-readout text-paper-dim">
-            Matches by {palette.match}
-          </p>
-        )}
+        <p className="text-readout text-paper-dim">{detail}</p>
       </div>
     </li>
   );
