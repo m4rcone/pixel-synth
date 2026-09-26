@@ -14,6 +14,9 @@ import {
   ALGORITHM_CATEGORIES,
   ALGORITHMS,
   getAlgorithm,
+  getCategory,
+  type AlgorithmCategory,
+  type AlgorithmId,
 } from "@/lib/algorithms";
 import { MAX_ANIMATION_FRAMES } from "@/lib/editor/animation-limits";
 import { EXPORT_FACTORS } from "@/lib/editor/export";
@@ -375,51 +378,20 @@ export default function HomePage() {
           <section aria-labelledby="algorithms-heading" className="pb-20">
             <SectionHead
               id="algorithms-heading"
-              title={`Same image, ${ALGORITHMS.length} dithering algorithms`}
-              link={{ label: "Compare them all", href: "/algorithms" }}
+              title={`${ALGORITHMS.length} dithering algorithms, four families`}
+              link={{
+                label: `Compare all ${ALGORITHMS.length}`,
+                href: "/algorithms",
+              }}
             >
-              One sphere, every algorithm the editor has, from Floyd–Steinberg
-              (1976) to blue noise and angled halftone screens.
+              The same sphere through one algorithm from each family. Every
+              algorithm has its own page with a before and after.
             </SectionHead>
-            <div className="flex flex-col gap-10">
+            <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               {ALGORITHM_CATEGORIES.map((category) => (
-                <div key={category.id} className="flex flex-col gap-4">
-                  <h3 className="text-caps text-paper">{category.name}</h3>
-                  <ul className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-8">
-                    {ALGORITHMS.filter(
-                      (algorithm) => algorithm.category === category.id,
-                    ).map((algorithm) => (
-                      <li key={algorithm.slug}>
-                        <Link
-                          href={`/algorithms/${algorithm.slug}`}
-                          className={`group border-line-strong bg-ink-raised hover:border-paper flex h-full flex-col border transition-colors ${focusRing}`}
-                        >
-                          <Image
-                            src={algorithm.preview}
-                            alt=""
-                            width={250}
-                            height={250}
-                            // Shown smaller than 250 px: smooth, not pixelated.
-                            unoptimized
-                            className="bg-ink-sunken border-line w-full border-b"
-                          />
-                          <span className="flex flex-col gap-1 p-3">
-                            <span className="group-hover:text-paper-hot text-sm font-semibold">
-                              {algorithm.shortName}
-                            </span>
-                            <span className="text-readout text-paper-dim">
-                              {[algorithm.author, algorithm.year]
-                                .filter(Boolean)
-                                .join(" · ") || "Classic technique"}
-                            </span>
-                          </span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                <FamilyCard key={category.id} category={category.id} />
               ))}
-            </div>
+            </ul>
           </section>
 
           <section aria-labelledby="palettes-heading" className="pb-20">
@@ -661,6 +633,73 @@ function SectionHead({
         </Link>
       )}
     </div>
+  );
+}
+
+/** The algorithm that stands for each family on the landing. */
+const FAMILY_LEADS: Record<AlgorithmCategory, AlgorithmId> = {
+  "error-diffusion": "floyd-steinberg",
+  ordered: "bayer-8-8",
+  noise: "void-and-cluster",
+  screen: "halftone",
+};
+
+function FamilyCard({ category }: { category: AlgorithmCategory }) {
+  const family = getCategory(category);
+  const members = ALGORITHMS.filter(
+    (algorithm) => algorithm.category === category,
+  );
+  const lead = getAlgorithm(FAMILY_LEADS[category]);
+  if (!family || !lead) return null;
+  const others = members.filter((algorithm) => algorithm.slug !== lead.slug);
+
+  return (
+    <li className="group border-line-strong bg-ink-raised hover:border-paper relative flex flex-col border transition-colors">
+      <h3 className="text-caps text-paper border-line truncate border-b px-4 py-3">
+        {family.name}
+      </h3>
+      {/* Neutral well; the preview never scales past its 250 px, so it stays
+          pixel-exact. */}
+      <div className="bg-ink-sunken border-line flex justify-center border-b">
+        <Image
+          src={lead.preview}
+          alt={`Sphere dithered with ${lead.name}`}
+          width={250}
+          height={250}
+          unoptimized
+          className="w-full max-w-62.5 [image-rendering:pixelated]"
+        />
+      </div>
+      <div className="flex flex-1 flex-col gap-3 p-4">
+        <div className="flex flex-col gap-1">
+          {/* Stretched over the whole card. */}
+          <Link
+            href={`/algorithms/${lead.slug}`}
+            className={`text-heading group-hover:text-paper-hot font-semibold after:absolute after:inset-0 ${focusRing}`}
+          >
+            {lead.shortName}
+          </Link>
+          <p className="text-readout text-paper-dim">
+            {[lead.author, lead.year].filter(Boolean).join(" · ")}
+          </p>
+        </div>
+        <p className="text-paper-dim flex-1 text-sm leading-relaxed">
+          {family.description}
+        </p>
+        {others.length > 0 && (
+          <p className="text-readout text-paper-dim border-line border-t pt-3">
+            <span className="text-caps">Also </span>
+            {others.map((algorithm) => algorithm.shortName).join(", ")}
+          </p>
+        )}
+        <Link
+          href={`/algorithms#family-${category}`}
+          className={`${textLink} relative z-10 self-start text-sm`}
+        >
+          All {members.length} {family.name.toLowerCase()} algorithms
+        </Link>
+      </div>
+    </li>
   );
 }
 
