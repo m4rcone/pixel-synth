@@ -400,11 +400,15 @@ export default function HomePage() {
             <SectionHead
               id="palettes-heading"
               title="Retro palettes: Game Boy, NES, PICO-8, CGA"
+              link={{
+                label: `All ${PALETTE_PRESETS.length} palettes`,
+                href: "/palettes",
+              }}
             >
               Dither straight to the colors of a console, a print process or
               your own image. Each palette matches by color or by brightness.
             </SectionHead>
-            <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               {FEATURED_PALETTES.map((id) => {
                 const palette = getPalettePreset(id);
                 return (
@@ -424,19 +428,13 @@ export default function HomePage() {
                 );
               })}
               <Cartridge
-                name="Your own colors"
+                name="Your colors"
                 href="/palettes#group-dynamic"
                 colors={extractedColors}
                 count={`${MIN_PALETTE_COLORS}–${MAX_PALETTE_COLORS} colors`}
-                detail="Taken from your image, or picked by hand"
+                detail="From your image, or picked by hand"
               />
             </ul>
-            <Link
-              href="/palettes"
-              className={`${textLink} mt-4 inline-block text-sm`}
-            >
-              +{PALETTE_PRESETS.length - FEATURED_PALETTES.length} more palettes
-            </Link>
           </section>
 
           <section
@@ -756,7 +754,7 @@ function Cartridge({
       </div>
       <div className="border-line flex flex-1 flex-col gap-2 border-t p-3">
         <div className="flex items-baseline justify-between gap-2">
-          <h3 className="text-sm font-semibold">
+          <h3 className="min-w-0 truncate text-sm font-semibold">
             {/* Stretched over the whole cartridge. */}
             <Link
               href={href}
@@ -767,7 +765,10 @@ function Cartridge({
           </h3>
           <span className="text-caps text-paper-dim shrink-0">{count}</span>
         </div>
-        <p className="text-readout text-paper-dim">{detail}</p>
+        {/* Always two lines tall, so every cartridge is the same size. */}
+        <p className="text-readout text-paper-dim line-clamp-2 min-h-8">
+          {detail}
+        </p>
       </div>
     </li>
   );
