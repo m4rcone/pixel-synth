@@ -418,11 +418,7 @@ export default function HomePage() {
                       name={palette.name}
                       href={`/palettes#palette-${id}`}
                       colors={palette.colors}
-                      detail={
-                        palette.colors.length <= HEX_LIST_MAX
-                          ? palette.colors.join(" ").toUpperCase()
-                          : `Matches by ${palette.match}`
-                      }
+                      detail={`Matches by ${palette.match}`}
                     />
                   )
                 );
@@ -432,7 +428,7 @@ export default function HomePage() {
                 href="/palettes#group-dynamic"
                 colors={extractedColors}
                 count={`${MIN_PALETTE_COLORS}–${MAX_PALETTE_COLORS} colors`}
-                detail="From your image, or picked by hand"
+                detail="From your image or by hand"
               />
             </ul>
           </section>
@@ -725,9 +721,6 @@ const FEATURED_PALETTES = [
   "cyanotype",
 ];
 
-/** Up to this many colors, a cartridge lists every hex value as text. */
-const HEX_LIST_MAX = 8;
-
 function Cartridge({
   name,
   href,
@@ -765,10 +758,7 @@ function Cartridge({
           </h3>
           <span className="text-caps text-paper-dim shrink-0">{count}</span>
         </div>
-        {/* Always two lines tall, so every cartridge is the same size. */}
-        <p className="text-readout text-paper-dim line-clamp-2 min-h-8">
-          {detail}
-        </p>
+        <p className="text-readout text-paper-dim truncate">{detail}</p>
       </div>
     </li>
   );
