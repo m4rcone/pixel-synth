@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
 
 // 4×4 RGB gradient
 const PNG_BASE64 =
@@ -454,4 +455,37 @@ test("editing the NES palette keeps all 54 colors", async ({ page }) => {
   await page.goto("/editor?sample=1&palette=nes");
   await page.getByRole("button", { name: "Edit colors" }).click();
   await expect(page.getByLabel(/^Color \d+$/)).toHaveCount(54);
+});
+
+test("the save dialog blocks sizes browsers can't draw", async ({ page }) => {
+  await page.goto("/editor?sample=1");
+  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Save" }).click();
+  const dialog = page.getByRole("dialog", { name: "Save image" });
+
+  // 1800 × 1200 at ×8 is 14400 × 9600, past Firefox's canvas area limit.
+  await expect(dialog.getByRole("button", { name: /^8x,/ })).toBeDisabled();
+  await expect(dialog.getByRole("button", { name: /^4x,/ })).toBeEnabled();
+  await expect(dialog).toContainText("×8 is too large for browsers to draw.");
+});
+
+test("a failed export says so and keeps the dialog open", async ({ page }) => {
+  // What browsers do past their canvas limits: no blob, no error.
+  await page.addInitScript(() => {
+    HTMLCanvasElement.prototype.toBlob = function (callback) {
+      callback(null);
+    };
+  });
+  await page.goto("/editor?sample=1");
+  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Save" }).click();
+  const dialog = page.getByRole("dialog", { name: "Save image" });
+  await dialog.getByRole("button", { name: "Save PNG" }).click();
+
+  await expect(dialog.getByRole("alert")).toContainText(
+    "Your browser couldn’t create a 1800 × 1200 image.",
+  );
+  await expect(dialog).toBeVisible();
+  const results = await new AxeBuilder({ page }).analyze();
+  expect(results.violations).toEqual([]);
 });

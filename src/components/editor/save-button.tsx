@@ -9,21 +9,19 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  defaultExportFactor,
+  EXPORT_FACTORS,
+  exportFits,
+  type ExportFactor,
+} from "@/lib/editor/export";
 import { cn } from "@/lib/utils";
-
-const FACTORS = [1, 2, 4, 8] as const;
-type Factor = (typeof FACTORS)[number];
-
-/** Suggested export size: ×1 for large images, else the largest factor up to ~1000 px. */
-function defaultFactor(width: number, height: number): Factor {
-  const longest = Math.max(width, height);
-  return [...FACTORS].reverse().find((k) => longest * k <= 1000) ?? 1;
-}
 
 export function SaveButton() {
   const { status, result, settings } = useEditorState();
   const [open, setOpen] = useState(false);
-  const [factor, setFactor] = useState<Factor>(1);
+  const [factor, setFactor] = useState<ExportFactor>(1);
+  const [error, setError] = useState<string | null>(null);
 
   const width = result?.width ?? 0;
   const height = result?.height ?? 0;
@@ -36,35 +34,54 @@ export function SaveButton() {
     return `pixelsynth-${settings.algorithm}${palette}${size}.png`;
   }
 
+  // Browsers fail silently past their canvas limits (a null context or
+  // blob): say so and keep the dialog open to pick a smaller size.
+  function fail() {
+    setError(
+      `Your browser couldn’t create a ${width * factor} × ${height * factor} image. Choose a smaller size.`,
+    );
+  }
+
   function save() {
     if (!result) return;
+    setError(null);
     // Enlarge without smoothing: each pixel becomes a crisp k×k block.
     const canvas = document.createElement("canvas");
     canvas.width = width * factor;
     canvas.height = height * factor;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(result, 0, 0, canvas.width, canvas.height);
-
     const name = fileName();
-    canvas.toBlob((blob) => {
-      if (!blob) return;
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = name;
-      link.click();
-      setTimeout(() => URL.revokeObjectURL(url), 0);
-    }, "image/png");
-    setOpen(false);
+    try {
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return fail();
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(result, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob((blob) => {
+        // Release the (possibly huge) canvas memory right away.
+        canvas.width = canvas.height = 0;
+        if (!blob) return fail();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = name;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 0);
+        setOpen(false);
+      }, "image/png");
+    } catch {
+      fail();
+    }
   }
+
+  const tooLarge = EXPORT_FACTORS.filter((k) => !exportFits(width, height, k));
 
   return (
     <Popover
       open={open}
       onOpenChange={(next) => {
-        if (next) setFactor(defaultFactor(width, height));
+        if (next) {
+          setFactor(defaultExportFactor(width, height));
+          setError(null);
+        }
         setOpen(next);
       }}
     >
@@ -92,14 +109,19 @@ export function SaveButton() {
           aria-label="Size"
           className="grid grid-cols-2 gap-1.5"
         >
-          {FACTORS.map((k) => (
+          {EXPORT_FACTORS.map((k) => (
             <button
               key={k}
               type="button"
               aria-pressed={k === factor}
               aria-label={`${k}x, ${width * k} by ${height * k} pixels`}
-              onClick={() => setFactor(k)}
+              disabled={tooLarge.includes(k)}
+              onClick={() => {
+                setFactor(k);
+                setError(null);
+              }}
               className={cn(
+                "disabled:cursor-not-allowed disabled:opacity-45",
                 "focus-visible:ring-safelight flex items-baseline justify-between gap-2 rounded-md border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none",
                 k === factor
                   ? "border-paper bg-paper text-ink"
@@ -116,7 +138,14 @@ export function SaveButton() {
         <p className="text-paper-dim text-xs leading-relaxed">
           Enlarged without smoothing, so every pixel stays a crisp block. ×1 is
           the size the image was processed at.
+          {tooLarge.length > 0 &&
+            ` ×${tooLarge.join(", ×")} ${tooLarge.length > 1 ? "are" : "is"} too large for browsers to draw.`}
         </p>
+        {error && (
+          <p role="alert" className="text-safelight text-xs leading-relaxed">
+            {error}
+          </p>
+        )}
         <Button onClick={save} className="self-end">
           Save PNG
         </Button>
