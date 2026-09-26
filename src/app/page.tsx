@@ -7,7 +7,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { StructuredData } from "@/components/structured-data";
 import { Button } from "@/components/ui/button";
 import { ALGORITHMS, getAlgorithm } from "@/lib/algorithms";
-import { HOME_FAQ, type FaqPart } from "@/lib/home-faq";
+import { faqStructuredData, HOME_FAQ, type FaqPart } from "@/lib/home-faq";
 import { getPalettePreset, PALETTE_PRESETS } from "@/lib/palettes";
 import {
   PALETTE_PREVIEW_SIZE,
@@ -138,6 +138,14 @@ const homeStructuredData = [
     operatingSystem: "Web",
     isAccessibleForFree: true,
     image: absoluteUrl(siteConfig.previewImage),
+    screenshot: absoluteUrl(palettePreview("pico8")),
+    featureList: [
+      `${ALGORITHMS.length} dithering algorithms`,
+      `${PALETTE_PRESETS.length} color palettes`,
+      "Pixel art preset",
+      "Local processing, no uploads",
+      "PNG export at ×1 to ×8",
+    ],
     creator: {
       "@type": "Person",
       name: siteConfig.creator,
@@ -149,6 +157,7 @@ const homeStructuredData = [
       priceCurrency: "USD",
     },
   },
+  faqStructuredData(HOME_FAQ),
 ];
 
 const navLink =
