@@ -87,7 +87,7 @@ export function SiteFooter({ className }: { className?: string }) {
         </ul>
       </nav>
       <div className="border-line text-paper-dim mt-10 flex flex-col gap-2 border-t pt-7 text-sm sm:flex-row sm:justify-between">
-        <p>© 2026 PixelSynth: a dithering image editor</p>
+        <p>© 2026 PixelSynth: Dithering & Pixel Art Tool</p>
         <p>Runs entirely in your browser.</p>
       </div>
     </footer>
