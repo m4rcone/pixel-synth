@@ -1,12 +1,17 @@
-// Regenerates the algorithm previews in public/250 and the dithered type
-// texture in public/textures with the real pipeline, so the site always shows
-// what the editor produces.
+// Regenerates every derived image with the real pipeline, so the site always
+// shows what the editor produces:
+//   public/250/            algorithm previews (sphere)
+//   public/textures/       dithered headline texture
+//   public/samples/        sample image (procedural sunset + calibration strip)
+//   public/palettes/       palette previews of the sample, pixel art preset
+//   src/data/sample-extracted-palette.json  colors of the "From image" preview
 //
 //   node scripts/generate-previews.mjs
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { deflateSync, inflateSync, crc32 } from "node:zlib";
 import { createServer } from "vite";
+import { makeSampleScene } from "./sample-scene.mjs";
 
 const root = process.cwd();
 
@@ -69,6 +74,7 @@ function chunk(type, data) {
 }
 
 function encodePng({ data, width, height }) {
+  // Always RGBA; opaque images compress almost as well as RGB.
   const header = Buffer.alloc(13);
   header.writeUInt32BE(width, 0);
   header.writeUInt32BE(height, 4);
@@ -161,6 +167,72 @@ try {
     encodePng(texture),
   );
   console.log("texture → /textures/dithered-type.png");
+
+  // Sample image and palette previews.
+  const {
+    SAMPLE_IMAGE,
+    PALETTE_PREVIEW_SIZE,
+    PIXEL_ART_PREVIEW,
+    PALETTE_PREVIEW_ALGORITHM,
+    EXTRACTED_PREVIEW_COLORS,
+    palettePreview,
+  } = await server.ssrLoadModule("/src/lib/samples.ts");
+  const { PALETTE_PRESETS } = await server.ssrLoadModule(
+    "/src/lib/palettes.ts",
+  );
+
+  const sample = makeSampleScene(SAMPLE_IMAGE.width, SAMPLE_IMAGE.height);
+  const write = (path, pixels) => {
+    const file = join(root, "public", path.slice(1));
+    mkdirSync(dirname(file), { recursive: true });
+    writeFileSync(file, encodePng(pixels));
+    console.log(`→ ${path}`);
+  };
+  write(SAMPLE_IMAGE.src, sample);
+
+  const previewScale = PALETTE_PREVIEW_SIZE.width / SAMPLE_IMAGE.width;
+  const renderPalette = (
+    color,
+    algorithm = PALETTE_PREVIEW_ALGORITHM,
+    scale = previewScale,
+  ) =>
+    renderPixels(
+      sample,
+      {
+        ...DEFAULT_SETTINGS,
+        algorithm,
+        scale,
+        color: { ...DEFAULT_SETTINGS.color, mode: "palette", ...color },
+      },
+      { dither: true },
+    );
+
+  for (const preset of PALETTE_PRESETS) {
+    write(
+      palettePreview(preset.id),
+      renderPalette({ palette: preset.id, match: preset.match }).pixels,
+    );
+  }
+
+  const extracted = renderPalette({
+    palette: "extracted",
+    match: "color",
+    extractCount: EXTRACTED_PREVIEW_COLORS,
+  });
+  write(palettePreview("extracted"), extracted.pixels);
+  writeFileSync(
+    join(root, "src/data/sample-extracted-palette.json"),
+    JSON.stringify(extracted.palette, null, 2) + "\n",
+  );
+
+  write(
+    PIXEL_ART_PREVIEW.src,
+    renderPalette(
+      { palette: "pico8", match: "color" },
+      "bayer-2-2",
+      PIXEL_ART_PREVIEW.width / SAMPLE_IMAGE.width,
+    ).pixels,
+  );
 } finally {
   await server.close();
 }
