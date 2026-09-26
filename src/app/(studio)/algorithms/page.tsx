@@ -116,7 +116,7 @@ export default function AlgorithmsPage() {
                 {family.description}
               </p>
             </div>
-            <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,16rem),1fr))] gap-5">
+            <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,13rem),1fr))] gap-4">
               {family.algorithms.map((algorithm) => {
                 const frame = frameOf.get(algorithm.slug)!;
                 return (

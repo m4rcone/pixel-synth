@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getCategoryName, type AlgorithmInfo } from "@/lib/algorithms";
-import { cn } from "@/lib/utils";
 
 export function AlgorithmCard({
   algorithm,
@@ -22,78 +21,49 @@ export function AlgorithmCard({
       aria-labelledby={titleId}
       // The title link is stretched over the whole card; the editor link sits
       // above it (z-10) and stays independently clickable.
-      className="group border-line-strong bg-ink-raised hover:border-paper target:border-safelight relative flex h-full scroll-mt-20 flex-col overflow-hidden rounded-md border transition-colors"
+      className="group border-line-strong bg-ink-raised hover:border-paper target:border-safelight relative flex h-full scroll-mt-20 flex-col border transition-colors"
     >
-      <div className="border-line bg-ink-sunken relative aspect-square w-full overflow-hidden border-b">
+      <p className="text-caps text-paper border-line flex items-center justify-between gap-3 truncate border-b px-4 py-3">
+        <span className="text-readout text-paper-dim">
+          {String(frame).padStart(2, "0")}
+        </span>
+        <span className="truncate">
+          {getCategoryName(algorithm.category)},{" "}
+          {algorithm.era === "classic" ? "classic" : "modern"}
+        </span>
+      </p>
+
+      {/* Neutral well. Cards are narrower than the 400 px preview, so it is
+          scaled down smoothly (nearest-neighbor would add moiré). */}
+      <div className="border-line bg-ink-sunken border-b">
         <Image
           src={algorithm.preview}
           alt={`A CRT terminal on a checkered table, dithered with ${algorithm.name}`}
-          fill
-          sizes="(max-width: 640px) 100vw, 320px"
-          // Served as-is: re-encoding would smear the 1-bit dither pattern.
-          // Cards are narrower than the 400 px preview, so the browser scales
-          // it down smoothly; nearest-neighbor would add moiré.
+          width={400}
+          height={400}
+          sizes="(max-width: 640px) 100vw, 280px"
           unoptimized
           preload={preloadPreview}
-          className="object-cover"
+          className="w-full"
         />
       </div>
 
-      <div className="flex flex-1 flex-col p-5">
-        <p className="text-paper-dim flex items-center justify-between gap-3">
-          <span className="text-readout text-paper-dim">
-            {String(frame).padStart(2, "0")}
-          </span>
-          <span className="text-caps text-right">
-            {getCategoryName(algorithm.category)},{" "}
-            {algorithm.era === "classic" ? "classic" : "modern"}
-          </span>
-        </p>
+      <div className="flex flex-1 flex-col gap-3 p-4">
+        <div className="flex flex-col gap-1">
+          <h3 id={titleId} className="text-heading font-semibold">
+            <Link
+              href={`/algorithms/${algorithm.slug}`}
+              className="group-hover:text-paper-hot focus-visible:after:ring-safelight transition-colors after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset"
+            >
+              {algorithm.name}
+            </Link>
+          </h3>
+          <p className="text-readout text-paper-dim">
+            {[algorithm.author, algorithm.year].filter(Boolean).join(" · ")}
+          </p>
+        </div>
 
-        <h3 id={titleId} className="text-heading mt-3 font-semibold">
-          <Link
-            href={`/algorithms/${algorithm.slug}`}
-            className="group-hover:text-paper-hot focus-visible:after:ring-safelight transition-colors after:absolute after:inset-0 after:rounded-md after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset"
-          >
-            {algorithm.name}
-          </Link>
-        </h3>
-
-        <p className="text-paper-dim mt-2 flex-1 text-sm leading-relaxed">
-          {algorithm.description}
-        </p>
-
-        <dl className="border-line mt-5 grid grid-cols-2 gap-x-4 gap-y-3 border-t pt-4 text-sm">
-          <Meta label="Author">{algorithm.author ?? "Unknown"}</Meta>
-          <Meta label="Year">
-            <span className="text-readout">{algorithm.year ?? "—"}</span>
-          </Meta>
-          <Meta label="Complexity">
-            <span className="capitalize">{algorithm.complexity}</span>
-          </Meta>
-          <Meta label="Processing cost">
-            <span className="sr-only">{algorithm.cost} of 5</span>
-            <span aria-hidden="true" className="flex h-5 items-center gap-1">
-              {Array.from({ length: 5 }, (_, i) => (
-                <span
-                  key={i}
-                  className={cn(
-                    "size-1.5 rounded-full",
-                    i < algorithm.cost ? "bg-paper" : "bg-line-strong",
-                  )}
-                />
-              ))}
-            </span>
-          </Meta>
-        </dl>
-
-        <div className="mt-5 flex items-center justify-between gap-3">
-          <span
-            aria-hidden="true"
-            className="text-paper-dim group-hover:text-paper text-sm transition-colors"
-          >
-            How it works
-          </span>
+        <div className="border-line mt-auto border-t pt-3">
           <Link
             href={`/editor?algorithm=${algorithm.slug}`}
             className="text-paper hover:text-paper-hot hover:decoration-paper-hot focus-visible:ring-safelight decoration-line-strong relative z-10 rounded-sm text-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
@@ -104,20 +74,5 @@ export function AlgorithmCard({
         </div>
       </div>
     </article>
-  );
-}
-
-function Meta({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="min-w-0">
-      <dt className="text-label text-paper-dim">{label}</dt>
-      <dd className="text-paper mt-0.5 truncate">{children}</dd>
-    </div>
   );
 }
