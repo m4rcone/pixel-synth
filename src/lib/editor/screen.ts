@@ -1,3 +1,4 @@
+import { smoothChannel } from "./filters";
 import type { ScreenSettings, ScreenShape } from "./settings";
 
 /** What a screen draws: dots of a shape, or parallel lines. */
@@ -151,4 +152,57 @@ export function screenThreshold(
   const threshold = (x: number, y: number) => thresholds[bucket(x, y)];
   cached = { key, threshold };
   return threshold;
+}
+
+/** Luminance (0–255) of the image a screen is laid over. */
+export type ScreenImage = {
+  gray: Float32Array;
+  width: number;
+  height: number;
+};
+
+/**
+ * {@link screenThreshold}, with Line Screen's lines bent: pushed across their
+ * direction by the brightness (`displace`) and by a sine wave along them
+ * (`wave`, `wavelength`), all in line spacings. Dots and straight lines get
+ * the plain screen.
+ *
+ * The brightness that pushes the lines is smoothed over about half a line
+ * spacing, so lines bend in curves while their thickness still follows the
+ * sharp image. Bent lines cross pixels at every phase, so the threshold is
+ * the continuous distance to the line center (rank = distance for a line).
+ */
+export function warpedScreenThreshold(
+  screen: ScreenSettings,
+  spot: ScreenSpot,
+  light: boolean,
+  image: ScreenImage,
+): (x: number, y: number) => number {
+  const { size, angle, displace, wave, wavelength } = screen;
+  if (spot !== "line" || (displace <= 0 && wave <= 0)) {
+    return screenThreshold(screen, spot, light);
+  }
+
+  const { width, height } = image;
+  const push = Float32Array.from(image.gray);
+  smoothChannel(push, width, height, Math.round(size / 2));
+  const lift = displace / 255;
+  const radians = (angle * Math.PI) / 180;
+  const cos = Math.cos(radians) / size;
+  const sin = Math.sin(radians) / size;
+  const turn = (2 * Math.PI) / wavelength;
+
+  return (x, y) => {
+    const px = x + 0.5;
+    const py = y + 0.5;
+    const u = px * cos - py * sin;
+    // Adding to v moves the pattern back: bright areas lift the lines.
+    const v =
+      px * sin +
+      py * cos +
+      push[y * width + x] * lift +
+      wave * Math.sin(u * turn);
+    const t = Math.abs(v - Math.floor(v) - 0.5) * 2;
+    return Math.min(1, Math.max(MIN_THRESHOLD, light ? t : 1 - t));
+  };
 }

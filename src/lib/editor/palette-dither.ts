@@ -7,7 +7,7 @@ import {
   luminance,
   type Pixels,
 } from "./pixels";
-import { screenThreshold } from "./screen";
+import { screenThreshold, warpedScreenThreshold } from "./screen";
 import {
   DEFAULT_SETTINGS,
   type DitherChoice,
@@ -98,7 +98,7 @@ function ditherRamp(
     return out;
   }
 
-  const offset = thresholdOffsets(method, width, screen);
+  const offset = thresholdOffsets(method, src, screen);
   for (let p = 0; p < out.length; p++) {
     out[p] = quantize(gray[p] + offset(p) * step);
   }
@@ -164,7 +164,7 @@ function ditherColor(
   // Threshold methods nudge every channel by the same amount; the spread
   // shrinks as the palette gets denser.
   const spread = 255 / Math.sqrt(palette.length);
-  const offset = thresholdOffsets(method, width, screen);
+  const offset = thresholdOffsets(method, src, screen);
   for (let p = 0; p < size; p++) {
     const t = offset(p) * spread;
     out[p] = nearest(data[p * 4] + t, data[p * 4 + 1] + t, data[p * 4 + 2] + t);
@@ -178,9 +178,10 @@ function ditherColor(
  */
 function thresholdOffsets(
   method: ReturnType<typeof getMethod>,
-  width: number,
+  src: Pixels,
   screen: ScreenSettings,
 ): (p: number) => number {
+  const { width, height } = src;
   if (method.kind === "ordered") {
     const { size, ranks } = method.matrix();
     const levels = size * size;
@@ -191,12 +192,16 @@ function thresholdOffsets(
     };
   }
   if (method.kind === "screen") {
+    const spot = method.lines ? "line" : screen.shape;
     // Ink dots: the cell center rounds to the darker color first.
-    const threshold = screenThreshold(
-      screen,
-      method.lines ? "line" : screen.shape,
-      false,
-    );
+    const threshold =
+      spot === "line" && (screen.displace > 0 || screen.wave > 0)
+        ? warpedScreenThreshold(screen, spot, false, {
+            gray: luminance(src),
+            width,
+            height,
+          })
+        : screenThreshold(screen, spot, false);
     return (p) => 0.5 - threshold(p % width, (p / width) | 0);
   }
   if (method.kind === "random") {

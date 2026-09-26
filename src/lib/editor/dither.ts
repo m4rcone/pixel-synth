@@ -1,6 +1,6 @@
 import type { AlgorithmId } from "@/lib/algorithms";
 import { createRandom } from "./pixels";
-import { screenThreshold } from "./screen";
+import { warpedScreenThreshold } from "./screen";
 import {
   DEFAULT_SETTINGS,
   type DitherChoice,
@@ -123,10 +123,11 @@ export function dither(
   const out = new Uint8Array(width * height);
 
   if (method.kind === "screen") {
-    const threshold = screenThreshold(
+    const threshold = warpedScreenThreshold(
       screen,
       method.lines ? "line" : screen.shape,
       screen.light,
+      { gray, width, height },
     );
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {

@@ -19,7 +19,14 @@ const changed: EditorSettings = {
   algorithm: "atkinson",
   scale: 0.35,
   diffusion: 0.75,
-  screen: { size: 14, angle: 22.5, shape: "diamond" },
+  screen: {
+    size: 14,
+    angle: 22.5,
+    shape: "diamond",
+    displace: 1.5,
+    wave: 0.4,
+    wavelength: 20,
+  },
   filters: {
     blackPoint: 12,
     whitePoint: 240,
@@ -117,12 +124,24 @@ describe("settings links", () => {
 
   it("clamps the screen and keeps its cell size whole", () => {
     const { screen } = decodeSettings(
-      encode({ v: 1, screen: { size: 900.4, angle: -30, shape: "star" } }),
+      encode({
+        v: 1,
+        screen: {
+          size: 900.4,
+          angle: -30,
+          shape: "star",
+          displace: 10,
+          wave: "big",
+          wavelength: 1,
+        },
+      }),
     )!.settings;
     expect(screen).toEqual({
       ...DEFAULT_SETTINGS.screen,
       size: 64,
       angle: 0,
+      displace: 4,
+      wavelength: 2,
     });
     expect(
       decodeSettings(encode({ v: 1, screen: { size: 9.6 } }))!.settings.screen

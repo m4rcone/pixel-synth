@@ -44,12 +44,24 @@ export type ScreenSettings = {
   angle: number;
   /** Dot shape (Halftone); Line Screen always draws lines. */
   shape: ScreenShape;
+  /**
+   * Line Screen: how far the brightest areas push the lines across their
+   * direction, in line spacings (0 = straight lines).
+   */
+  displace: number;
+  /** Line Screen: amplitude of a sine wave along the lines, in line spacings. */
+  wave: number;
+  /** Line Screen: length of one wave, in line spacings. */
+  wavelength: number;
 };
 
 /** Range of the screen parameters, shared by the sliders and shared links. */
 export const SCREEN_LIMITS = {
   size: { min: 4, max: 64 },
   angle: { min: 0, max: 180 },
+  displace: { min: 0, max: 4 },
+  wave: { min: 0, max: 2 },
+  wavelength: { min: 2, max: 64 },
 } as const;
 
 /** Smallest processing scale the editor allows. */
@@ -126,7 +138,14 @@ export const DEFAULT_SETTINGS: EditorSettings = {
   algorithm: DEFAULT_ALGORITHM,
   scale: 1,
   diffusion: 1,
-  screen: { size: 8, angle: 45, shape: "round" },
+  screen: {
+    size: 8,
+    angle: 45,
+    shape: "round",
+    displace: 0,
+    wave: 0,
+    wavelength: 12,
+  },
   filters: DEFAULT_FILTERS,
   colorCount: 1,
   background: "#000000",

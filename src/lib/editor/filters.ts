@@ -174,6 +174,24 @@ function kernelBlur(pixels: Pixels, sigma: number) {
   }
 }
 
+/**
+ * Smooths one channel in place with two box blurs of `radius` (a tent
+ * filter): cheap at any radius, edges clamp.
+ */
+export function smoothChannel(
+  channel: Float32Array,
+  width: number,
+  height: number,
+  radius: number,
+) {
+  if (radius < 1) return;
+  const scratch = new Float32Array(channel.length);
+  for (let pass = 0; pass < 2; pass++) {
+    boxBlurHorizontal(channel, scratch, width, height, radius);
+    boxBlurVertical(scratch, channel, width, height, radius);
+  }
+}
+
 /** Radii of 3 box blurs whose composition approximates a Gaussian of `sigma`. */
 function boxRadii(sigma: number) {
   const n = 3;

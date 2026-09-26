@@ -203,9 +203,11 @@ function ScreenDiagram({ lines }: { lines: boolean }) {
         <li>
           In the editor, set the {lines ? "line spacing" : "screen size"} (
           {SCREEN_LIMITS.size.min}–{SCREEN_LIMITS.size.max} px) and the angle
-          {lines ? "" : ", and pick round, square or diamond dots"}. With dots
-          lighter than the background, the {lines ? "lines" : "dots"} mark the
-          light areas instead.
+          {lines
+            ? "; displacement lifts the lines where the image is bright, and wave ripples them along their length"
+            : ", and pick round, square or diamond dots"}
+          . With dots lighter than the background, the{" "}
+          {lines ? "lines" : "dots"} mark the light areas instead.
         </li>
       </ul>
     </div>

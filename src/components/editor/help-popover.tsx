@@ -20,7 +20,7 @@ const TIPS = [
   },
   {
     title: "Halftone screens",
-    body: "Halftone and Line Screen draw a grid of dots or lines that grow with the tone. Screen size is the distance between dots, in processed pixels; angle turns the grid (45° is the classic for one ink). Big screens read best at full processing scale.",
+    body: "Halftone and Line Screen draw a grid of dots or lines that grow with the tone. Screen size is the distance between dots, in processed pixels; angle turns the grid (45° is the classic for one ink). Big screens read best at full processing scale. On Line Screen, displacement lifts the lines where the image is bright (an oscilloscope or CRT look) and wave ripples them; both are measured in line spacings.",
   },
   {
     title: "Palette",

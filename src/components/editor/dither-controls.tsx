@@ -37,6 +37,9 @@ const SHAPES: { value: ScreenShape; label: string }[] = [
   { value: "square", label: "Square" },
   { value: "diamond", label: "Diamond" },
 ];
+/** Line Screen distances are in line spacings, so they scale with the screen. */
+const lines = (value: number) =>
+  `${Number.isInteger(value) ? value : value.toFixed(2)} ${value === 1 ? "line" : "lines"}`;
 const isDitherChoice = (value: string): value is DitherChoice =>
   value === "none" || isAlgorithmId(value);
 
@@ -165,6 +168,51 @@ export function DitherControls() {
             onChange={(angle) => setScreen(update, { angle })}
             onCommit={(angle) => setScreen(apply, { angle })}
           />
+          {settings.algorithm === "line-screen" && (
+            <>
+              <SliderField
+                id="dither-screen-displace"
+                label="Displacement"
+                value={settings.screen.displace}
+                defaultValue={DEFAULT_SETTINGS.screen.displace}
+                min={SCREEN_LIMITS.displace.min}
+                max={SCREEN_LIMITS.displace.max}
+                step={0.05}
+                disabled={disabled}
+                format={lines}
+                onChange={(displace) => setScreen(update, { displace })}
+                onCommit={(displace) => setScreen(apply, { displace })}
+              />
+              <SliderField
+                id="dither-screen-wave"
+                label="Wave"
+                value={settings.screen.wave}
+                defaultValue={DEFAULT_SETTINGS.screen.wave}
+                min={SCREEN_LIMITS.wave.min}
+                max={SCREEN_LIMITS.wave.max}
+                step={0.05}
+                disabled={disabled}
+                format={lines}
+                onChange={(wave) => setScreen(update, { wave })}
+                onCommit={(wave) => setScreen(apply, { wave })}
+              />
+              {settings.screen.wave > 0 && (
+                <SliderField
+                  id="dither-screen-wavelength"
+                  label="Wave length"
+                  value={settings.screen.wavelength}
+                  defaultValue={DEFAULT_SETTINGS.screen.wavelength}
+                  min={SCREEN_LIMITS.wavelength.min}
+                  max={SCREEN_LIMITS.wavelength.max}
+                  step={1}
+                  disabled={disabled}
+                  format={lines}
+                  onChange={(wavelength) => setScreen(update, { wavelength })}
+                  onCommit={(wavelength) => setScreen(apply, { wavelength })}
+                />
+              )}
+            </>
+          )}
           {settings.algorithm === "halftone" && (
             <div className="flex flex-col gap-2">
               <span className="text-label text-paper-dim">Dot shape</span>

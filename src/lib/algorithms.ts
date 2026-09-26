@@ -285,7 +285,7 @@ export const ALGORITHMS = [
     category: "screen",
     era: "classic",
     description:
-      "Parallel lines whose thickness follows the tone, like an engraving or a banknote. Set the line spacing and angle.",
+      "Parallel lines whose thickness follows the tone, like an engraving or a banknote. Set the line spacing and angle, let the light lift the lines like an oscilloscope, or make them wave.",
     complexity: "low",
     year: null,
     author: null,

@@ -511,6 +511,62 @@ describe("halftone screens", () => {
     }
   });
 
+  it("lifts the lines by the brightness", () => {
+    // 40% gray, 8 px lines, displacement 1.25: 1.25 × 0.4 × 8 = 4 px up.
+    const lifted = screen("line-screen", 102, { angle: 0, displace: 1.25 });
+    const straight = screen("line-screen", 102, { angle: 0, displace: 1e-6 });
+    for (let y = 0; y < SIZE - 4; y++) {
+      expect(lifted[y * SIZE], `row ${y}`).toBe(straight[(y + 4) * SIZE]);
+    }
+    // Where the image is brighter, the lines sit higher.
+    const gray = new Float32Array(SIZE * SIZE).map((_, p) =>
+      p % SIZE < SIZE / 2 ? 40 : 200,
+    );
+    const bits = dither(gray, SIZE, SIZE, "line-screen", 1, {
+      ...DEFAULT_SETTINGS.screen,
+      angle: 0,
+      displace: 1,
+      light: false,
+    });
+    const column = (x: number) =>
+      Array.from({ length: SIZE }, (_, y) => bits[y * SIZE + x]).join();
+    expect(column(8)).not.toBe(column(SIZE - 8));
+  });
+
+  it("waves the lines along their length", () => {
+    const bits = screen("line-screen", 100, {
+      angle: 0,
+      wave: 0.5,
+      wavelength: 6,
+    });
+    const rows = Array.from({ length: SIZE }, (_, y) =>
+      bits.subarray(y * SIZE, (y + 1) * SIZE),
+    );
+    expect(rows.some((row) => row.some((b) => b !== row[0]))).toBe(true);
+  });
+
+  it("keeps the tone when the lines bend", () => {
+    for (const angle of [0, 30]) {
+      for (const value of [40, 128, 210]) {
+        const bits = screen("line-screen", value, {
+          angle,
+          displace: 2,
+          wave: 0.6,
+          wavelength: 5,
+        });
+        expect(litShare(bits), `${angle}° ${value}`).toBeCloseTo(
+          value / 255,
+          1,
+        );
+      }
+    }
+  });
+
+  it("leaves dots alone: bending is for lines", () => {
+    const warp = { displace: 2, wave: 1 };
+    expect(screen("halftone", 90, warp)).toEqual(screen("halftone", 90));
+  });
+
   it("gives palettes darker dots between neighboring colors", () => {
     const run = (value: number, match: "color" | "brightness") => {
       const gray = createPixels(SIZE, SIZE);
@@ -539,7 +595,12 @@ describe("halftone screens", () => {
     const settings = {
       ...DEFAULT_SETTINGS,
       algorithm: "halftone" as const,
-      screen: { size: 12, angle: 0, shape: "square" as const },
+      screen: {
+        ...DEFAULT_SETTINGS.screen,
+        size: 12,
+        angle: 0,
+        shape: "square" as const,
+      },
     };
     const dots = (value: number, overrides: Partial<EditorSettings>) => {
       for (let i = 0; i < src.data.length; i += 4)

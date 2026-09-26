@@ -487,6 +487,21 @@ test("halftone screens show their size, angle and shape", async ({ page }) => {
   await expect(angle).toHaveAttribute("aria-valuetext", "52.5°");
   await expect(shape).toHaveCount(0);
 
+  // Lines bend: displacement and wave, with a wave length once waving.
+  const displace = page.getByRole("slider", { name: "Displacement" });
+  await expect(displace).toHaveAttribute("aria-valuetext", "0 lines");
+  const straight = await canvasPrint(page);
+  await displace.focus();
+  await page.keyboard.press("PageUp");
+  await expect
+    .poll(() => canvasPrint(page), { message: "displacement bends the lines" })
+    .not.toBe(straight);
+  const wavelength = page.getByRole("slider", { name: "Wave length" });
+  await expect(wavelength).toHaveCount(0);
+  await page.getByRole("slider", { name: "Wave", exact: true }).focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(wavelength).toHaveAttribute("aria-valuetext", "12 lines");
+
   await page.getByRole("combobox", { name: "Algorithm" }).click();
   await page.getByRole("option", { name: "Bayer 4×4" }).click();
   await expect(size).toHaveCount(0);

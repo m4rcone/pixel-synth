@@ -150,13 +150,21 @@ export function decodeSettings(code: string): SharedSettings | null {
 
   if (isObject(data.screen)) {
     const { screen } = data;
-    const { size, angle } = SCREEN_LIMITS;
+    const { size, angle, displace, wave, wavelength } = SCREEN_LIMITS;
     const cell = number(screen.size, size.min, size.max);
     if (cell !== undefined) settings.screen.size = Math.round(cell);
     settings.screen.angle =
       number(screen.angle, angle.min, angle.max) ?? base.screen.angle;
     settings.screen.shape =
       oneOf(screen.shape, SCREEN_SHAPES) ?? base.screen.shape;
+    settings.screen.displace =
+      number(screen.displace, displace.min, displace.max) ??
+      base.screen.displace;
+    settings.screen.wave =
+      number(screen.wave, wave.min, wave.max) ?? base.screen.wave;
+    settings.screen.wavelength =
+      number(screen.wavelength, wavelength.min, wavelength.max) ??
+      base.screen.wavelength;
   }
 
   if (isObject(data.filters)) {
