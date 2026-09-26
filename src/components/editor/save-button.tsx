@@ -90,7 +90,7 @@ export function SaveButton() {
         <div
           role="group"
           aria-label="Size"
-          className="grid grid-cols-4 gap-1.5"
+          className="grid grid-cols-2 gap-1.5"
         >
           {FACTORS.map((k) => (
             <button
@@ -100,7 +100,7 @@ export function SaveButton() {
               aria-label={`${k}x, ${width * k} by ${height * k} pixels`}
               onClick={() => setFactor(k)}
               className={cn(
-                "focus-visible:ring-safelight flex flex-col items-center gap-0.5 rounded-md border py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none",
+                "focus-visible:ring-safelight flex items-baseline justify-between gap-2 rounded-md border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none",
                 k === factor
                   ? "border-paper bg-paper text-ink"
                   : "border-input text-paper-dim hover:text-paper",
