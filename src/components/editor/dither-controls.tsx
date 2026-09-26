@@ -6,9 +6,10 @@ import { useEditorActions, useEditorState } from "@/contexts/editor-context";
 import { algorithmsByCategory, isAlgorithmId } from "@/lib/algorithms";
 import {
   DEFAULT_SETTINGS,
+  MIN_SCALE,
   type DitherChoice,
-  type EditorSettings,
 } from "@/lib/editor/settings";
+import { usePixelArtPreset } from "@/hooks/use-pixel-art-preset";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -23,47 +24,18 @@ import {
 import { SliderField } from "./slider-field";
 
 const CATEGORIES = algorithmsByCategory();
-const MIN_SCALE = 0.05;
-
-/** One click to the classic pixel-art look; every value stays adjustable. */
-const PIXEL_ART = {
-  width: 128,
-  algorithm: "bayer-2-2",
-  palette: "pico8",
-} as const;
-
 const isDitherChoice = (value: string): value is DitherChoice =>
   value === "none" || isAlgorithmId(value);
 
 export function DitherControls() {
   const { status, source, settings } = useEditorState();
-  const { update, commit, applyDither } = useEditorActions();
+  const { update, commit } = useEditorActions();
+  const applyPixelArt = usePixelArtPreset();
   const disabled = status === "empty";
   // Algorithm and scale only affect the output once dithering is applied.
   const apply = status === "dithered" ? commit : update;
   const sourceWidth = source?.pixels.width ?? 0;
   const sourceHeight = source?.pixels.height ?? 0;
-
-  function applyPixelArt() {
-    const preset = (s: EditorSettings): Partial<EditorSettings> => ({
-      algorithm: PIXEL_ART.algorithm,
-      scale: sourceWidth
-        ? Math.min(1, Math.max(MIN_SCALE, PIXEL_ART.width / sourceWidth))
-        : s.scale,
-      color: {
-        ...s.color,
-        mode: "palette",
-        palette: PIXEL_ART.palette,
-        match: "color",
-      },
-    });
-    if (status === "dithered") {
-      commit(preset);
-    } else {
-      update(preset);
-      applyDither();
-    }
-  }
 
   return (
     <div className="flex flex-col gap-4">

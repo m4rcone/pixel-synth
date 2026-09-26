@@ -159,18 +159,19 @@ test("palette mode dithers to a preset and names the export", async ({
   );
 });
 
-test("pixel art preset shrinks to 128 px with PICO-8 and Bayer 2×2", async ({
+test("pixel art preset targets ~12k pixels with PICO-8 and Bayer 2×2", async ({
   page,
 }) => {
   await page.goto("/editor");
   await page.waitForLoadState("networkidle");
+  // 250×250 sphere → 111×111 (≈ 128×96 worth of pixels).
   await page.getByLabel(/drop an image/i).setInputFiles(SPHERE);
   await page.getByRole("button", { name: "Pixel art preset" }).click();
 
   await expect(
     page.getByRole("button", { name: "Reset", exact: true }),
   ).toBeVisible();
-  await expect(page.getByLabel("Output size")).toHaveValue("128");
+  await expect(page.getByLabel("Output size")).toHaveValue("111");
   await expect(page.getByRole("combobox", { name: "Algorithm" })).toHaveText(
     "Bayer 2×2",
   );
@@ -258,5 +259,28 @@ test("palette cards open the editor with that palette", async ({ page }) => {
   await page.getByRole("button", { name: "Try a sample image" }).click();
   await expect(page.getByRole("combobox", { name: "Palette" })).toContainText(
     "Cyanotype",
+  );
+});
+
+test("the palettes page link applies the full pixel art preset", async ({
+  page,
+}) => {
+  await page.goto("/palettes");
+  await page.waitForLoadState("networkidle");
+  await page.getByRole("link", { name: "Try the pixel art preset" }).click();
+  await expect(page).toHaveURL(/\/editor\?preset=pixel-art$/);
+  await page.waitForLoadState("networkidle");
+  await page.getByRole("button", { name: "Try a sample image" }).click();
+
+  // Sample 1800×1200 → 136×91, dithered right away.
+  await expect(page.getByLabel("Output size")).toHaveValue("136");
+  await expect(
+    page.getByRole("button", { name: "Reset", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole("combobox", { name: "Algorithm" })).toHaveText(
+    "Bayer 2×2",
+  );
+  await expect(page.getByRole("combobox", { name: "Palette" })).toContainText(
+    "PICO-8",
   );
 });

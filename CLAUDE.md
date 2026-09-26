@@ -30,7 +30,7 @@ Use the `/verify` command to run the whole gate before committing.
 
 ## Layout
 
-- `src/app/` — routes. `/` is the landing page; `(studio)/` groups `/editor`, `/algorithms`, `/algorithms/[slug]` and `/palettes`, which share the studio sidebar and editor providers (state survives navigation between them). `/editor?algorithm=<slug>` and `?palette=<id>` preselect settings. Each route has an `opengraph-image.tsx` built on `src/lib/og-image.tsx`; use `pageMetadata()` from `src/lib/site.ts` for page metadata.
+- `src/app/` — routes. `/` is the landing page; `(studio)/` groups `/editor`, `/algorithms`, `/algorithms/[slug]` and `/palettes`, which share the studio sidebar and editor providers (state survives navigation between them). `/editor?algorithm=<slug>` and `?palette=<id>` preselect settings; `?preset=pixel-art` applies the pixel art preset to the next image loaded. The preset lives in `src/lib/editor/pixel-art.ts` (fixed pixel count, not fixed width) and is applied only through `usePixelArtPreset()`. Each route has an `opengraph-image.tsx` built on `src/lib/og-image.tsx`; use `pageMetadata()` from `src/lib/site.ts` for page metadata.
 - `src/lib/algorithms.ts` — single source of truth for the algorithm catalog (slug = id = public anchor). Never hardcode algorithm lists elsewhere; never change an existing slug.
 - `src/lib/samples.ts` — paths of generated assets: the sample image (procedural sunset + calibration strip from `scripts/sample-scene.mjs`), palette previews, pixel art preview. Never edit those files by hand; rerun `node scripts/generate-previews.mjs` (unit tests check they exist).
 - `src/lib/palettes.ts` — preset palettes (hex values from each system's reference) with their default match mode ("color" or "brightness").

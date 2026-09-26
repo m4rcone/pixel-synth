@@ -18,7 +18,7 @@ const TIPS = [
   },
   {
     title: "Pixel art preset",
-    body: "Shrinks the image to 128 px wide, applies the PICO-8 palette with a 2×2 Bayer pattern. Save it ×4 or ×8 to share.",
+    body: "Shrinks the image to about 128 × 96 pixels’ worth of detail, whatever its shape, and applies PICO-8 with a 2×2 Bayer pattern. Save it ×4 or ×8 to share.",
   },
   {
     title: "Luminance",

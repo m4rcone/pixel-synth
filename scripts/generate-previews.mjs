@@ -225,12 +225,15 @@ try {
     JSON.stringify(extracted.palette, null, 2) + "\n",
   );
 
+  const { PIXEL_ART_PRESET } = await server.ssrLoadModule(
+    "/src/lib/editor/pixel-art.ts",
+  );
   write(
     PIXEL_ART_PREVIEW.src,
     renderPalette(
-      { palette: "pico8", match: "color" },
-      "bayer-2-2",
-      PIXEL_ART_PREVIEW.width / SAMPLE_IMAGE.width,
+      { palette: PIXEL_ART_PRESET.palette, match: PIXEL_ART_PRESET.match },
+      PIXEL_ART_PRESET.algorithm,
+      PIXEL_ART_PREVIEW.scale,
     ).pixels,
   );
 } finally {

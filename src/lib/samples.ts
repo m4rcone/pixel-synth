@@ -4,6 +4,8 @@
  * spectrum), used by the editor's "Try a sample image" and the palette pages.
  */
 
+import { pixelArtScale } from "@/lib/editor/pixel-art";
+
 export const SAMPLE_IMAGE = {
   src: "/samples/sunset.png",
   name: "sunset.png",
@@ -18,11 +20,17 @@ export function palettePreview(id: string) {
   return `/palettes/${id}.png`;
 }
 
+const pixelArtSampleScale = pixelArtScale(
+  SAMPLE_IMAGE.width,
+  SAMPLE_IMAGE.height,
+);
+
 /** Pixel art preset applied to the sample (native size, shown enlarged). */
 export const PIXEL_ART_PREVIEW = {
   src: "/palettes/pixel-art.png",
-  width: 128,
-  height: 85,
+  scale: pixelArtSampleScale,
+  width: Math.max(1, Math.round(SAMPLE_IMAGE.width * pixelArtSampleScale)),
+  height: Math.max(1, Math.round(SAMPLE_IMAGE.height * pixelArtSampleScale)),
 } as const;
 
 /** Preview settings shared by the generator and the page copy. */

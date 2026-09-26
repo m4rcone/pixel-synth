@@ -150,12 +150,13 @@ export default function PalettesPage() {
               <strong className="text-paper font-medium">
                 Pixel art preset
               </strong>{" "}
-              shrinks the image to 128 px wide, applies PICO-8 and a 2×2 Bayer
-              pattern. Save it at ×4 or ×8 and every pixel stays a crisp block.
+              shrinks any image to about 128 × 96 pixels’ worth of detail,
+              whatever its shape, and applies PICO-8 with a 2×2 Bayer pattern.
+              Save it at ×4 or ×8 and every pixel stays a crisp block.
             </p>
             <Button asChild className="self-start">
-              <Link href="/editor?palette=pico8&algorithm=bayer-2-2">
-                Open the editor with PICO-8
+              <Link href="/editor?preset=pixel-art">
+                Try the pixel art preset
               </Link>
             </Button>
           </div>

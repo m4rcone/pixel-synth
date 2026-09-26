@@ -21,6 +21,9 @@ export type Tone = {
   range: number;
 };
 
+/** Smallest processing scale the editor allows. */
+export const MIN_SCALE = 0.05;
+
 /** A catalog algorithm, or "none": plain nearest-color quantization. */
 export type DitherChoice = AlgorithmId | "none";
 
