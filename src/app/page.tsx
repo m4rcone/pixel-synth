@@ -1,28 +1,116 @@
+import Image from "next/image";
 import Link from "next/link";
 import { DitherBackground } from "@/components/dither-background";
 import { DitherSpecimen } from "@/components/dither-specimen";
 import { Logo } from "@/components/logo";
+import { SiteFooter } from "@/components/site-footer";
 import { StructuredData } from "@/components/structured-data";
 import { Button } from "@/components/ui/button";
-import { ALGORITHM_CATEGORIES, ALGORITHMS } from "@/lib/algorithms";
+import { ALGORITHMS, getAlgorithm } from "@/lib/algorithms";
+import { HOME_FAQ, type FaqPart } from "@/lib/home-faq";
+import { getPalettePreset, PALETTE_PRESETS } from "@/lib/palettes";
+import {
+  PALETTE_PREVIEW_SIZE,
+  palettePreview,
+  PIXEL_ART_PREVIEW,
+} from "@/lib/samples";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
-const FEATURES = [
+const SAMPLE_LINK = "/editor?sample=1";
+const PIXEL_ART_LINK = "/editor?sample=1&preset=pixel-art";
+
+const paletteName = (id: string) => getPalettePreset(id)?.name ?? id;
+const algorithmName = (slug: string) => getAlgorithm(slug)?.name ?? slug;
+
+const SHOWCASE_PALETTES = [
+  "gameboy",
+  "pico8",
+  "cga-cyan-magenta",
+  "sepia",
+  "riso",
+  "cyanotype",
+];
+
+type Thumbnail = {
+  src: string;
+  width: number;
+  height: number;
+  /** Shown at its natural size with crisp pixels. */
+  pixelated?: boolean;
+};
+
+const paletteThumbnail = (id: string): Thumbnail => ({
+  src: palettePreview(id),
+  ...PALETTE_PREVIEW_SIZE,
+});
+
+const USE_CASES: {
+  title: string;
+  text: string;
+  image: Thumbnail;
+  links: { label: string; href: string }[];
+}[] = [
   {
-    label: "Algorithms",
-    title: "Fifteen ways to break a gradient",
-    desc: "Error diffusion, ordered matrices, blue-noise and halftone — from Floyd–Steinberg (1976) to Void-and-Cluster, side by side.",
+    title: "Pixel art & game assets",
+    text: "Shrink a photo to sprite size, snap it to PICO-8 or Game Boy and export at ×1 for your engine.",
+    image: { ...PIXEL_ART_PREVIEW, pixelated: true },
+    links: [
+      {
+        label: `${paletteName("pico8")} palette`,
+        href: "/palettes#palette-pico8",
+      },
+      { label: "Pixel art preset", href: PIXEL_ART_LINK },
+    ],
   },
   {
-    label: "Controls",
-    title: "Tune the grain in real time",
-    desc: "Push scale, contrast, brightness, noise and blur and watch the pixels rearrange instantly, no render queue.",
+    title: "Print, zines & risograph",
+    text: "Split tones into ink-friendly dots with newsprint, sepia, cyanotype and riso palettes.",
+    image: paletteThumbnail("riso"),
+    links: [
+      {
+        label: `${paletteName("riso")} palette`,
+        href: "/palettes#palette-riso",
+      },
+      {
+        label: algorithmName("clustered-dot-halftone-ordered"),
+        href: "/algorithms/clustered-dot-halftone-ordered",
+      },
+    ],
   },
   {
-    label: "Tone mapping",
-    title: "Color where you want it",
-    desc: "Map custom shades to shadows, midtones and highlights while luminance is preserved across the image.",
+    title: "Laser engraving & plotters",
+    text: "Engravers burn dots, not grays. Floyd–Steinberg, Atkinson or Jarvis give pure black-and-white PNGs.",
+    image: {
+      src: getAlgorithm("atkinson")?.preview ?? "",
+      width: 250,
+      height: 250,
+    },
+    links: [
+      { label: algorithmName("atkinson"), href: "/algorithms/atkinson" },
+      {
+        label: algorithmName("floyd-steinberg"),
+        href: "/algorithms/floyd-steinberg",
+      },
+    ],
   },
+  {
+    title: "Posters, covers & social",
+    text: "A printed, retro texture for album art, posters and posts, sized for sharing.",
+    image: paletteThumbnail("zx-spectrum"),
+    links: [{ label: "Try it with a sample", href: SAMPLE_LINK }],
+  },
+];
+
+const STEPS = [
+  {
+    title: "Load an image",
+    text: "Drop, paste or pick a file. It never leaves your device.",
+  },
+  {
+    title: "Choose the look",
+    text: "An algorithm, 1-bit or a palette, filters and size.",
+  },
+  { title: "Export", text: "Crisp PNG at ×1 to ×8, no watermark." },
 ];
 
 const homeStructuredData = [
@@ -65,6 +153,9 @@ const homeStructuredData = [
 
 const navLink =
   "rounded-sm px-2 py-1.5 text-sm text-paper-dim transition-colors hover:text-paper focus-visible:ring-2 focus-visible:ring-safelight focus-visible:outline-none";
+
+const textLink =
+  "text-paper hover:text-safelight focus-visible:ring-safelight decoration-line-strong rounded-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none";
 
 export default function HomePage() {
   return (
@@ -123,6 +214,9 @@ export default function HomePage() {
                 tabIndex={-1}
                 className="font-display text-display font-medium focus:outline-hidden"
               >
+                <span className="text-safelight mb-5 block font-sans text-base font-medium tracking-normal">
+                  Online image dithering & pixel art converter
+                </span>
                 <span className="text-paper-dim block">Smooth in.</span>
                 <span className="dithered-text block pb-[0.08em]">
                   Dither out.
@@ -130,9 +224,9 @@ export default function HomePage() {
               </h1>
 
               <p className="text-paper-dim mt-8 max-w-md text-lg leading-relaxed">
-                PixelSynth is an in-browser dithering lab. It turns photographs
-                into algorithmic grain with fifteen real dithering algorithms,
-                every pixel computed on your device — no uploads, no accounts.
+                Turn any photo into dithered, 1-bit or pixel art images.{" "}
+                {ALGORITHMS.length} algorithms, Game Boy, PICO-8 and CGA
+                palettes, crisp exports. Everything runs on your device.
               </p>
 
               <div className="mt-9 flex flex-wrap items-center gap-3">
@@ -140,17 +234,14 @@ export default function HomePage() {
                   <Link href="/editor">Open the editor</Link>
                 </Button>
                 <Button asChild size="lg" variant="outline">
-                  <Link href="/algorithms">Browse algorithms</Link>
+                  <Link href={SAMPLE_LINK}>Try it with a sample</Link>
                 </Button>
               </div>
 
               <dl className="border-line mt-10 grid max-w-md grid-cols-3 border-t pt-5">
                 <Fact value={String(ALGORITHMS.length)} label="Algorithms" />
-                <Fact
-                  value={String(ALGORITHM_CATEGORIES.length)}
-                  label="Families"
-                />
-                <Fact value="100%" label="Local" />
+                <Fact value={String(PALETTE_PRESETS.length)} label="Palettes" />
+                <Fact value="0" label="Uploads" />
               </dl>
             </div>
 
@@ -159,27 +250,184 @@ export default function HomePage() {
             </div>
           </section>
 
-          <section aria-labelledby="features-heading" className="pb-20">
-            <h2
-              id="features-heading"
-              className="font-display text-title mb-10 max-w-lg font-medium"
-            >
-              A darkroom for pixels
-            </h2>
-            <div className="grid gap-10 sm:grid-cols-3 sm:gap-8">
-              {FEATURES.map((feature) => (
-                <article
-                  key={feature.label}
-                  className="border-line border-t pt-5"
+          <section aria-labelledby="palettes-heading" className="pb-20">
+            <div className="mb-8 flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+              <div className="flex max-w-2xl flex-col gap-4">
+                <h2
+                  id="palettes-heading"
+                  className="font-display text-title font-medium"
                 >
-                  <p className="text-label text-safelight">{feature.label}</p>
+                  Classic palettes, one click away
+                </h2>
+                <p className="text-paper-dim text-lg leading-relaxed">
+                  Dither straight to the colors of the Game Boy, PICO-8, CGA or
+                  a risograph, or to colors taken from your own image.
+                </p>
+              </div>
+              <Link href="/palettes" className={`${textLink} text-sm`}>
+                See all {PALETTE_PRESETS.length} palettes
+              </Link>
+            </div>
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 lg:grid-cols-6">
+              {SHOWCASE_PALETTES.map((id) => (
+                <li key={id}>
+                  <Link
+                    href={`/palettes#palette-${id}`}
+                    className="group focus-visible:ring-safelight focus-visible:ring-offset-ink flex flex-col gap-2 rounded-sm focus-visible:ring-2 focus-visible:ring-offset-4 focus-visible:outline-none"
+                  >
+                    {/* Downscaled below 480 px wide: smooth, not pixelated. */}
+                    <Image
+                      src={palettePreview(id)}
+                      alt=""
+                      width={PALETTE_PREVIEW_SIZE.width}
+                      height={PALETTE_PREVIEW_SIZE.height}
+                      unoptimized
+                      className="border-line group-hover:border-line-strong bg-ink-sunken w-full rounded-xs border transition-colors"
+                    />
+                    <span className="text-paper-dim group-hover:text-paper text-sm transition-colors">
+                      {paletteName(id)}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section
+            aria-labelledby="pixel-art-heading"
+            className="grid items-center gap-8 pb-20 lg:grid-cols-2 lg:gap-12"
+          >
+            <figure className="border-line-strong bg-ink-raised rounded-md border p-3">
+              <Image
+                src={PIXEL_ART_PREVIEW.src}
+                alt={`The sample image at ${PIXEL_ART_PREVIEW.width} by ${PIXEL_ART_PREVIEW.height} pixels, PICO-8 palette, 2×2 Bayer pattern`}
+                width={PIXEL_ART_PREVIEW.width}
+                height={PIXEL_ART_PREVIEW.height}
+                unoptimized
+                className="w-full rounded-xs [image-rendering:pixelated]"
+              />
+              <figcaption className="text-readout text-paper-dim mt-2">
+                {PIXEL_ART_PREVIEW.width} × {PIXEL_ART_PREVIEW.height} px, shown
+                enlarged
+              </figcaption>
+            </figure>
+            <div className="flex max-w-lg flex-col gap-5">
+              <h2
+                id="pixel-art-heading"
+                className="font-display text-title font-medium"
+              >
+                Photo to pixel art in one click
+              </h2>
+              <p className="text-paper-dim text-lg leading-relaxed">
+                The pixel art preset shrinks any image to about 128 × 96 pixels,
+                snaps it to PICO-8 with a 2×2 Bayer pattern and exports crisp at
+                ×4 or ×8.
+              </p>
+              <Button asChild size="lg" className="self-start">
+                <Link href={PIXEL_ART_LINK}>Try the pixel art preset</Link>
+              </Button>
+            </div>
+          </section>
+
+          <section aria-labelledby="use-cases-heading" className="pb-20">
+            <div className="mb-10 flex max-w-2xl flex-col gap-4">
+              <h2
+                id="use-cases-heading"
+                className="font-display text-title font-medium"
+              >
+                A darkroom for pixels
+              </h2>
+              <p className="text-paper-dim text-lg leading-relaxed">
+                {ALGORITHMS.length} algorithms, from Floyd–Steinberg (1976) to
+                blue noise and halftone. Tune scale, contrast, noise and blur in
+                real time, and map your own colors to shadows, midtones and
+                highlights.
+              </p>
+            </div>
+            <ul className="grid gap-5 md:grid-cols-2">
+              {USE_CASES.map((useCase) => (
+                <li
+                  key={useCase.title}
+                  className="border-line bg-ink-raised/60 flex flex-col gap-5 rounded-md border p-5 sm:flex-row"
+                >
+                  <Image
+                    src={useCase.image.src}
+                    alt=""
+                    width={useCase.image.width}
+                    height={useCase.image.height}
+                    unoptimized
+                    className={
+                      useCase.image.pixelated
+                        ? "border-line bg-ink-sunken aspect-3/2 w-34 shrink-0 rounded-xs border object-cover [image-rendering:pixelated]"
+                        : "border-line bg-ink-sunken aspect-3/2 w-34 shrink-0 rounded-xs border object-cover"
+                    }
+                  />
+                  <div className="flex flex-col gap-2">
+                    <h3 className="font-display text-heading font-medium">
+                      {useCase.title}
+                    </h3>
+                    <p className="text-paper-dim leading-relaxed">
+                      {useCase.text}
+                    </p>
+                    <ul className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                      {useCase.links.map((link) => (
+                        <li key={link.href}>
+                          <Link href={link.href} className={textLink}>
+                            {link.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section aria-labelledby="how-heading" className="pb-20">
+            <h2
+              id="how-heading"
+              className="font-display text-title mb-10 font-medium"
+            >
+              How it works
+            </h2>
+            <ol className="grid gap-8 sm:grid-cols-3">
+              {STEPS.map((step, index) => (
+                <li key={step.title} className="border-line border-t pt-5">
+                  <span
+                    aria-hidden="true"
+                    className="text-readout text-safelight"
+                  >
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
                   <h3 className="font-display text-heading mt-3 font-medium">
-                    {feature.title}
+                    {step.title}
                   </h3>
-                  <p className="text-paper-dim mt-3 leading-relaxed">
-                    {feature.desc}
+                  <p className="text-paper-dim mt-2 leading-relaxed">
+                    {step.text}
                   </p>
-                </article>
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          <section aria-labelledby="faq-heading" className="pb-20">
+            <h2
+              id="faq-heading"
+              className="font-display text-title mb-8 font-medium"
+            >
+              Frequently asked questions
+            </h2>
+            <div className="border-line max-w-3xl border-b">
+              {HOME_FAQ.map((entry) => (
+                <details key={entry.question} className="border-line border-t">
+                  <summary className="marker:text-safelight focus-visible:ring-safelight cursor-pointer rounded-sm py-4 text-lg font-medium focus-visible:ring-2 focus-visible:outline-none">
+                    {entry.question}
+                  </summary>
+                  <p className="text-paper-dim pb-5 leading-relaxed">
+                    <FaqAnswer parts={entry.answer} />
+                  </p>
+                </details>
               ))}
             </div>
           </section>
@@ -195,16 +443,18 @@ export default function HomePage() {
               Drop in an image. Pick an algorithm.{" "}
               <span className="text-paper-dim">Watch it develop.</span>
             </p>
-            <Button asChild size="lg">
-              <Link href="/editor">Start dithering</Link>
-            </Button>
+            <div className="flex flex-wrap gap-3">
+              <Button asChild size="lg">
+                <Link href="/editor">Start dithering</Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <Link href={SAMPLE_LINK}>Try it with a sample</Link>
+              </Button>
+            </div>
           </section>
         </main>
 
-        <footer className="border-line text-paper-dim flex flex-col gap-2 border-t py-7 text-sm sm:flex-row sm:justify-between">
-          <p>© 2026 PixelSynth — a dithering image editor</p>
-          <p>Runs entirely in your browser.</p>
-        </footer>
+        <SiteFooter />
       </div>
     </div>
   );
@@ -216,5 +466,17 @@ function Fact({ value, label }: { value: string; label: string }) {
       <dt className="text-paper-dim order-2 text-sm">{label}</dt>
       <dd className="font-display text-heading order-1 font-medium">{value}</dd>
     </div>
+  );
+}
+
+function FaqAnswer({ parts }: { parts: FaqPart[] }) {
+  return parts.map((part, index) =>
+    typeof part === "string" ? (
+      part
+    ) : (
+      <Link key={index} href={part.href} className={textLink}>
+        {part.text}
+      </Link>
+    ),
   );
 }

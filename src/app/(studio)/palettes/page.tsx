@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { GlobalHeader } from "@/components/global-header";
+import { SiteFooter } from "@/components/site-footer";
 import { cn } from "@/lib/utils";
 import { StructuredData } from "@/components/structured-data";
 import { Button } from "@/components/ui/button";
@@ -262,6 +263,9 @@ export default function PalettesPage() {
             </li>
           </ul>
         </section>
+      </div>
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-8">
+        <SiteFooter />
       </div>
     </>
   );

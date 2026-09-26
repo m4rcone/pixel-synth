@@ -3,6 +3,7 @@ import Link from "next/link";
 import { StructuredData } from "@/components/structured-data";
 import { AlgorithmCard } from "@/components/algorithm-card";
 import { GlobalHeader } from "@/components/global-header";
+import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { ALGORITHMS, algorithmsByCategory } from "@/lib/algorithms";
 import {
@@ -130,6 +131,9 @@ export default function AlgorithmsPage() {
             </ul>
           </section>
         ))}
+      </div>
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-8">
+        <SiteFooter />
       </div>
     </>
   );

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { AlgorithmMethod } from "@/components/algorithm-method";
 import { CompareSlider } from "@/components/compare-slider";
 import { GlobalHeader } from "@/components/global-header";
+import { SiteFooter } from "@/components/site-footer";
 import { StructuredData } from "@/components/structured-data";
 import { Button } from "@/components/ui/button";
 import {
@@ -202,6 +203,9 @@ export default async function AlgorithmPage({
           )}
         </nav>
       </article>
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-8">
+        <SiteFooter />
+      </div>
     </>
   );
 }
