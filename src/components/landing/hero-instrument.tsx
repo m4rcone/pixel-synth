@@ -108,8 +108,6 @@ export function HeroInstrument({
             // Shown 1:1 from sm up; smaller screens scale it down smoothly
             // (nearest-neighbor would add moiré).
             afterClassName="max-sm:[image-rendering:auto]"
-            showLabels={false}
-            initial={50}
             onPointerPosition={setPoint}
           />
         </div>
