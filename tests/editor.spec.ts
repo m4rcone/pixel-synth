@@ -136,10 +136,10 @@ test("catalog cards open the algorithm page from anywhere on the card", async ({
 }) => {
   await page.goto("/algorithms");
   await page.waitForLoadState("networkidle");
-  // Click where the card's description is, not its title.
-  const description = page.getByText("An optimized version of JJN");
-  await description.scrollIntoViewIfNeeded();
-  const box = await description.boundingBox();
+  // Click the card's preview, not its title.
+  const preview = page.getByAltText(/dithered with Stucki$/);
+  await preview.scrollIntoViewIfNeeded();
+  const box = await preview.boundingBox();
   await page.mouse.click(box!.x + box!.width / 2, box!.y + box!.height / 2);
   await expect(page).toHaveURL(/\/algorithms\/stucki$/);
 });
