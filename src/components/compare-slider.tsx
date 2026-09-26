@@ -13,6 +13,8 @@ type CompareSliderProps = {
   /** `sizes` of the (optimized) "before" image. */
   beforeSizes?: string;
   labels?: { before: string; after: string };
+  /** Set false to hide the corner labels (e.g. when the surrounding UI already reads "before/after"). */
+  showLabels?: boolean;
   /** Extra classes for the "after" image (e.g. to change its scaling). */
   afterClassName?: string;
   /** Initial share of the "before" image shown, in percent. */
@@ -34,6 +36,7 @@ export function CompareSlider({
   height = 250,
   beforeSizes = "(max-width: 480px) 100vw, 424px",
   labels = { before: "Source", after: "Dithered" },
+  showLabels = true,
   afterClassName,
   initial = 38,
   onDraggingChange,
@@ -108,12 +111,16 @@ export function CompareSlider({
         style={{ clipPath: `inset(0 ${100 - reveal}% 0 0)` }}
       />
 
-      <span className="text-caps bg-ink text-paper pointer-events-none absolute bottom-2 left-2 px-1.5 py-0.5">
-        {labels.before}
-      </span>
-      <span className="text-caps bg-ink text-paper pointer-events-none absolute right-2 bottom-2 px-1.5 py-0.5">
-        {labels.after}
-      </span>
+      {showLabels && (
+        <>
+          <span className="text-caps bg-ink text-paper pointer-events-none absolute bottom-2 left-2 px-1.5 py-0.5">
+            {labels.before}
+          </span>
+          <span className="text-caps bg-ink text-paper pointer-events-none absolute right-2 bottom-2 px-1.5 py-0.5">
+            {labels.after}
+          </span>
+        </>
+      )}
 
       <div
         className="pointer-events-none absolute inset-y-0 z-10 w-px bg-white/75"
