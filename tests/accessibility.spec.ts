@@ -150,6 +150,17 @@ test.describe("accessibility", () => {
     await expectNoAccessibilityViolations(page);
   });
 
+  test("CMYK controls have no axe violations", async ({ page }) => {
+    await page.goto("/editor?algorithm=halftone");
+    await uploadTinyImage(page);
+    await page.getByRole("button", { name: "Apply dither" }).click();
+    await page.getByRole("button", { name: "CMYK", exact: true }).click();
+    await expect(page.getByRole("list", { name: "Inks" })).toBeVisible();
+    // Let the mode switch's color transition finish.
+    await page.waitForTimeout(400);
+    await expectNoAccessibilityViolations(page);
+  });
+
   test("the share settings popover has no axe violations", async ({ page }) => {
     await page.goto("/editor");
     await uploadTinyImage(page);

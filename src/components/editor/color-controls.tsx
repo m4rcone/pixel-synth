@@ -27,12 +27,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CmykControls } from "./cmyk-controls";
 import { SliderField } from "./slider-field";
 import { ToneControls } from "./tone-controls";
 
 const MODES = [
   { value: "mono", label: "1-bit" },
   { value: "palette", label: "Palette" },
+  { value: "cmyk", label: "CMYK" },
 ] as const;
 
 const MATCHES = [
@@ -63,8 +65,8 @@ const PALETTE_OPTIONS = PALETTE_GROUPS.map((group) => ({
 }));
 
 /**
- * The Color section: monochrome (1-bit + tone mapping, unchanged) or dither
- * to a palette.
+ * The Color section: monochrome (1-bit + tone mapping), dither to a palette,
+ * or CMYK process inks.
  */
 export function ColorControls() {
   const { status, settings } = useEditorState();
@@ -85,6 +87,8 @@ export function ColorControls() {
       />
       {settings.color.mode === "mono" ? (
         <ToneControls />
+      ) : settings.color.mode === "cmyk" ? (
+        <CmykControls />
       ) : (
         <PaletteControls disabled={disabled} setColor={setColor} />
       )}

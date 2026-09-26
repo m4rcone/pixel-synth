@@ -51,6 +51,7 @@ const changed: EditorSettings = {
     match: "brightness",
     extractCount: 12,
     custom: ["#000000", "#ff0000", "#ffffff"],
+    black: 0.8,
   },
 };
 
@@ -147,6 +148,22 @@ describe("settings links", () => {
       decodeSettings(encode({ v: 1, screen: { size: 9.6 } }))!.settings.screen
         .size,
     ).toBe(10);
+  });
+
+  it("carries CMYK mode and clamps its black amount", () => {
+    const cmyk = {
+      ...DEFAULT_SETTINGS,
+      color: { ...DEFAULT_SETTINGS.color, mode: "cmyk" as const, black: 1 },
+    };
+    expect(decodeSettings(encodeSettings(cmyk, false))?.settings).toEqual(cmyk);
+    const clamped = decodeSettings(
+      encode({ v: 1, color: { mode: "cmyk", black: 7 } }),
+    );
+    expect(clamped?.settings.color).toMatchObject({ mode: "cmyk", black: 1 });
+    expect(
+      decodeSettings(encode({ v: 1, color: { mode: "rgb" } }))?.settings.color
+        .mode,
+    ).toBe("mono");
   });
 
   it("carries a transparent background", () => {

@@ -27,6 +27,10 @@ const TIPS = [
     body: "Dithers straight to a set of colors. “Match by color” suits many-hued palettes; “Match by brightness” suits single-hue ones like Game Boy or sepia.",
   },
   {
+    title: "CMYK",
+    body: "Separates the image into cyan, magenta, yellow and black, dithers each ink on its own and overprints them on white paper, like a four-color press. With Halftone, the screens take the classic angles and form rosettes. Black ink sets how much of the shared gray prints in black instead of all three colors.",
+  },
+  {
     title: "Pixel art preset",
     body: "Shrinks the image to about 128 × 96 pixels’ worth of detail, whatever its shape, and applies PICO-8 with a 2×2 Bayer pattern. Save it ×4 or ×8 to share.",
   },

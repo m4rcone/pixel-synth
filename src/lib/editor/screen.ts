@@ -79,10 +79,9 @@ const SAMPLE_CELLS = 16;
 
 const MIN_THRESHOLD = 1 / 1024;
 
-let cached: {
-  key: string;
-  threshold: (x: number, y: number) => number;
-} | null = null;
+/** Screens kept ready: CMYK draws four at once, one per ink angle. */
+const CACHE_SIZE = 8;
+const cache = new Map<string, (x: number, y: number) => number>();
 
 /**
  * Per-pixel threshold (0–1] of a halftone screen: a grid of cells `size`
@@ -104,7 +103,8 @@ export function screenThreshold(
   light: boolean,
 ): (x: number, y: number) => number {
   const key = `${size}|${angle}|${spot}|${light}`;
-  if (cached?.key === key) return cached.threshold;
+  const hit = cache.get(key);
+  if (hit) return hit;
 
   const { ranks, levels } = ranksFor(spot);
   const radians = (angle * Math.PI) / 180;
@@ -150,7 +150,9 @@ export function screenThreshold(
   }
 
   const threshold = (x: number, y: number) => thresholds[bucket(x, y)];
-  cached = { key, threshold };
+  // Maps iterate in insertion order: the first key is the oldest.
+  if (cache.size === CACHE_SIZE) cache.delete(cache.keys().next().value!);
+  cache.set(key, threshold);
   return threshold;
 }
 

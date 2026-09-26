@@ -161,6 +161,43 @@ test("palette mode dithers to a preset and names the export", async ({
   );
 });
 
+test("CMYK mode screens each ink at its angle and names the export", async ({
+  page,
+}) => {
+  await page.goto("/editor?algorithm=halftone");
+  await page.waitForLoadState("networkidle");
+  await page.getByLabel(/drop an image/i).setInputFiles(SPHERE);
+  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "CMYK", exact: true }).click();
+
+  const inks = page.getByRole("list", { name: "Inks" });
+  await expect(inks.getByRole("listitem")).toHaveText([
+    "Cyanscreen at 15°",
+    "Magentascreen at 75°",
+    "Yellowscreen at 0°",
+    "Blackscreen at 45°",
+  ]);
+  // Turning the screen turns every ink with it.
+  await page.getByRole("slider", { name: "Screen angle" }).focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(inks.getByRole("listitem").nth(1)).toHaveText(
+    "Magentascreen at 82.5°",
+  );
+  await expect(page.getByRole("slider", { name: "Black ink" })).toHaveAttribute(
+    "aria-valuetext",
+    "50%",
+  );
+
+  await page.getByRole("button", { name: "Save" }).click();
+  const dialog = page.getByRole("dialog", { name: "Save image" });
+  await dialog.getByRole("button", { name: /^1x,/ }).click();
+  const download = page.waitForEvent("download");
+  await dialog.getByRole("button", { name: "Save PNG" }).click();
+  expect((await download).suggestedFilename()).toBe(
+    "pixelsynth-halftone-cmyk.png",
+  );
+});
+
 test("pixel art preset targets ~12k pixels with PICO-8 and Bayer 2×2", async ({
   page,
 }) => {

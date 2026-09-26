@@ -5,6 +5,7 @@ import {
   MIN_PALETTE_COLORS,
 } from "@/lib/palettes";
 import {
+  COLOR_MODES,
   DEFAULT_SETTINGS,
   FILTER_LIMITS,
   MIN_SCALE,
@@ -202,8 +203,7 @@ export function decodeSettings(code: string): SharedSettings | null {
 
   if (isObject(data.color)) {
     const { color } = data;
-    settings.color.mode =
-      oneOf(color.mode, ["mono", "palette"] as const) ?? base.color.mode;
+    settings.color.mode = oneOf(color.mode, COLOR_MODES) ?? base.color.mode;
     if (typeof color.palette === "string" && isPaletteId(color.palette)) {
       settings.color.palette = color.palette;
     }
@@ -217,6 +217,7 @@ export function decodeSettings(code: string): SharedSettings | null {
     if (extractCount !== undefined) {
       settings.color.extractCount = Math.round(extractCount);
     }
+    settings.color.black = number(color.black, 0, 1) ?? base.color.black;
   }
 
   const custom = colors(data.custom) ?? null;
