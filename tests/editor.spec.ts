@@ -214,3 +214,49 @@ test("'None' is offered as a no-dithering choice", async ({ page }) => {
     "None (nearest color)",
   );
 });
+
+test("the empty editor loads the sample image", async ({ page }) => {
+  await page.goto("/editor");
+  await page.waitForLoadState("networkidle");
+  await page.getByRole("button", { name: "Try a sample image" }).click();
+
+  await expect(
+    page.getByRole("application", { name: "Original image canvas" }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Output size")).toHaveValue("1800");
+});
+
+test("?palette= switches to palette mode with that palette", async ({
+  page,
+}) => {
+  await page.goto("/editor?palette=gameboy&algorithm=bayer-4-4");
+  await page.waitForLoadState("networkidle");
+  await page.getByRole("button", { name: "Try a sample image" }).click();
+
+  await expect(
+    page.getByRole("button", { name: "Palette", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("combobox", { name: "Palette" })).toContainText(
+    "Game Boy",
+  );
+  await expect(
+    page.getByRole("button", { name: "Brightness", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("combobox", { name: "Algorithm" })).toHaveText(
+    "Bayer 4×4",
+  );
+});
+
+test("palette cards open the editor with that palette", async ({ page }) => {
+  await page.goto("/palettes");
+  await page.waitForLoadState("networkidle");
+  await page
+    .getByRole("link", { name: /Use in the editor\s*:\s*Cyanotype/ })
+    .click();
+  await expect(page).toHaveURL(/\/editor\?palette=cyanotype$/);
+  await page.waitForLoadState("networkidle");
+  await page.getByRole("button", { name: "Try a sample image" }).click();
+  await expect(page.getByRole("combobox", { name: "Palette" })).toContainText(
+    "Cyanotype",
+  );
+});

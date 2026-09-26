@@ -29,6 +29,7 @@ test.describe("accessibility", () => {
     "/algorithms/floyd-steinberg",
     "/algorithms/blue-noise",
     "/algorithms/random-dither",
+    "/palettes",
   ]) {
     test(`has no axe violations on ${route}`, async ({ page }) => {
       await page.goto(route);
@@ -192,6 +193,7 @@ test.describe("accessibility on a phone", () => {
     "/editor",
     "/algorithms",
     "/algorithms/bayer-4-4",
+    "/palettes",
   ]) {
     test(`has no axe violations on ${route}`, async ({ page }) => {
       await page.goto(route);
