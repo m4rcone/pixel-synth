@@ -116,6 +116,8 @@ export default async function AlgorithmPage({
               width={PREVIEW_SIZE}
               height={PREVIEW_SIZE}
               beforeSizes={`(max-width: 480px) 100vw, ${PREVIEW_SIZE}px`}
+              showLabels={false}
+              initial={50}
             />
           </div>
 
