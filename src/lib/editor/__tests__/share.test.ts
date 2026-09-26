@@ -17,7 +17,14 @@ const changed: EditorSettings = {
   ...DEFAULT_SETTINGS,
   algorithm: "atkinson",
   scale: 0.35,
-  filters: { brightness: 1.2, contrast: -0.3, blur: 1.5, noise: 0.1 },
+  diffusion: 0.75,
+  filters: {
+    brightness: 1.2,
+    contrast: -0.3,
+    saturation: 1.4,
+    blur: 1.5,
+    noise: 0.1,
+  },
   colorCount: 3,
   preserveLuminance: true,
   tones: {

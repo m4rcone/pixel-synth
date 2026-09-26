@@ -15,6 +15,10 @@ const TIPS = [
     body: "Dithers a smaller copy of the image, then scales it back up to the original size. Lower values give bigger, chunkier grain.",
   },
   {
+    title: "Error diffusion",
+    body: "For error diffusion algorithms: how much of each pixel’s rounding error spreads to its neighbors. Lower values give flatter, cleaner areas with fewer stray dots.",
+  },
+  {
     title: "Palette",
     body: "Dithers straight to a set of colors. “Match by color” suits many-hued palettes; “Match by brightness” suits single-hue ones like Game Boy or sepia.",
   },

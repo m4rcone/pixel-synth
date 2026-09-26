@@ -16,6 +16,7 @@ const FILTER_FIELDS: {
 }[] = [
   { key: "contrast", label: "Contrast" },
   { key: "brightness", label: "Brightness", display: (v) => v - 1 },
+  { key: "saturation", label: "Saturation", display: (v) => v - 1 },
   { key: "noise", label: "Noise" },
   { key: "blur", label: "Blur" },
 ];

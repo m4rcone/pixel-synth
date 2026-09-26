@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { ALGORITHMS } from "@/lib/algorithms";
 import { PALETTE_PRESETS } from "@/lib/palettes";
-import { dither } from "../dither";
+import { dither, getMethod } from "../dither";
 import { applyFilters } from "../filters";
 import { bayerMatrix, ERROR_KERNELS, voidAndCluster } from "../matrices";
 import { ditherToPalette, extractPalette } from "../palette-dither";
 import { renderPixels } from "../pipeline";
 import { createPixels, type Pixels } from "../pixels";
 import { resizeArea, resizeNearest } from "../resize";
-import { DEFAULT_SETTINGS } from "../settings";
+import { DEFAULT_FILTERS, DEFAULT_SETTINGS } from "../settings";
 
 function gradient(width: number, height: number): Pixels {
   const pixels = createPixels(width, height);
@@ -134,12 +134,22 @@ describe("filters", () => {
   it("brightness scales, contrast pivots around mid-gray", () => {
     const px = createPixels(1, 1);
     px.data.set([100, 100, 100, 255]);
-    applyFilters(px, { brightness: 1.5, contrast: 0, noise: 0, blur: 0 });
+    applyFilters(px, {
+      ...DEFAULT_FILTERS,
+      brightness: 1.5,
+      contrast: 0,
+      blur: 0,
+    });
     expect(px.data[0]).toBe(150);
 
     const mid = createPixels(1, 1);
     mid.data.set([127.5, 200, 55, 255]);
-    applyFilters(mid, { brightness: 1, contrast: 1, noise: 0, blur: 0 });
+    applyFilters(mid, {
+      ...DEFAULT_FILTERS,
+      brightness: 1,
+      contrast: 1,
+      blur: 0,
+    });
     expect(mid.data[1]).toBe(255);
     expect(mid.data[2]).toBe(0);
   });
@@ -151,11 +161,88 @@ describe("filters", () => {
       0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 255, 255, 255,
       255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
     ]);
-    applyFilters(edge, { brightness: 1, contrast: 0, noise: 0, blur: 2 });
+    applyFilters(edge, {
+      ...DEFAULT_FILTERS,
+      brightness: 1,
+      contrast: 0,
+      blur: 2,
+    });
     expect(edge.data[3 * 4]).toBeGreaterThan(0);
     expect(edge.data[4 * 4]).toBeLessThan(255);
-    applyFilters(px, { brightness: 1, contrast: 0, noise: 0, blur: 0 });
+    applyFilters(px, {
+      ...DEFAULT_FILTERS,
+      brightness: 1,
+      contrast: 0,
+      blur: 0,
+    });
     expect(px.data[0]).toBe(0);
+  });
+});
+
+describe("saturation", () => {
+  const color = () => {
+    const px = createPixels(1, 1);
+    px.data.set([200, 100, 50, 255]);
+    return px;
+  };
+
+  it("0 turns colors into their gray", () => {
+    const px = color();
+    applyFilters(px, { ...DEFAULT_FILTERS, saturation: 0 });
+    const luma = Math.round(0.299 * 200 + 0.587 * 100 + 0.114 * 50);
+    expect([...px.data.slice(0, 3)]).toEqual([luma, luma, luma]);
+  });
+
+  it("above 1 pushes channels away from the gray", () => {
+    const px = color();
+    applyFilters(px, { ...DEFAULT_FILTERS, saturation: 1.5 });
+    expect(px.data[0]).toBeGreaterThan(200);
+    expect(px.data[2]).toBeLessThan(50);
+  });
+});
+
+describe("diffusion strength", () => {
+  // A flat 25% gray: classic diffusion lights about a quarter of the pixels.
+  const flat = (value: number) => new Float32Array(64 * 64).fill(value);
+  const lit = (bits: Uint8Array) => bits.filter((b) => b === 255).length;
+
+  it("the catalog's error diffusion family is what the engine diffuses", () => {
+    // The editor shows the strength control from the catalog category.
+    for (const algorithm of ALGORITHMS) {
+      expect(
+        getMethod(algorithm.slug).kind === "diffusion",
+        algorithm.slug,
+      ).toBe(algorithm.category === "error-diffusion");
+    }
+  });
+
+  it("1 is the classic algorithm, bit for bit", () => {
+    const gray = gradient(48, 8);
+    const settings = { ...DEFAULT_SETTINGS, algorithm: "atkinson" as const };
+    expect(renderPixels(gray, settings, { dither: true }).pixels.data).toEqual(
+      renderPixels(gray, { ...settings, diffusion: 1 }, { dither: true }).pixels
+        .data,
+    );
+  });
+
+  it("scales the error passed on, down to a plain threshold at 0", () => {
+    const full = lit(dither(flat(64), 64, 64, "floyd-steinberg", 1));
+    const half = lit(dither(flat(64), 64, 64, "floyd-steinberg", 0.5));
+    const none = dither(flat(64), 64, 64, "floyd-steinberg", 0);
+    expect(full / (64 * 64)).toBeCloseTo(0.25, 1);
+    expect(half).toBeLessThan(full);
+    expect(none).toEqual(dither(flat(64), 64, 64, "none"));
+  });
+
+  it("applies to palette dithering too", () => {
+    const src = gradient(48, 8);
+    const colors = ["#000000", "#ffffff"];
+    expect(
+      ditherToPalette(src, "floyd-steinberg", colors, "color", 0).data,
+    ).toEqual(ditherToPalette(src, "none", colors, "color").data);
+    expect(
+      ditherToPalette(src, "floyd-steinberg", colors, "brightness", 0).data,
+    ).toEqual(ditherToPalette(src, "none", colors, "brightness").data);
   });
 });
 

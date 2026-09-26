@@ -11,7 +11,8 @@ A free online dithering and pixel art tool. Turn any photo into dithered, 1-bit 
 - **Palette gallery**: every palette previewed on the same sample image at `/palettes`, one click from the editor.
 - **Pixel art preset**: one click shrinks any image to about 128 × 96 pixels' worth of detail, whatever its shape, and applies PICO-8 with a 2×2 Bayer pattern. Set the output width in pixels, or pick the nearest-color "None" option to skip dithering.
 - **1-bit dot colors**: tint the dots of a classic 1-bit dither by brightness band (shadows, midtones, highlights), optionally shaded by the original brightness.
-- **Filters**: processing scale, brightness, contrast, noise and blur; the image re-renders as soon as you release a control.
+- **Filters**: processing scale, brightness, contrast, saturation, noise and blur; the image re-renders as soon as you release a control.
+- **Error diffusion strength**: pass on less of each pixel's rounding error for flatter, cleaner areas with fewer stray dots (error diffusion algorithms).
 - **Easy input**: drop, paste or pick a PNG, JPEG, WebP, GIF, AVIF or BMP file, or try the built-in sample image (a sunset scene with a calibration strip).
 - **Crisp export**: save a PNG at ×1, ×2, ×4 or ×8, enlarged nearest-neighbor so every pixel stays a sharp block.
 - **Share settings**: copy a link that reopens the editor with the same look, for any image. It carries the settings only, never your image.

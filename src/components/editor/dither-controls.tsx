@@ -3,7 +3,11 @@
 import { useState } from "react";
 import { Grid2x2 } from "lucide-react";
 import { useEditorActions, useEditorState } from "@/contexts/editor-context";
-import { algorithmsByCategory, isAlgorithmId } from "@/lib/algorithms";
+import {
+  algorithmsByCategory,
+  getAlgorithm,
+  isAlgorithmId,
+} from "@/lib/algorithms";
 import {
   DEFAULT_SETTINGS,
   MIN_SCALE,
@@ -83,6 +87,23 @@ export function DitherControls() {
           </SelectContent>
         </Select>
       </div>
+
+      {settings.algorithm !== "none" &&
+        getAlgorithm(settings.algorithm)?.category === "error-diffusion" && (
+          <SliderField
+            id="dither-diffusion"
+            label="Error diffusion"
+            value={settings.diffusion}
+            defaultValue={DEFAULT_SETTINGS.diffusion}
+            min={0}
+            max={1}
+            step={0.01}
+            disabled={disabled}
+            format={(v) => `${Math.round(v * 100)}%`}
+            onChange={(diffusion) => update({ diffusion })}
+            onCommit={(diffusion) => apply({ diffusion })}
+          />
+        )}
 
       <SliderField
         id="dither-scale"

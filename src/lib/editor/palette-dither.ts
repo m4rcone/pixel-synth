@@ -28,13 +28,14 @@ export function ditherToPalette(
   algorithm: DitherChoice,
   colors: readonly string[],
   match: PaletteMatch,
+  diffusion = 1,
 ): Pixels {
   const palette = colors.map(hexToRgb);
   const out = createPixels(src.width, src.height);
   const indices =
     match === "brightness"
-      ? ditherRamp(src, algorithm, palette)
-      : ditherColor(src, algorithm, palette);
+      ? ditherRamp(src, algorithm, palette, diffusion)
+      : ditherColor(src, algorithm, palette, diffusion);
   const ramp =
     match === "brightness"
       ? [...palette].sort((a, b) => luma(a) - luma(b))
@@ -55,6 +56,7 @@ function ditherRamp(
   src: Pixels,
   algorithm: DitherChoice,
   palette: Rgb[],
+  diffusion: number,
 ): Uint8Array {
   const { width, height } = src;
   const levels = palette.length;
@@ -74,7 +76,7 @@ function ditherRamp(
         const x = reverse ? width - 1 - s : s;
         const p = y * width + x;
         const index = quantize(gray[p]);
-        const unit = (gray[p] - index * step) / kernel.divisor;
+        const unit = ((gray[p] - index * step) / kernel.divisor) * diffusion;
         out[p] = index;
         for (const [dx, dy, weight] of kernel.taps) {
           const nx = x + dx * dir;
@@ -100,6 +102,7 @@ function ditherColor(
   src: Pixels,
   algorithm: DitherChoice,
   palette: Rgb[],
+  diffusion: number,
 ): Uint8Array {
   const { width, height, data } = src;
   const size = width * height;
@@ -131,9 +134,9 @@ function ditherColor(
         const index = nearest(r, g, b);
         const [pr, pg, pb] = palette[index];
         out[p] = index;
-        const er = (r - pr) / kernel.divisor;
-        const eg = (g - pg) / kernel.divisor;
-        const eb = (b - pb) / kernel.divisor;
+        const er = ((r - pr) / kernel.divisor) * diffusion;
+        const eg = ((g - pg) / kernel.divisor) * diffusion;
+        const eb = ((b - pb) / kernel.divisor) * diffusion;
         for (const [dx, dy, weight] of kernel.taps) {
           const nx = x + dx * dir;
           const ny = y + dy;

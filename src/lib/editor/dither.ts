@@ -83,13 +83,15 @@ export const RANDOM_SEED = 0x5eed;
 /**
  * Converts a luminance buffer (0–255) into a 1-bit image (0 or 255 per pixel).
  * Error diffusion works on a float copy, so accumulated error is never
- * clipped — the classic bug when diffusing into 8-bit storage.
+ * clipped — the classic bug when diffusing into 8-bit storage. `diffusion`
+ * scales the error passed on (1 = the classic algorithm).
  */
 export function dither(
   gray: Float32Array,
   width: number,
   height: number,
   algorithm: DitherChoice,
+  diffusion = 1,
 ): Uint8Array {
   const method = getMethod(algorithm);
   const out = new Uint8Array(width * height);
@@ -131,7 +133,7 @@ export function dither(
       const x = reverse ? width - 1 - step : step;
       const p = y * width + x;
       const value = buffer[p] < 128 ? 0 : 255;
-      const unit = (buffer[p] - value) / kernel.divisor;
+      const unit = ((buffer[p] - value) / kernel.divisor) * diffusion;
       out[p] = value;
 
       for (const [dx, dy, weight] of kernel.taps) {

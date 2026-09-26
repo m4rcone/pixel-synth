@@ -2,16 +2,18 @@ import { createRandom, type Pixels } from "./pixels";
 import { DEFAULT_FILTERS, type Filters } from "./settings";
 
 /**
- * Applies contrast → brightness → noise → blur in place, in that order.
- * Contrast pivots around mid-gray; brightness is a multiplier (1 = neutral).
+ * Applies contrast → brightness → saturation → noise → blur in place, in
+ * that order. Contrast pivots around mid-gray; brightness is a multiplier
+ * (1 = neutral); saturation scales each color's distance from its luma.
  */
 export function applyFilters(pixels: Pixels, filters: Filters, seed = 1) {
   const { data } = pixels;
-  const { contrast, brightness, noise, blur } = filters;
+  const { contrast, brightness, saturation, noise, blur } = filters;
 
   if (
     contrast !== DEFAULT_FILTERS.contrast ||
     brightness !== DEFAULT_FILTERS.brightness ||
+    saturation !== DEFAULT_FILTERS.saturation ||
     noise > 0
   ) {
     const gain = (1 + contrast) * brightness;
@@ -21,9 +23,19 @@ export function applyFilters(pixels: Pixels, filters: Filters, seed = 1) {
 
     for (let i = 0; i < data.length; i += 4) {
       const n = noise > 0 ? (0.5 - random()) * noiseAmount : 0;
-      data[i] = data[i] * gain + offset + n;
-      data[i + 1] = data[i + 1] * gain + offset + n;
-      data[i + 2] = data[i + 2] * gain + offset + n;
+      const r = data[i] * gain + offset;
+      const g = data[i + 1] * gain + offset;
+      const b = data[i + 2] * gain + offset;
+      if (saturation === 1) {
+        data[i] = r + n;
+        data[i + 1] = g + n;
+        data[i + 2] = b + n;
+      } else {
+        const l = 0.299 * r + 0.587 * g + 0.114 * b;
+        data[i] = l + (r - l) * saturation + n;
+        data[i + 1] = l + (g - l) * saturation + n;
+        data[i + 2] = l + (b - l) * saturation + n;
+      }
     }
   }
 

@@ -427,3 +427,25 @@ test("a settings link's custom palette wins over the saved one", async ({
     "#ff0000",
   );
 });
+
+test("error diffusion strength shows only for diffusion algorithms", async ({
+  page,
+}) => {
+  await page.goto("/editor?sample=1");
+  await page.getByRole("button", { name: "Apply dither" }).click();
+
+  const diffusion = page.getByRole("slider", { name: "Error diffusion" });
+  await expect(diffusion).toHaveAttribute("aria-valuetext", "100%");
+  await diffusion.focus();
+  await page.keyboard.press("Home");
+  await expect(diffusion).toHaveAttribute("aria-valuetext", "0%");
+
+  await page.getByRole("combobox", { name: "Algorithm" }).click();
+  await page.getByRole("option", { name: "Bayer 4×4" }).click();
+  await expect(diffusion).toHaveCount(0);
+
+  const saturation = page.getByRole("slider", { name: "Saturation" });
+  await saturation.focus();
+  await page.keyboard.press("Home");
+  await expect(saturation).toHaveAttribute("aria-valuetext", "-1.00");
+});

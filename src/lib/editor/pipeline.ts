@@ -54,13 +54,20 @@ export function renderPixels(
         settings.algorithm,
         palette,
         settings.color.match,
+        settings.diffusion,
       ),
       palette,
     };
   }
 
   const gray = luminance(pixels);
-  const bits = dither(gray, pixels.width, pixels.height, settings.algorithm);
+  const bits = dither(
+    gray,
+    pixels.width,
+    pixels.height,
+    settings.algorithm,
+    settings.diffusion,
+  );
   const out = createPixels(pixels.width, pixels.height);
   toneMap(bits, gray, pixels.data, out.data, settings);
   pixels = out;

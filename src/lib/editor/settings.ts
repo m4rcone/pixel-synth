@@ -9,6 +9,8 @@ import {
 export type Filters = {
   brightness: number;
   contrast: number;
+  /** 1 = unchanged, 0 = grayscale, 2 = doubled. */
+  saturation: number;
   blur: number;
   noise: number;
 };
@@ -46,6 +48,11 @@ export type EditorSettings = {
    * enlarge it without smoothing.
    */
   scale: number;
+  /**
+   * Share of each pixel's quantization error passed on to its neighbors
+   * (0–1), for error diffusion algorithms only. 1 is the classic algorithm.
+   */
+  diffusion: number;
   filters: Filters;
   colorCount: 1 | 2 | 3;
   preserveLuminance: boolean;
@@ -60,6 +67,7 @@ export const FILTER_LIMITS: Record<
 > = {
   brightness: { min: 0, max: 2 },
   contrast: { min: -1, max: 1 },
+  saturation: { min: 0, max: 2 },
   blur: { min: 0, max: 5 },
   noise: { min: 0, max: 1 },
 };
@@ -67,6 +75,7 @@ export const FILTER_LIMITS: Record<
 export const DEFAULT_FILTERS: Filters = {
   brightness: 1,
   contrast: 0,
+  saturation: 1,
   blur: 0,
   noise: 0,
 };
@@ -74,6 +83,7 @@ export const DEFAULT_FILTERS: Filters = {
 export const DEFAULT_SETTINGS: EditorSettings = {
   algorithm: DEFAULT_ALGORITHM,
   scale: 1,
+  diffusion: 1,
   filters: DEFAULT_FILTERS,
   colorCount: 1,
   preserveLuminance: false,
@@ -95,6 +105,7 @@ export function hasActiveFilters(filters: Filters) {
   return (
     filters.contrast !== DEFAULT_FILTERS.contrast ||
     filters.brightness !== DEFAULT_FILTERS.brightness ||
+    filters.saturation !== DEFAULT_FILTERS.saturation ||
     filters.noise > DEFAULT_FILTERS.noise ||
     filters.blur > DEFAULT_FILTERS.blur
   );

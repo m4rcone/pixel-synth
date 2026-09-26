@@ -67,6 +67,9 @@ export function encodeSettings(
       ? { algorithm: settings.algorithm }
       : {}),
     ...(settings.scale !== base.scale ? { scale: settings.scale } : {}),
+    ...(settings.diffusion !== base.diffusion
+      ? { diffusion: settings.diffusion }
+      : {}),
     ...(diffObject(settings.filters, base.filters)
       ? { filters: diffObject(settings.filters, base.filters) }
       : {}),
@@ -137,6 +140,7 @@ export function decodeSettings(code: string): SharedSettings | null {
     settings.algorithm = algorithm;
   }
   settings.scale = number(data.scale, MIN_SCALE, 1) ?? base.scale;
+  settings.diffusion = number(data.diffusion, 0, 1) ?? base.diffusion;
 
   if (isObject(data.filters)) {
     for (const key of Object.keys(FILTER_LIMITS) as (keyof Filters)[]) {
