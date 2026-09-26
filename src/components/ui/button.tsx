@@ -5,27 +5,46 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors outline-none disabled:pointer-events-none disabled:opacity-45 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 focus-visible:ring-2 focus-visible:ring-safelight focus-visible:ring-offset-2 focus-visible:ring-offset-ink aria-invalid:border-destructive",
+  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap text-xs font-semibold uppercase tracking-caps transition-colors outline-none disabled:pointer-events-none disabled:opacity-45 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-safelight aria-invalid:border-destructive",
   {
     variants: {
       variant: {
-        default: "bg-paper text-ink hover:bg-paper/85",
+        // Solid plate with the bottom-right corner cut.
+        default: "btn-notch text-ink",
         destructive: "bg-destructive text-paper hover:bg-destructive/85",
-        outline:
-          "border border-input bg-transparent text-paper hover:border-paper/60 hover:bg-accent",
+        outline: "text-paper hover:text-paper-hot",
         secondary: "bg-secondary text-secondary-foreground hover:bg-accent",
         ghost: "text-paper-dim hover:bg-accent hover:text-paper",
-        link: "text-paper underline decoration-line-strong underline-offset-4 hover:decoration-paper",
+        link: "text-paper underline decoration-line-strong underline-offset-4 hover:text-paper-hot hover:decoration-paper-hot",
       },
       size: {
         default: "h-9 px-4 has-[>svg]:px-3",
         sm: "h-8 gap-1.5 px-3 has-[>svg]:px-2.5",
-        lg: "h-11 px-6 text-base has-[>svg]:px-5",
+        lg: "h-11 px-5 has-[>svg]:px-4",
         icon: "size-9",
         "icon-sm": "size-8",
         "icon-lg": "size-10",
       },
     },
+    // Extra room on the right for the cut corner (after the size padding).
+    compoundVariants: [
+      {
+        variant: "default",
+        size: ["default", "sm", "lg"],
+        className: "pr-6 has-[>svg]:pr-5",
+      },
+      // Corner brackets over a faint frame; icon buttons get a plain frame.
+      {
+        variant: "outline",
+        size: ["default", "sm", "lg"],
+        className: "btn-brackets",
+      },
+      {
+        variant: "outline",
+        size: ["icon", "icon-sm", "icon-lg"],
+        className: "border-line-strong hover:border-paper border",
+      },
+    ],
     defaultVariants: {
       variant: "default",
       size: "default",

@@ -26,7 +26,7 @@ export function Segmented<T extends string>({
       role="group"
       aria-label={label}
       className={cn(
-        "border-input inline-flex w-full gap-0.5 rounded-md border p-0.5",
+        "border-input inline-flex w-full gap-0.5 border p-0.5",
         disabled && "opacity-45",
         className,
       )}
@@ -39,7 +39,7 @@ export function Segmented<T extends string>({
           disabled={disabled || option.disabled}
           onClick={() => option.value !== value && onChange(option.value)}
           className={cn(
-            "focus-visible:ring-safelight h-8 flex-1 rounded-sm px-3 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed",
+            "focus-visible:outline-safelight h-8 flex-1 px-3 text-sm font-medium transition-colors outline-none focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed",
             option.disabled && !disabled && "opacity-45",
             option.value === value
               ? "bg-paper text-ink"
