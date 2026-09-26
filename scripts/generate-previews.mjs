@@ -206,10 +206,10 @@ try {
   // undithered original for the "before" side.
   const {
     HERO_ALGORITHMS,
+    HERO_SIZE,
     HERO_PALETTES,
     HERO_ORIGINAL,
     ANIMATED_DITHER,
-    heroSize,
     heroVariant,
   } = await server.ssrLoadModule("/src/lib/samples.ts");
   rmSync(join(root, "public", "landing"), { recursive: true, force: true });
@@ -223,7 +223,7 @@ try {
       const settings = {
         ...DEFAULT_SETTINGS,
         algorithm,
-        scale: heroSize(algorithm).width / SAMPLE_IMAGE.width,
+        scale: HERO_SIZE.width / SAMPLE_IMAGE.width,
       };
       if (preset) {
         settings.color = {

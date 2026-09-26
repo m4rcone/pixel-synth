@@ -12,7 +12,7 @@ import {
   HERO_ALGORITHMS,
   HERO_ORIGINAL,
   HERO_PALETTES,
-  heroSize,
+  HERO_SIZE,
   heroVariant,
   PALETTE_PREVIEW_SIZE,
   palettePreview,
@@ -90,9 +90,7 @@ describe("generated assets", () => {
       HERO_PALETTES.map((palette) => [algorithm, palette] as const),
     ),
   )("has the %s × %s hero variant", (algorithm, palette) => {
-    expect(pngSize(heroVariant(algorithm, palette))).toEqual(
-      heroSize(algorithm),
-    );
+    expect(pngSize(heroVariant(algorithm, palette))).toEqual(HERO_SIZE);
   });
 
   it("has the hero original at its declared size", () => {

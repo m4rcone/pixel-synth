@@ -10,8 +10,7 @@ const TICK = 20;
 
 type Size = { width: number; height: number };
 
-/** An algorithm in the stepper, with the processing size of its images. */
-export type HeroAlgorithmInfo = { id: string; name: string; size: Size };
+export type HeroAlgorithmInfo = { id: string; name: string };
 
 /** Display facts about a hero palette; `param` is null for 1-bit. */
 export type HeroPaletteInfo = {
@@ -38,6 +37,7 @@ export function HeroInstrument({
   algorithms,
   palettes,
   variantPattern,
+  size,
   original,
 }: {
   // Everything comes in as data so the client bundle doesn't carry the
@@ -46,6 +46,8 @@ export function HeroInstrument({
   palettes: HeroPaletteInfo[];
   /** Image path with `{algorithm}` and `{palette}` placeholders. */
   variantPattern: string;
+  /** Processing size of every variant; the hero shows them 1:1. */
+  size: Size;
   original: { src: string };
 }) {
   const [algorithmIndex, setAlgorithmIndex] = useState(0);
@@ -54,7 +56,6 @@ export function HeroInstrument({
 
   const algorithm = algorithms[algorithmIndex];
   const palette = palettes[paletteIndex];
-  const { size } = algorithm;
   const variant = (a: number, p: number) =>
     variantPattern
       .replace("{algorithm}", algorithms[wrap(a, algorithms.length)].id)
@@ -79,7 +80,7 @@ export function HeroInstrument({
     (palette.param ? `&palette=${palette.param}` : "");
 
   return (
-    <figure className="flex w-full min-w-0 flex-col gap-4">
+    <figure className="flex w-full max-w-124 min-w-0 flex-col gap-4 xl:justify-self-end">
       <div className="relative pt-3.5 pl-4">
         <div
           aria-hidden="true"
@@ -103,7 +104,10 @@ export function HeroInstrument({
             }}
             width={size.width}
             height={size.height}
-            beforeSizes="(max-width: 1024px) 100vw, 540px"
+            beforeSizes="(max-width: 640px) 100vw, 480px"
+            // Shown 1:1 from sm up; smaller screens scale it down smoothly
+            // (nearest-neighbor would add moiré).
+            afterClassName="max-sm:[image-rendering:auto]"
             labels={{ before: "Before", after: "After" }}
             initial={50}
             onPointerPosition={setPoint}

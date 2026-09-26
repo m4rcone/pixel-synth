@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 type CompareSliderProps = {
   before: { src: string; alt: string };
@@ -12,6 +13,8 @@ type CompareSliderProps = {
   /** `sizes` of the (optimized) "before" image. */
   beforeSizes?: string;
   labels?: { before: string; after: string };
+  /** Extra classes for the "after" image (e.g. to change its scaling). */
+  afterClassName?: string;
   /** Initial share of the "before" image shown, in percent. */
   initial?: number;
   onDraggingChange?: (dragging: boolean) => void;
@@ -31,6 +34,7 @@ export function CompareSlider({
   height = 250,
   beforeSizes = "(max-width: 480px) 100vw, 424px",
   labels = { before: "Source", after: "Dithered" },
+  afterClassName,
   initial = 38,
   onDraggingChange,
   onPointerPosition,
@@ -85,7 +89,10 @@ export function CompareSlider({
         unoptimized
         priority
         draggable={false}
-        className="absolute inset-0 size-full object-cover [image-rendering:pixelated]"
+        className={cn(
+          "absolute inset-0 size-full object-cover [image-rendering:pixelated]",
+          afterClassName,
+        )}
       />
       <Image
         src={before.src}

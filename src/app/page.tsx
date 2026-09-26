@@ -40,7 +40,7 @@ import {
   HERO_ORIGINAL,
   HERO_PALETTES,
   HERO_VARIANT_PATTERN,
-  heroSize,
+  HERO_SIZE,
   heroVariant,
   PALETTE_PREVIEW_SIZE,
   palettePreview,
@@ -68,7 +68,6 @@ const algorithmName = (slug: string) => getAlgorithm(slug)?.shortName ?? slug;
 const HERO_ALGORITHM_LIST: HeroAlgorithmInfo[] = HERO_ALGORITHMS.map((id) => ({
   id,
   name: algorithmName(id),
-  size: heroSize(id),
 }));
 
 const HERO_PALETTE_LIST = HERO_PALETTES.map((id): HeroPaletteInfo => {
@@ -283,7 +282,7 @@ export default function HomePage() {
           tabIndex={-1}
           className="flex flex-1 flex-col focus:outline-hidden"
         >
-          <section className="grid items-center gap-12 pt-12 pb-16 lg:grid-cols-2 lg:pt-20 lg:pb-20">
+          <section className="grid items-center gap-12 pt-12 pb-16 lg:pt-20 lg:pb-20 xl:grid-cols-2">
             <div className="flex max-w-xl flex-col gap-7">
               <p className="text-caps text-paper-dim">
                 Specimen: {SAMPLE_IMAGE.name} · {SAMPLE_IMAGE.width} ×{" "}
@@ -342,6 +341,7 @@ export default function HomePage() {
               algorithms={HERO_ALGORITHM_LIST}
               palettes={HERO_PALETTE_LIST}
               variantPattern={HERO_VARIANT_PATTERN}
+              size={HERO_SIZE}
               original={HERO_ORIGINAL}
             />
           </section>

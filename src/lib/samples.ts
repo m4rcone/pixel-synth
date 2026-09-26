@@ -57,11 +57,13 @@ export const PALETTE_PREVIEW_ALGORITHM = "floyd-steinberg" as const;
 export const EXTRACTED_PREVIEW_COLORS = 8;
 
 /**
- * Landing hero: the sample at 240×160, one image per algorithm × palette
+ * Landing hero: the sample at 480×320, one image per algorithm × palette
  * pair, every algorithm and every preset palette plus 1-bit (the editor's
  * default black-and-white mode, not a palette), in catalog order. The first
- * of each list is what the hero opens on. Also the undithered original at
- * twice that size for the "before" side.
+ * of each list is what the hero opens on. 480 px is where every algorithm
+ * reads well (halftone screens need it to form dots) and the hero shows it
+ * 1:1, so no scaling beats against ordered patterns. Also the undithered
+ * original at twice that size for the "before" side.
  */
 export const HERO_ALGORITHMS: readonly AlgorithmId[] = ALGORITHMS.map(
   (algorithm) => algorithm.slug,
@@ -70,23 +72,11 @@ export const HERO_PALETTES: readonly string[] = [
   "1-bit",
   ...PALETTE_PRESETS.map((palette) => palette.id),
 ];
-export const HERO_SIZE = { width: 240, height: 160 } as const;
-/**
- * Halftone screens are measured in dots, not pixels: at 240 px no screen
- * size forms round dots. Screen algorithms render at twice the size with
- * the editor's default screen.
- */
-export const HERO_SCREEN_SIZE = { width: 480, height: 320 } as const;
-
-/** Processing size of an algorithm's hero variants. */
-export function heroSize(algorithm: string) {
-  return ALGORITHMS.find((a) => a.slug === algorithm)?.category === "screen"
-    ? HERO_SCREEN_SIZE
-    : HERO_SIZE;
-}
+export const HERO_SIZE = { width: 480, height: 320 } as const;
 
 /** Image path pattern of a hero variant, for code that can't call `heroVariant`. */
-export const HERO_VARIANT_PATTERN = "/landing/synthwave-{algorithm}-{palette}.png";
+export const HERO_VARIANT_PATTERN =
+  "/landing/synthwave-{algorithm}-{palette}.png";
 
 export function heroVariant(algorithm: string, palette: string) {
   return HERO_VARIANT_PATTERN.replace("{algorithm}", algorithm).replace(
@@ -97,8 +87,8 @@ export function heroVariant(algorithm: string, palette: string) {
 
 export const HERO_ORIGINAL = {
   src: "/landing/synthwave-original.png",
-  width: 480,
-  height: 320,
+  width: 960,
+  height: 640,
 } as const;
 
 /** The animated sample dithered, and its first frame for when it's paused. */
