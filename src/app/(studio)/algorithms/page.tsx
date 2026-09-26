@@ -60,7 +60,7 @@ export default function AlgorithmsPage() {
     <>
       <StructuredData data={structuredData} />
       <GlobalHeader page="Algorithms" />
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-4 py-10 sm:px-8">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-14 px-4 py-10 sm:px-8">
         <header className="border-line flex flex-col gap-6 border-b pb-8">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <h1
@@ -115,7 +115,7 @@ export default function AlgorithmsPage() {
                 {family.description}
               </p>
             </div>
-            <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,17rem),1fr))] gap-4">
+            <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,16rem),1fr))] gap-5">
               {family.algorithms.map((algorithm) => {
                 const frame = frameOf.get(algorithm.slug)!;
                 return (
@@ -132,7 +132,7 @@ export default function AlgorithmsPage() {
           </section>
         ))}
       </div>
-      <div className="mx-auto w-full max-w-7xl px-4 sm:px-8">
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-8">
         <SiteFooter />
       </div>
     </>

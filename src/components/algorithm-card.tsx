@@ -1,5 +1,5 @@
+import Image from "next/image";
 import Link from "next/link";
-import { AlgorithmCardPreview } from "@/components/algorithm-card-preview";
 import { getCategoryName, type AlgorithmInfo } from "@/lib/algorithms";
 import { cn } from "@/lib/utils";
 
@@ -20,15 +20,22 @@ export function AlgorithmCard({
     <article
       id={id}
       aria-labelledby={titleId}
-      // The title link is stretched over the whole card; the source toggle and
-      // the editor link sit above it (z-10) and stay independently clickable.
+      // The title link is stretched over the whole card; the editor link sits
+      // above it (z-10) and stays independently clickable.
       className="group border-line bg-ink-raised hover:border-line-strong target:border-safelight relative flex h-full scroll-mt-20 flex-col overflow-hidden rounded-md border transition-colors"
     >
-      <AlgorithmCardPreview
-        algorithm={algorithm.name}
-        preview={algorithm.preview}
-        preload={preloadPreview}
-      />
+      <div className="border-line bg-ink-sunken relative aspect-square w-full overflow-hidden border-b">
+        <Image
+          src={algorithm.preview}
+          alt={`Sphere dithered with ${algorithm.name}`}
+          fill
+          sizes="(max-width: 640px) 100vw, 320px"
+          // Served as-is: re-encoding would smear the 1-bit dither pattern.
+          unoptimized
+          preload={preloadPreview}
+          className="object-cover [image-rendering:pixelated]"
+        />
+      </div>
 
       <div className="flex flex-1 flex-col p-5">
         <p className="text-paper-dim flex items-center justify-between text-sm">
