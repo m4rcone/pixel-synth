@@ -115,9 +115,9 @@ try {
   };
   write(SAMPLE_IMAGE.src, sample);
 
-  // Animated sample: the grid rolls and the sun's stripes move once per loop. One 256-color
-  // palette for every frame, nearest color only (dithering is the
-  // editor's job).
+  // Animated sample: the grid rolls and the sun's stripes move once per
+  // loop. One 256-color palette for every frame, nearest color only
+  // (dithering is the editor's job).
   const { ANIMATED_SAMPLE } = await server.ssrLoadModule("/src/lib/samples.ts");
   const { renderAnimation } = await server.ssrLoadModule(
     "/src/lib/editor/pipeline.ts",
@@ -202,7 +202,7 @@ try {
       PIXEL_ART_PREVIEW.scale,
     ).pixels,
   );
-  // Landing hero: every algorithm × palette pair at 240×160, and the
+  // Landing hero: every algorithm × palette pair at HERO_SIZE, and the
   // undithered original for the "before" side.
   const {
     HERO_ALGORITHMS,

@@ -6,7 +6,7 @@ A free online dithering and pixel art tool. Turn any photo into dithered, 1-bit 
 
 ## Features
 
-- **17 dithering algorithms**: error diffusion (Floyd–Steinberg, Stucki, Atkinson…), ordered (Bayer, clustered dot, void-and-cluster, blue noise), noise-based and halftone screens (round, square or diamond dots, or lines, at any size and angle; lines can be lifted by the light or waved). Each has its own page showing its kernel or threshold matrix, with a before/after comparison.
+- **17 dithering algorithms**: error diffusion (Floyd–Steinberg, Stucki, Atkinson…), ordered (Bayer, clustered dot, blue noise), noise-based (random, void-and-cluster) and halftone screens (round, square or diamond dots, or lines, at any size and angle; lines can be lifted by the light or waved). Each has its own page showing its kernel or threshold matrix, with a before/after comparison.
 - **Color palettes**: dither straight to 17 classic palettes (Game Boy, Game Boy Pocket, PICO-8, NES, CGA, EGA, ZX Spectrum, C64, MSX, Apple II, sepia, cyanotype, riso…), a palette extracted from your image (2 to 64 colors) or your own custom colors. Match by color or by brightness.
 - **Palette import**: paste a list of hex codes or open a palette file (Lospec's HEX, GPL, PAL or Paint.NET TXT) to fill the custom palette.
 - **CMYK**: separate the image into cyan, magenta, yellow and black, dither each ink on its own and overprint them on white paper, like a four-color press. With the halftone and line screens, each ink takes its classic angle and the screens form rosettes; "Black ink" sets how much of the shared gray prints in black.
@@ -28,7 +28,7 @@ A free online dithering and pixel art tool. Turn any photo into dithered, 1-bit 
 
 | Route                | What it is                                                             |
 | -------------------- | ---------------------------------------------------------------------- |
-| `/`                  | Landing page: palettes, pixel art, use cases, how it works, FAQ        |
+| `/`                  | Landing page: before/after hero, algorithms, palettes, GIFs, uses, FAQ |
 | `/editor`            | The editor                                                             |
 | `/algorithms`        | The algorithm catalog, grouped by family (`#algorithm-<slug>` anchors) |
 | `/algorithms/<slug>` | One page per algorithm                                                 |
@@ -53,7 +53,7 @@ Every page has its own metadata, Open Graph image and structured data; `/sitemap
 
 - **Next.js** (App Router, all routes statically prerendered) · **React** · **TypeScript**
 - **Tailwind CSS** · **shadcn/ui** (Radix UI) · lucide icons
-- A dependency-free image pipeline (typed arrays + Web Worker), Canvas 2D viewport and a single WebGL shader for the landing background
+- A dependency-free image pipeline (typed arrays + Web Worker) and a Canvas 2D viewport; the landing is static images and two small client islands
 - **Vitest** (engine and pure logic) · **Playwright + axe** (end-to-end and accessibility)
 - Deployed on **Vercel**
 
@@ -79,7 +79,7 @@ Then open http://localhost:3000.
 - `npm run lint:prettier`: format everything with Prettier
 - `npm test`: unit and end-to-end tests
 - `npm run test:unit`: engine and logic tests (Vitest)
-- `npm run test:e2e`: end-to-end and accessibility tests (Playwright; starts a dev server, or set `BASE_URL=http://localhost:3000` to reuse a running one)
+- `npm run test:e2e`: end-to-end and accessibility tests (Playwright; starts a dev server on `PORT` (3000 by default), or set `BASE_URL=http://localhost:3000` to reuse a running one)
 - `npm run test:a11y`: only the accessibility tests
 - `npm run perf:bundles`: per-route JavaScript size table (run after `npm run build`)
 - `node scripts/generate-previews.mjs`: regenerate the sample image and every preview with the current engine

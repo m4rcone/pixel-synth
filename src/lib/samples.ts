@@ -2,8 +2,9 @@
  * Generated sample assets (see scripts/generate-previews.mjs). The sample is
  * a procedural synthwave sunset in the site's colors: a long sky gradient,
  * lit clouds, a striped yellow sun, mountains and a blue-white grid over a
- * glossy floor, lit in HDR so it spans black to white (scripts/sample-scene.mjs). Used by the editor's "Try a
- * sample image", the landing and the palette pages.
+ * glossy floor, lit in HDR so it spans black to white
+ * (scripts/sample-scene.mjs). Used by the editor's "Try a sample image", the
+ * landing and the palette pages.
  */
 
 import { ALGORITHMS, type AlgorithmId } from "@/lib/algorithms";
