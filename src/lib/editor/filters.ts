@@ -87,11 +87,20 @@ export function unsharpMask(pixels: Pixels, amount: number) {
 }
 
 /**
- * Gaussian blur approximated by three successive box blurs (separable,
- * O(n) regardless of radius). Operates on RGB; alpha is left untouched.
+ * Below this sigma the blur uses an exact Gaussian kernel: three box blurs
+ * all round down to radius 0 there (nothing happens below ~0.58), and the
+ * kernel is still small.
+ */
+const EXACT_BLUR_MAX_SIGMA = 2;
+
+/**
+ * Gaussian blur, separable: an exact kernel for small sigmas, three
+ * successive box blurs (O(n) regardless of radius) for larger ones.
+ * Operates on RGB; alpha is left untouched.
  */
 export function gaussianBlur(pixels: Pixels, sigma: number) {
-  if (sigma < 0.2) return;
+  if (sigma <= 0) return;
+  if (sigma < EXACT_BLUR_MAX_SIGMA) return kernelBlur(pixels, sigma);
   const { width, height, data } = pixels;
   const size = width * height;
   const channels = [0, 1, 2].map((c) => {
@@ -111,6 +120,57 @@ export function gaussianBlur(pixels: Pixels, sigma: number) {
   for (let c = 0; c < 3; c++) {
     const channel = channels[c];
     for (let p = 0; p < size; p++) data[p * 4 + c] = channel[p];
+  }
+}
+
+/** Separable blur with a sampled, normalized Gaussian kernel. */
+function kernelBlur(pixels: Pixels, sigma: number) {
+  const { width, height, data } = pixels;
+  const radius = Math.ceil(sigma * 3);
+  const kernel = new Float32Array(2 * radius + 1);
+  let total = 0;
+  for (let k = -radius; k <= radius; k++) {
+    total += kernel[k + radius] = Math.exp(-(k * k) / (2 * sigma * sigma));
+  }
+  for (let k = 0; k < kernel.length; k++) kernel[k] /= total;
+
+  const row = new Float32Array(width * height * 3);
+  // Horizontal pass into `row`, vertical pass back into `data`; edges clamp.
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      let r = 0,
+        g = 0,
+        b = 0;
+      for (let k = -radius; k <= radius; k++) {
+        const i = (y * width + Math.min(width - 1, Math.max(0, x + k))) * 4;
+        const w = kernel[k + radius];
+        r += data[i] * w;
+        g += data[i + 1] * w;
+        b += data[i + 2] * w;
+      }
+      const o = (y * width + x) * 3;
+      row[o] = r;
+      row[o + 1] = g;
+      row[o + 2] = b;
+    }
+  }
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      let r = 0,
+        g = 0,
+        b = 0;
+      for (let k = -radius; k <= radius; k++) {
+        const o = (Math.min(height - 1, Math.max(0, y + k)) * width + x) * 3;
+        const w = kernel[k + radius];
+        r += row[o] * w;
+        g += row[o + 1] * w;
+        b += row[o + 2] * w;
+      }
+      const i = (y * width + x) * 4;
+      data[i] = r;
+      data[i + 1] = g;
+      data[i + 2] = b;
+    }
   }
 }
 

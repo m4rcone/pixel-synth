@@ -20,7 +20,9 @@ export function toneMap(
   const midtones = hexToRgb(tones.midtones.color);
   const shadows = hexToRgb(tones.shadows.color);
   const midtoneMax = tones.midtones.range;
-  const shadowMax = tones.shadows.range;
+  // Never past the midtones band, whatever the settings say (a shared link
+  // can carry crossed ranges).
+  const shadowMax = Math.min(tones.shadows.range, midtoneMax);
 
   for (let p = 0, i = 0; p < bits.length; p++, i += 4) {
     out[i + 3] = source[i + 3];

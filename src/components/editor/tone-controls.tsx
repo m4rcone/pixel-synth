@@ -5,6 +5,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { useEditorActions, useEditorState } from "@/contexts/editor-context";
 import {
   DEFAULT_SETTINGS,
+  orderedTones,
   type EditorSettings,
   type ToneSlot,
 } from "@/lib/editor/settings";
@@ -34,6 +35,24 @@ function setTone(
   });
 }
 
+/**
+ * Moves a band's upper bound. With three colors the shadows and midtones
+ * bounds can't cross: the value stops one step short (the slider's range
+ * stays 0–255, as with the levels points).
+ */
+function setRange(slot: ToneSlot, range: number) {
+  return (settings: EditorSettings) => {
+    const { tones, colorCount } = settings;
+    let limited = range;
+    if (colorCount >= 3 && slot === "shadows") {
+      limited = Math.max(0, Math.min(range, tones.midtones.range - 1));
+    } else if (colorCount >= 3 && slot === "midtones") {
+      limited = Math.max(range, tones.shadows.range + 1);
+    }
+    return setTone(slot, { range: limited })(settings);
+  };
+}
+
 export function ToneControls() {
   const { status, settings } = useEditorState();
   const { update, commit } = useEditorActions();
@@ -52,7 +71,13 @@ export function ToneControls() {
         <Select
           value={String(settings.colorCount)}
           onValueChange={(value) =>
-            commit({ colorCount: Number(value) as 1 | 2 | 3 })
+            commit(({ tones }) => {
+              const colorCount = Number(value) as 1 | 2 | 3;
+              // A third band needs shadows below midtones.
+              return colorCount === 3
+                ? { colorCount, tones: orderedTones(tones) }
+                : { colorCount };
+            })
           }
           disabled={disabled}
         >
@@ -117,8 +142,8 @@ export function ToneControls() {
             disabled={slotDisabled}
             locked={slot === "highlights"}
             format={(v) => String(v)}
-            onChange={(range) => update(setTone(slot, { range }))}
-            onCommit={(range) => commit(setTone(slot, { range }))}
+            onChange={(range) => update(setRange(slot, range))}
+            onCommit={(range) => commit(setRange(slot, range))}
             leading={
               <>
                 <label htmlFor={colorId} className="sr-only">

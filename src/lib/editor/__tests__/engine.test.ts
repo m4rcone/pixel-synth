@@ -8,7 +8,12 @@ import { ditherToPalette, extractPalette } from "../palette-dither";
 import { renderPixels } from "../pipeline";
 import { createPixels, type Pixels } from "../pixels";
 import { resizeArea, resizeNearest } from "../resize";
-import { DEFAULT_FILTERS, DEFAULT_SETTINGS } from "../settings";
+import {
+  DEFAULT_FILTERS,
+  DEFAULT_SETTINGS,
+  orderedTones,
+  type EditorSettings,
+} from "../settings";
 
 function gradient(width: number, height: number): Pixels {
   const pixels = createPixels(width, height);
@@ -176,6 +181,28 @@ describe("filters", () => {
       blur: 0,
     });
     expect(px.data[0]).toBe(0);
+  });
+});
+
+describe("blur strength", () => {
+  // A hard edge; how far the blur spreads it into the white side.
+  const spread = (blur: number) => {
+    const edge = createPixels(32, 1);
+    for (let x = 0; x < 32; x++) {
+      const v = x < 16 ? 0 : 255;
+      edge.data.set([v, v, v, 255], x * 4);
+    }
+    applyFilters(edge, { ...DEFAULT_FILTERS, blur });
+    return 255 - edge.data[16 * 4];
+  };
+
+  it("acts from low values (not only past ~0.9) and grows with it", () => {
+    // Below ~0.4 a Gaussian that narrow barely touches the neighbors.
+    const values = [0.5, 0.8, 1, 2, 3.5, 5].map(spread);
+    expect(values[0]).toBeGreaterThan(0);
+    for (let i = 1; i < values.length; i++) {
+      expect(values[i]).toBeGreaterThan(values[i - 1]);
+    }
   });
 });
 
@@ -352,6 +379,69 @@ describe("renderPixels", () => {
     expect(colors).toEqual(
       new Set(["0,0,0", "255,255,255", "229,57,53", "30,136,229"]),
     );
+  });
+
+  it("each band covers the luminance up to its bound", () => {
+    // A pure ramp, 1 pixel per level; Bayer lights some pixels in each band.
+    const src = gradient(256, 4);
+    const tones = (shadows: number, midtones: number) => ({
+      ...DEFAULT_SETTINGS.tones,
+      shadows: { ...DEFAULT_SETTINGS.tones.shadows, range: shadows },
+      midtones: { ...DEFAULT_SETTINGS.tones.midtones, range: midtones },
+    });
+    const bandOf = (settings: EditorSettings) => {
+      const { pixels } = renderPixels(
+        src,
+        { ...settings, algorithm: "bayer-2-2" },
+        { dither: true },
+      );
+      // Highest input level each color was used for, across the ramp.
+      const top = new Map<string, number>();
+      for (let x = 0; x < 256; x++) {
+        for (let y = 0; y < 4; y++) {
+          const i = (y * 256 + x) * 4;
+          const key = `${pixels.data[i]},${pixels.data[i + 1]},${pixels.data[i + 2]}`;
+          if (key !== "0,0,0") top.set(key, x);
+        }
+      }
+      return top;
+    };
+
+    const bands = bandOf({
+      ...DEFAULT_SETTINGS,
+      colorCount: 3,
+      tones: tones(60, 150),
+    });
+    expect(bands.get("30,136,229")).toBeLessThanOrEqual(60);
+    expect(bands.get("229,57,53")).toBeLessThanOrEqual(150);
+    expect(bands.get("229,57,53")).toBeGreaterThan(60);
+    expect(bands.get("255,255,255")).toBe(255);
+
+    // Crossed ranges (e.g. from a shared link): shadows stop at the
+    // midtones bound instead of taking over the highlights.
+    const crossed = bandOf({
+      ...DEFAULT_SETTINGS,
+      colorCount: 3,
+      tones: tones(200, 150),
+    });
+    expect(crossed.get("30,136,229")).toBeLessThanOrEqual(150);
+    expect(crossed.get("255,255,255")).toBe(255);
+  });
+
+  it("orders crossed tone bands", () => {
+    const at = (shadows: number, midtones: number) =>
+      orderedTones({
+        ...DEFAULT_SETTINGS.tones,
+        shadows: { ...DEFAULT_SETTINGS.tones.shadows, range: shadows },
+        midtones: { ...DEFAULT_SETTINGS.tones.midtones, range: midtones },
+      });
+    const ranges = (t: EditorSettings["tones"]) => [
+      t.shadows.range,
+      t.midtones.range,
+    ];
+    expect(ranges(at(85, 170))).toEqual([85, 170]);
+    expect(ranges(at(200, 150))).toEqual([149, 150]);
+    expect(ranges(at(0, 0))).toEqual([0, 1]);
   });
 
   it("does not mutate the source", () => {

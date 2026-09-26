@@ -628,3 +628,119 @@ test("levels points can't cross and gamma sits in the middle", async ({
   await page.keyboard.press("Home");
   await expect(white).toHaveAttribute("aria-valuenow", "245");
 });
+
+/** Cheap fingerprint of what the canvas shows. */
+function canvasPrint(page: Page) {
+  return page
+    .getByRole("application")
+    .locator("canvas")
+    .evaluate((canvas: HTMLCanvasElement) => {
+      const { data } = canvas
+        .getContext("2d")!
+        .getImageData(0, 0, canvas.width, canvas.height);
+      let hash = 0;
+      for (let i = 0; i < data.length; i += 7) hash = (hash * 31 + data[i]) | 0;
+      return hash;
+    });
+}
+
+test("every filter changes the image, and its reset restores it exactly", async ({
+  page,
+}) => {
+  await page.goto("/editor?sample=1");
+  await page.getByRole("button", { name: "Apply dither" }).click();
+  await expect(page.locator('[aria-live="polite"]')).toContainText(
+    "Rendered image is ready",
+  );
+  const original = await canvasPrint(page);
+
+  // Keys that move each slider off its default; blur needs a few steps
+  // before it is visible at all.
+  const moves: [string, string, number][] = [
+    ["Black point", "PageUp", 1],
+    ["Gamma", "PageUp", 1],
+    ["White point", "PageDown", 1],
+    ["Contrast", "PageUp", 1],
+    ["Brightness", "PageUp", 1],
+    ["Saturation", "PageUp", 3],
+    ["Sharpen", "PageUp", 3],
+    ["Noise", "PageUp", 1],
+    ["Blur", "PageUp", 5],
+  ];
+  for (const [label, key, times] of moves) {
+    await page.getByRole("slider", { name: label }).focus();
+    for (let i = 0; i < times; i++) await page.keyboard.press(key);
+    await expect
+      .poll(() => canvasPrint(page), { message: `${label} changes the image` })
+      .not.toBe(original);
+
+    await page
+      .getByRole("button", { name: `Reset ${label.toLowerCase()} to default` })
+      .click();
+    await expect
+      .poll(() => canvasPrint(page), { message: `${label} reset restores it` })
+      .toBe(original);
+  }
+});
+
+test("every dot color control changes the image, and bands can't cross", async ({
+  page,
+}) => {
+  await page.goto("/editor?sample=1");
+  await page.getByRole("button", { name: "Apply dither" }).click();
+  await expect(page.locator('[aria-live="polite"]')).toContainText(
+    "Rendered image is ready",
+  );
+  const shadows = page.getByRole("slider", { name: "Shadows" });
+  const midtones = page.getByRole("slider", { name: "Midtones" });
+  const changes = async (action: () => Promise<void>, what: string) => {
+    const before = await canvasPrint(page);
+    await action();
+    await expect
+      .poll(() => canvasPrint(page), { message: `${what} changes the image` })
+      .not.toBe(before);
+  };
+  const pickColor = (label: string, color: string) =>
+    page.getByLabel(label, { exact: true }).fill(color);
+  const chooseCount = async (count: string) => {
+    await page.getByRole("combobox", { name: "Dot colors" }).click();
+    await page.getByRole("option", { name: count }).click();
+  };
+
+  await changes(() => pickColor("Highlights color", "#ffd54f"), "Highlights");
+  await changes(() => chooseCount("3 colors"), "3 colors");
+  await changes(async () => {
+    await midtones.focus();
+    await page.keyboard.press("PageUp");
+  }, "Midtones range");
+  await changes(async () => {
+    await shadows.focus();
+    await page.keyboard.press("PageDown");
+  }, "Shadows range");
+  await changes(() => pickColor("Midtones color", "#43a047"), "Midtones color");
+  await changes(() => pickColor("Shadows color", "#8e24aa"), "Shadows color");
+  await changes(
+    () => page.getByRole("checkbox", { name: "Shade by brightness" }).click(),
+    "Shade by brightness",
+  );
+  await changes(() => pickColor("Background", "#263238"), "Background");
+
+  // Shadows stop one step below midtones, and the other way around.
+  await shadows.focus();
+  await page.keyboard.press("End");
+  const midValue = Number(await midtones.getAttribute("aria-valuenow"));
+  await expect(shadows).toHaveAttribute("aria-valuenow", String(midValue - 1));
+  await page.keyboard.press("Home");
+  await midtones.focus();
+  await page.keyboard.press("Home");
+  await expect(midtones).toHaveAttribute("aria-valuenow", "1");
+
+  // Ranges set with two colors are put in order when a third comes in.
+  await chooseCount("2 colors");
+  await midtones.focus();
+  await page.keyboard.press("Home");
+  await expect(midtones).toHaveAttribute("aria-valuenow", "0");
+  await chooseCount("3 colors");
+  await expect(midtones).toHaveAttribute("aria-valuenow", "1");
+  await expect(shadows).toHaveAttribute("aria-valuenow", "0");
+});

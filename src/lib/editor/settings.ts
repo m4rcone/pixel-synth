@@ -123,6 +123,23 @@ export const DEFAULT_SETTINGS: EditorSettings = {
   },
 };
 
+/**
+ * Tone bands kept in order: the shadows band ends below the midtones band
+ * (otherwise shadows would take over midtones and part of the highlights).
+ * Used when a third dot color comes in with ranges set for two.
+ */
+export function orderedTones(
+  tones: EditorSettings["tones"],
+): EditorSettings["tones"] {
+  if (tones.shadows.range < tones.midtones.range) return tones;
+  const midtones = Math.max(1, tones.midtones.range);
+  return {
+    ...tones,
+    midtones: { ...tones.midtones, range: midtones },
+    shadows: { ...tones.shadows, range: midtones - 1 },
+  };
+}
+
 export function hasLevels(filters: Filters) {
   return (
     filters.blackPoint !== DEFAULT_FILTERS.blackPoint ||
