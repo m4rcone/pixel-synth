@@ -113,7 +113,7 @@ try {
   const { renderPixels } = await server.ssrLoadModule(
     "/src/lib/editor/pipeline.ts",
   );
-  const { DEFAULT_SETTINGS } = await server.ssrLoadModule(
+  const { DEFAULT_SETTINGS, SCREEN_LIMITS } = await server.ssrLoadModule(
     "/src/lib/editor/settings.ts",
   );
 
@@ -258,10 +258,22 @@ try {
     makeSampleScene(HERO_ORIGINAL.width, HERO_ORIGINAL.height),
   );
   const heroScale = HERO_SIZE.width / SAMPLE_IMAGE.width;
+  // Screens are sized in processed pixels: the default 8 px cell leaves only
+  // 30 dots across 240 px. The finest screen keeps them closer in scale to
+  // the pixel-level algorithms.
+  const heroScreen = {
+    ...DEFAULT_SETTINGS.screen,
+    size: SCREEN_LIMITS.size.min,
+  };
   for (const algorithm of HERO_ALGORITHMS) {
     for (const palette of HERO_PALETTES) {
       const preset = PALETTE_PRESETS.find((p) => p.id === palette);
-      const settings = { ...DEFAULT_SETTINGS, algorithm, scale: heroScale };
+      const settings = {
+        ...DEFAULT_SETTINGS,
+        algorithm,
+        scale: heroScale,
+        screen: heroScreen,
+      };
       if (preset) {
         settings.color = {
           ...DEFAULT_SETTINGS.color,
