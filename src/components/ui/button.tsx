@@ -11,7 +11,8 @@ const buttonVariants = cva(
       variant: {
         // Solid plate with the bottom-right corner cut.
         default: "btn-notch text-ink",
-        destructive: "bg-destructive text-paper hover:bg-destructive/85",
+        // Same cut-corner plate, in the destructive color.
+        destructive: "btn-notch-destructive text-paper",
         outline: "text-paper hover:text-paper-hot",
         secondary: "bg-secondary text-secondary-foreground hover:bg-accent",
         ghost: "text-paper-dim hover:bg-accent hover:text-paper",
@@ -29,7 +30,7 @@ const buttonVariants = cva(
     // Extra room on the right for the cut corner (after the size padding).
     compoundVariants: [
       {
-        variant: "default",
+        variant: ["default", "destructive"],
         size: ["default", "sm", "lg"],
         className: "pr-6 has-[>svg]:pr-5",
       },

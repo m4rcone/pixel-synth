@@ -213,6 +213,23 @@
   }
 }
 
+/* Same cut-corner plate as btn-notch, in the destructive color: a confirm
+   action that is both primary-shaped and marked as dangerous. */
+@utility btn-notch-destructive {
+  background-image: linear-gradient(
+    -45deg,
+    transparent 0.5rem,
+    var(--destructive) 0.5rem
+  );
+  &:hover {
+    background-image: linear-gradient(
+      -45deg,
+      transparent 0.5rem,
+      color-mix(in oklab, var(--destructive) 85%, transparent) 0.5rem
+    );
+  }
+}
+
 /* Secondary button: corner brackets over a faint frame. */
 @utility btn-brackets {
   --bracket: linear-gradient(var(--paper), var(--paper));
