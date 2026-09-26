@@ -12,7 +12,7 @@ Turn any image into algorithmic art using real dithering techniques — right in
 - **Sample image** — no photo at hand? Try the built-in sample, which includes a calibration strip.
 - **Pixel art mode** — one-click preset, output width in pixels, nearest-color "no dither" option and crisp ×2/×4/×8 export.
 - **Interactive controls** — processing scale, brightness, contrast, noise and blur.
-- **Tone mapping** — assign custom colors to shadows, midtones and highlights, with optional luminance preservation.
+- **1-bit dot colors** — tint the dots of a classic 1-bit dither by brightness band (shadows, midtones, highlights), optionally shaded by the original brightness.
 - **Live before / after** — pan, zoom, pinch and compare the original against the processed image, side by side or with a toggle.
 - **Fast** — the pipeline runs in a Web Worker; a 4-megapixel image dithers in roughly 0.1–0.35 s on a recent laptop.
 - **100% client-side** — every pixel is computed locally; nothing leaves your device.

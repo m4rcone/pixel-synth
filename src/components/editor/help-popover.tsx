@@ -21,8 +21,8 @@ const TIPS = [
     body: "Shrinks the image to about 128 × 96 pixels’ worth of detail, whatever its shape, and applies PICO-8 with a 2×2 Bayer pattern. Save it ×4 or ×8 to share.",
   },
   {
-    title: "Luminance",
-    body: "Applies each tone color while preserving the original brightness of the pixel.",
+    title: "1-bit dot colors",
+    body: "In 1-bit mode, lit dots take the color of their brightness band (highlights, midtones, shadows) on a black background. “Shade by brightness” darkens each color with the original pixel’s brightness.",
   },
   {
     title: "Restore defaults",

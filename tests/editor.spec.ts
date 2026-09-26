@@ -284,3 +284,22 @@ test("the palettes page link applies the full pixel art preset", async ({
     "PICO-8",
   );
 });
+
+test("1-bit mode names its dot colors and shading", async ({ page }) => {
+  await page.goto("/editor");
+  await upload(page);
+  await page.getByRole("button", { name: "Apply dither" }).click();
+
+  await expect(
+    page.getByRole("button", { name: "1-bit", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  const dotColors = page.getByRole("combobox", { name: "Dot colors" });
+  await expect(dotColors).toBeEnabled();
+  await dotColors.click();
+  await page.getByRole("option", { name: "3 colors" }).click();
+  await expect(dotColors).toHaveText("3 colors");
+  await page.getByRole("checkbox", { name: "Shade by brightness" }).check();
+  await expect(
+    page.getByRole("checkbox", { name: "Shade by brightness" }),
+  ).toBeChecked();
+});

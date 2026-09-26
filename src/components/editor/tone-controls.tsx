@@ -44,42 +44,48 @@ export function ToneControls() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-end gap-4">
-        <div className="flex flex-1 flex-col gap-2">
-          <Label
-            htmlFor="tone-color-count"
-            className="text-label text-paper-dim"
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="tone-color-count" className="text-label text-paper-dim">
+          Dot colors
+        </Label>
+        <Select
+          value={String(settings.colorCount)}
+          onValueChange={(value) =>
+            commit({ colorCount: Number(value) as 1 | 2 | 3 })
+          }
+          disabled={disabled}
+        >
+          <SelectTrigger
+            id="tone-color-count"
+            aria-describedby="tone-color-count-hint"
+            className="w-full"
           >
-            Color mode
-          </Label>
-          <Select
-            value={String(settings.colorCount)}
-            onValueChange={(value) =>
-              commit({ colorCount: Number(value) as 1 | 2 | 3 })
-            }
-            disabled={disabled}
-          >
-            <SelectTrigger id="tone-color-count" className="w-full">
-              <SelectValue placeholder="Select a quantity" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1">1 color</SelectItem>
-              <SelectItem value="2">2 colors</SelectItem>
-              <SelectItem value="3">3 colors</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex h-9 items-center gap-2">
-          <Checkbox
-            id="tone-luminance"
-            checked={settings.preserveLuminance}
-            onCheckedChange={(checked) =>
-              commit({ preserveLuminance: checked === true })
-            }
-            disabled={disabled}
-          />
-          <Label htmlFor="tone-luminance">Luminance</Label>
-        </div>
+            <SelectValue placeholder="Select a quantity" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="1">1 color</SelectItem>
+            <SelectItem value="2">2 colors</SelectItem>
+            <SelectItem value="3">3 colors</SelectItem>
+          </SelectContent>
+        </Select>
+        <p
+          id="tone-color-count-hint"
+          className="text-paper-dim text-xs leading-relaxed"
+        >
+          Black background; lit dots take the color of their brightness band.
+        </p>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <Checkbox
+          id="tone-luminance"
+          checked={settings.preserveLuminance}
+          onCheckedChange={(checked) =>
+            commit({ preserveLuminance: checked === true })
+          }
+          disabled={disabled}
+        />
+        <Label htmlFor="tone-luminance">Shade by brightness</Label>
       </div>
 
       {TONE_SLOTS.map(({ slot, label, minColors }) => {

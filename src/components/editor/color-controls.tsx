@@ -31,7 +31,7 @@ import { SliderField } from "./slider-field";
 import { ToneControls } from "./tone-controls";
 
 const MODES = [
-  { value: "mono", label: "Monochrome" },
+  { value: "mono", label: "1-bit" },
   { value: "palette", label: "Palette" },
 ] as const;
 
