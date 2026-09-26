@@ -229,7 +229,8 @@ export default function HomePage() {
               <p className="text-paper-dim mt-8 max-w-md text-lg leading-relaxed">
                 Turn any photo into dithered, 1-bit or pixel art images.{" "}
                 {ALGORITHMS.length} algorithms, Game Boy, NES, PICO-8 and CGA
-                palettes, crisp exports. Everything runs on your device.
+                palettes, crisp PNG and animated GIF exports. Everything runs on
+                your device.
               </p>
 
               <div className="mt-9 flex flex-wrap items-center gap-3">

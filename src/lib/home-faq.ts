@@ -1,3 +1,4 @@
+import { MAX_ANIMATION_FRAMES } from "@/lib/editor/animation-limits";
 import { EXPORT_FACTORS } from "@/lib/editor/export";
 import { SUPPORTED_FORMATS_DETAIL } from "@/lib/editor/load-image";
 
@@ -54,6 +55,21 @@ export const HOME_FAQ: FaqEntry[] = [
     question: "Can I share my settings?",
     answer: [
       "Yes. The link icon in the editor copies a link that reopens the editor with the same look for any image. It never includes your image.",
+    ],
+  },
+  {
+    question: "Can I dither an animated GIF?",
+    answer: [
+      `Yes, up to ${MAX_ANIMATION_FRAMES} frames. Every frame is dithered with the same palette and saved as an animated GIF with the original timing. `,
+      { text: "Bayer", href: "/algorithms/bayer-8-8" },
+      " and ",
+      { text: "Blue Noise", href: "/algorithms/blue-noise" },
+      " stay steady from frame to frame; try them on the ",
+      {
+        text: "animated sample",
+        href: "/editor?sample=animated&algorithm=bayer-8-8",
+      },
+      ".",
     ],
   },
   {

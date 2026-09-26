@@ -6,11 +6,11 @@ export const siteConfig = {
   /** Home title, used as is (the root layout applies no template to it). */
   title: "Free Online Dithering & Pixel Art Tool | PixelSynth",
   url: "https://pixelsynth.art",
-  description: `Turn photos into dithered, 1-bit or pixel art images in your browser. ${ALGORITHMS.length} algorithms, Game Boy, NES, PICO-8 and CGA palettes. Free, no uploads.`,
+  description: `Turn photos and animated GIFs into dithered, 1-bit or pixel art in your browser. ${ALGORITHMS.length} algorithms, Game Boy, NES, PICO-8 and CGA palettes. Free, no uploads.`,
   creator: "m4rcone",
   previewImage: "/250/pixel-synth.png",
   /** Last meaningful content update, used by the sitemap. */
-  updated: "2026-09-25",
+  updated: "2026-09-26",
   links: {
     /** Author profile (structured data). */
     github: "https://github.com/m4rcone",
