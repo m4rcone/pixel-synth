@@ -1,7 +1,7 @@
 "use client";
 
 import { type ChangeEvent, type DragEvent, useRef, useState } from "react";
-import { ImageUp, LoaderCircle, Orbit } from "lucide-react";
+import { ImageUp, LoaderCircle, Sunset } from "lucide-react";
 import { useEditorActions } from "@/contexts/editor-context";
 import {
   ImageLoadError,
@@ -120,7 +120,7 @@ export function ImageDropzone() {
             {loadingSample === "still" ? (
               <LoaderCircle className="animate-spin" aria-hidden="true" />
             ) : (
-              <Orbit aria-hidden="true" />
+              <Sunset aria-hidden="true" />
             )}
             {loadingSample === "still"
               ? "Loading sample…"

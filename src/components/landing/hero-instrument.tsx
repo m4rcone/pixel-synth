@@ -95,7 +95,7 @@ export function HeroInstrument({
           <CompareSlider
             before={{
               src: original.src,
-              alt: "The sample image before dithering: a ringed gas giant with a small moon, stars and a nebula",
+              alt: "The sample image before dithering: a synthwave sunset, a striped sun over mountains and a neon grid",
             }}
             after={{
               src: variant(algorithmIndex, paletteIndex),

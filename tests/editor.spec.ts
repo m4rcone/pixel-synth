@@ -470,7 +470,7 @@ test("a settings link reopens the editor with the same look", async ({
   await page.getByRole("button", { name: "Share settings" }).click();
   const link = await page.getByLabel("Settings link").inputValue();
   expect(new URL(link).pathname).toBe("/editor");
-  expect(link).not.toContain("orbit");
+  expect(link).not.toContain("synthwave");
   await page.getByRole("button", { name: "Copy link" }).click();
   await expect(page.getByText("Link copied to the clipboard.")).toBeVisible();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(link);

@@ -3,7 +3,7 @@
 //   public/specimens/      the algorithm specimen (a CRT terminal on a table,
 //                          scripts/specimen-scene.mjs) and every algorithm's
 //                          preview of it
-//   public/samples/        sample image (a ringed planet, scripts/sample-scene.mjs)
+//   public/samples/        sample image (a synthwave sunset, scripts/sample-scene.mjs)
 //                          and its animated version (GIF)
 //   public/palettes/       palette previews of the sample, pixel art preset
 //   public/landing/        hero variants (algorithm × palette), the dithered
@@ -115,7 +115,7 @@ try {
   };
   write(SAMPLE_IMAGE.src, sample);
 
-  // Animated sample: the rings turn and the moon orbits once per loop. One 256-color
+  // Animated sample: the grid rolls and the sun's stripes move once per loop. One 256-color
   // palette for every frame, nearest color only (dithering is the
   // editor's job).
   const { ANIMATED_SAMPLE } = await server.ssrLoadModule("/src/lib/samples.ts");

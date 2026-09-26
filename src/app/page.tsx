@@ -491,7 +491,7 @@ export default function HomePage() {
               still={ANIMATED_DITHER.still}
               width={ANIMATED_DITHER.width}
               height={ANIMATED_DITHER.height}
-              alt={`The animated sample, rings turning around a gas giant, dithered with ${algorithmName(ANIMATED_DITHER.algorithm)} and the ${paletteName(ANIMATED_DITHER.palette)} palette`}
+              alt={`The animated sample, a neon grid rolling toward a striped sun, dithered with ${algorithmName(ANIMATED_DITHER.algorithm)} and the ${paletteName(ANIMATED_DITHER.palette)} palette`}
               caption={`${ANIMATED_SAMPLE.frames} frames · ${ANIMATED_SAMPLE.delay} ms · ${algorithmName(ANIMATED_DITHER.algorithm)} · ${paletteName(ANIMATED_DITHER.palette)}`}
             />
           </section>

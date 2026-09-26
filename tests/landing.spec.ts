@@ -93,7 +93,7 @@ test("the hero steps through algorithms and palettes", async ({ page }) => {
     hero.getByRole("img", {
       name: /dithered with Line Screen and the Game Boy palette/,
     }),
-  ).toHaveAttribute("src", "/landing/orbit-line-screen-gameboy.png");
+  ).toHaveAttribute("src", "/landing/synthwave-line-screen-gameboy.png");
   await expect(link).toHaveAttribute(
     "href",
     "/editor?sample=1&algorithm=line-screen&palette=gameboy",
