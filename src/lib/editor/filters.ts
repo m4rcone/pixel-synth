@@ -1,14 +1,22 @@
 import { createRandom, type Pixels } from "./pixels";
-import { DEFAULT_FILTERS, type Filters } from "./settings";
+import { DEFAULT_FILTERS, hasLevels, type Filters } from "./settings";
+
+/** Blur radius (sigma, in pixels) of the unsharp mask behind "sharpen". */
+const SHARPEN_SIGMA = 1;
 
 /**
- * Applies contrast → brightness → saturation → noise → blur in place, in
- * that order. Contrast pivots around mid-gray; brightness is a multiplier
- * (1 = neutral); saturation scales each color's distance from its luma.
+ * Applies levels → sharpen → contrast → brightness → saturation → noise →
+ * blur in place, in that order. Levels maps the black and white points to
+ * 0 and 255 with a midtone gamma. Contrast pivots around mid-gray;
+ * brightness is a multiplier (1 = neutral); saturation scales each color's
+ * distance from its luma.
  */
 export function applyFilters(pixels: Pixels, filters: Filters, seed = 1) {
   const { data } = pixels;
-  const { contrast, brightness, saturation, noise, blur } = filters;
+  const { contrast, brightness, saturation, noise, blur, sharpen } = filters;
+
+  if (hasLevels(filters)) applyLevels(pixels, filters);
+  if (sharpen > 0) unsharpMask(pixels, sharpen);
 
   if (
     contrast !== DEFAULT_FILTERS.contrast ||
@@ -40,6 +48,42 @@ export function applyFilters(pixels: Pixels, filters: Filters, seed = 1) {
   }
 
   if (blur > 0) gaussianBlur(pixels, blur * 0.65);
+}
+
+/** Levels on R, G and B alike, through a 256-entry lookup table. */
+export function applyLevels(
+  { data }: Pixels,
+  { blackPoint, whitePoint, gamma }: Filters,
+) {
+  // Keep at least one step between the points, whatever the input.
+  const black = Math.min(254, Math.max(0, blackPoint));
+  const white = Math.max(black + 1, Math.min(255, whitePoint));
+  const exponent = 1 / gamma;
+  const table = new Uint8ClampedArray(256);
+  for (let v = 0; v < 256; v++) {
+    const t = Math.min(1, Math.max(0, (v - black) / (white - black)));
+    table[v] = Math.round(255 * t ** exponent);
+  }
+  for (let i = 0; i < data.length; i += 4) {
+    data[i] = table[data[i]];
+    data[i + 1] = table[data[i + 1]];
+    data[i + 2] = table[data[i + 2]];
+  }
+}
+
+/**
+ * Unsharp mask: pushes every pixel away from its blurred neighborhood by
+ * `amount` (1 doubles the local contrast of fine detail). Alpha is kept.
+ */
+export function unsharpMask(pixels: Pixels, amount: number) {
+  const blurred = { ...pixels, data: new Uint8ClampedArray(pixels.data) };
+  gaussianBlur(blurred, SHARPEN_SIGMA);
+  const { data } = pixels;
+  for (let i = 0; i < data.length; i += 4) {
+    for (let c = i; c < i + 3; c++) {
+      data[c] = data[c] + (data[c] - blurred.data[c]) * amount;
+    }
+  }
 }
 
 /**

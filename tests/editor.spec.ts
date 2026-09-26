@@ -523,3 +523,108 @@ test("exports are indexed PNGs at the smallest bit depth", async ({ page }) => {
   });
   expect(await header("2")).toMatchObject({ width: 3600, height: 2400 });
 });
+
+test("a transparent 1-bit background saves as a PNG with transparency", async ({
+  page,
+}) => {
+  await page.goto("/editor?sample=1");
+  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("checkbox", { name: "Transparent" }).click();
+  await expect(page.getByLabel("Background", { exact: true })).toBeDisabled();
+  await expect(page.locator('[aria-live="polite"]')).toContainText(
+    "Rendered image is ready",
+  );
+
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Save image" });
+  await dialog.getByRole("button", { name: /^1x,/ }).click();
+  const download = page.waitForEvent("download");
+  await dialog.getByRole("button", { name: "Save PNG" }).click();
+  const png = readFileSync((await (await download).path())!);
+  // Indexed, with a tRNS chunk marking the unlit color transparent.
+  expect(png[25]).toBe(3);
+  expect(png.includes(Buffer.from("tRNS"))).toBe(true);
+
+  // Unchecking brings back a solid background.
+  await page.getByRole("checkbox", { name: "Transparent" }).click();
+  await expect(page.getByLabel("Background", { exact: true })).toBeEnabled();
+});
+
+test("after a reset, transparency toggles back to the default background", async ({
+  page,
+}) => {
+  await page.goto("/editor?sample=1");
+  await page.getByRole("button", { name: "Apply dither" }).click();
+  const background = page.getByLabel("Background", { exact: true });
+  const transparent = page.getByRole("checkbox", { name: "Transparent" });
+  await background.fill("#1e88e5");
+  await expect(background).toHaveValue("#1e88e5");
+
+  await page.getByRole("button", { name: "Reset", exact: true }).click();
+  await page
+    .getByRole("alertdialog", { name: "Reset adjustments?" })
+    .getByRole("button", { name: "Reset", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Apply dither" }).click();
+  await expect(background).toHaveValue("#000000");
+
+  await transparent.click();
+  await transparent.click();
+  await expect(background).toHaveValue("#000000");
+
+  // A color picked before turning transparency on still comes back.
+  await background.fill("#e53935");
+  await transparent.click();
+  await transparent.click();
+  await expect(background).toHaveValue("#e53935");
+});
+
+test("levels points can't cross and gamma sits in the middle", async ({
+  page,
+}) => {
+  await page.goto("/editor?sample=1");
+  await expect(page.getByRole("application")).toBeVisible();
+  const black = page.getByRole("slider", { name: "Black point" });
+  const white = page.getByRole("slider", { name: "White point" });
+  const gamma = page.getByRole("slider", { name: "Gamma" });
+  const value = async (slider: typeof black) =>
+    Number(await slider.getAttribute("aria-valuenow"));
+  const thumbLeft = (slider: typeof black) =>
+    slider.evaluate((el) => (el.parentElement as HTMLElement).style.left);
+
+  await expect(gamma).toHaveAttribute("aria-valuetext", "1.00");
+  await gamma.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(gamma).not.toHaveAttribute("aria-valuetext", "1.00");
+
+  // Moving one point never moves the other's thumb or changes its range.
+  await black.focus();
+  for (let i = 0; i < 64; i++) await page.keyboard.press("ArrowRight");
+  const blackLeft = await thumbLeft(black);
+  await white.focus();
+  for (let i = 0; i < 12; i++) await page.keyboard.press("PageDown");
+  expect(await thumbLeft(black)).toBe(blackLeft);
+  await expect(black).toHaveAttribute("aria-valuemax", "254");
+
+  // Pushing a point into the other stops one step short of it.
+  const whiteValue = await value(white);
+  await black.focus();
+  await page.keyboard.press("End");
+  await expect(black).toHaveAttribute("aria-valuenow", String(whiteValue - 1));
+  await white.focus();
+  await page.keyboard.press("Home");
+  await expect(white).toHaveAttribute("aria-valuenow", String(whiteValue));
+
+  // With the black point at its highest, the white point still moves
+  // (away from it) and the black point can move back down.
+  await page.keyboard.press("End");
+  await black.focus();
+  await page.keyboard.press("End");
+  await expect(black).toHaveAttribute("aria-valuenow", "254");
+  await expect(white).toHaveAttribute("aria-valuemin", "1");
+  for (let i = 0; i < 10; i++) await page.keyboard.press("ArrowLeft");
+  await expect(black).toHaveAttribute("aria-valuenow", "244");
+  await white.focus();
+  await page.keyboard.press("Home");
+  await expect(white).toHaveAttribute("aria-valuenow", "245");
+});

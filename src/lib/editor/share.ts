@@ -79,6 +79,10 @@ export function encodeSettings(
     ...(settings.preserveLuminance !== base.preserveLuminance
       ? { preserveLuminance: settings.preserveLuminance }
       : {}),
+    // null (transparent) survives JSON as null.
+    ...(settings.background !== base.background
+      ? { background: settings.background }
+      : {}),
     ...(Object.keys(tones).length ? { tones } : {}),
     ...(diffObject(color, baseColor)
       ? { color: diffObject(color, baseColor) }
@@ -156,6 +160,11 @@ export function decodeSettings(code: string): SharedSettings | null {
   }
   if (typeof data.preserveLuminance === "boolean") {
     settings.preserveLuminance = data.preserveLuminance;
+  }
+  if (data.background === null) {
+    settings.background = null;
+  } else if (typeof data.background === "string" && HEX.test(data.background)) {
+    settings.background = data.background;
   }
 
   if (isObject(data.tones)) {

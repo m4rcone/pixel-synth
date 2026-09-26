@@ -179,6 +179,86 @@ describe("filters", () => {
   });
 });
 
+describe("levels", () => {
+  const gray = (...values: number[]) => {
+    const px = createPixels(values.length, 1);
+    values.forEach((v, i) => px.data.set([v, v, v, 255], i * 4));
+    return px;
+  };
+  const reds = (px: Pixels) => [...px.data].filter((_, i) => i % 4 === 0);
+
+  it("maps the black and white points to 0 and 255", () => {
+    const px = gray(10, 40, 140, 240, 250);
+    applyFilters(px, { ...DEFAULT_FILTERS, blackPoint: 40, whitePoint: 240 });
+    expect(reds(px)).toEqual([0, 0, 128, 255, 255]);
+  });
+
+  it("gamma above 1 lightens the midtones, below 1 darkens them", () => {
+    const light = gray(0, 128, 255);
+    applyFilters(light, { ...DEFAULT_FILTERS, gamma: 2 });
+    expect(reds(light)).toEqual([0, Math.round(255 * (128 / 255) ** 0.5), 255]);
+    const dark = gray(128);
+    applyFilters(dark, { ...DEFAULT_FILTERS, gamma: 0.5 });
+    expect(dark.data[0]).toBeLessThan(128);
+  });
+
+  it("keeps a step between crossed points", () => {
+    const px = gray(99, 100, 101);
+    applyFilters(px, { ...DEFAULT_FILTERS, blackPoint: 100, whitePoint: 20 });
+    expect(reds(px)).toEqual([0, 0, 255]);
+  });
+});
+
+describe("sharpen", () => {
+  it("leaves a flat field alone and steepens an edge", () => {
+    const flatField = createPixels(8, 8);
+    flatField.data.fill(90);
+    applyFilters(flatField, { ...DEFAULT_FILTERS, sharpen: 2 });
+    expect(new Set(flatField.data.filter((_, i) => i % 4 !== 3))).toEqual(
+      new Set([90]),
+    );
+
+    const edge = createPixels(8, 1);
+    for (let x = 0; x < 8; x++) {
+      const v = x < 4 ? 60 : 180;
+      edge.data.set([v, v, v, 255], x * 4);
+    }
+    applyFilters(edge, { ...DEFAULT_FILTERS, sharpen: 1 });
+    expect(edge.data[3 * 4]).toBeLessThan(60);
+    expect(edge.data[4 * 4]).toBeGreaterThan(180);
+    expect(edge.data[4 * 4 + 3]).toBe(255);
+  });
+});
+
+describe("1-bit background", () => {
+  const render = (background: string | null) =>
+    renderPixels(
+      gradient(16, 2),
+      { ...DEFAULT_SETTINGS, algorithm: "bayer-4-4", background },
+      { dither: true },
+    ).pixels.data;
+  const offPixels = (data: Uint8ClampedArray) =>
+    [...Array(data.length / 4).keys()]
+      .map((p) => [...data.subarray(p * 4, p * 4 + 4)])
+      .filter(([r, g, b]) => !(r === 255 && g === 255 && b === 255));
+
+  it("paints off pixels with the background color", () => {
+    const off = offPixels(render("#1e88e5"));
+    expect(off.length).toBeGreaterThan(0);
+    for (const pixel of off) expect(pixel).toEqual([30, 136, 229, 255]);
+  });
+
+  it("leaves them transparent without one, and black by default", () => {
+    const transparent = render(null);
+    const black = render(DEFAULT_SETTINGS.background);
+    for (let i = 0; i < black.length; i += 4) {
+      const on = black[i] === 255;
+      expect(transparent[i + 3]).toBe(on ? 255 : 0);
+      if (!on) expect([...black.subarray(i, i + 4)]).toEqual([0, 0, 0, 255]);
+    }
+  });
+});
+
 describe("saturation", () => {
   const color = () => {
     const px = createPixels(1, 1);

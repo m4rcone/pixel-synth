@@ -37,14 +37,14 @@ export function bugReportContext({
   const colorLine =
     color.mode === "palette"
       ? `palette ${color.palette} (match by ${color.match})`
-      : `1-bit, ${settings.colorCount} dot color${settings.colorCount > 1 ? "s" : ""}${settings.preserveLuminance ? ", shaded by brightness" : ""}`;
+      : `1-bit, ${settings.colorCount} dot color${settings.colorCount > 1 ? "s" : ""}${settings.preserveLuminance ? ", shaded by brightness" : ""}, background ${settings.background ?? "transparent"}`;
 
   return [
     `Status: ${status}`,
     `Algorithm: ${settings.algorithm}`,
     `Color: ${colorLine}`,
     `Processing scale: ${Math.round(settings.scale * 100)}%`,
-    `Filters: brightness ${filters.brightness}, contrast ${filters.contrast}, noise ${filters.noise}, blur ${filters.blur}`,
+    `Filters: levels ${filters.blackPoint}–${filters.whitePoint} gamma ${filters.gamma}, brightness ${filters.brightness}, contrast ${filters.contrast}, sharpen ${filters.sharpen}, noise ${filters.noise}, blur ${filters.blur}`,
     `Image: ${source ? size(source) : "none"}`,
     `Output: ${result ? size(result) : "none"}`,
     `Browser: ${userAgent}`,

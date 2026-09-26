@@ -32,6 +32,24 @@ const FIT_PADDING = 0.92;
 /** Distance in px within which a press grabs the split divider. */
 const DIVIDER_GRAB = 16;
 const SPLIT_STEP = 0.05;
+/** Checkerboard behind transparent pixels: cell size (CSS px) and shades. */
+const CHECKER_CELL = 8;
+const CHECKER_SHADES = ["rgb(52 48 45)", "rgb(28 26 24)"];
+
+let checkerTile: HTMLCanvasElement | null = null;
+function checkerPattern(ctx: CanvasRenderingContext2D) {
+  if (!checkerTile) {
+    checkerTile = document.createElement("canvas");
+    checkerTile.width = checkerTile.height = CHECKER_CELL * 2;
+    const tile = checkerTile.getContext("2d")!;
+    tile.fillStyle = CHECKER_SHADES[0];
+    tile.fillRect(0, 0, CHECKER_CELL * 2, CHECKER_CELL * 2);
+    tile.fillStyle = CHECKER_SHADES[1];
+    tile.fillRect(0, 0, CHECKER_CELL, CHECKER_CELL);
+    tile.fillRect(CHECKER_CELL, CHECKER_CELL, CHECKER_CELL, CHECKER_CELL);
+  }
+  return ctx.createPattern(checkerTile, "repeat");
+}
 
 type Size = { width: number; height: number };
 
@@ -120,8 +138,14 @@ export function Canvas({ onStatusChange }: CanvasProps) {
     const height = frame.height * scale;
     const left = (view.width - width) / 2 + position.x;
     const top = (view.height - height) / 2 + position.y;
-    // Smooth only when shrinking; enlarged pixels stay crisp.
+    // Smooth only when shrinking; enlarged pixels stay crisp. A
+    // checkerboard shows through transparent pixels.
     const draw = (bitmap: ImageBitmap) => {
+      const checker = checkerPattern(ctx);
+      if (checker) {
+        ctx.fillStyle = checker;
+        ctx.fillRect(left, top, width, height);
+      }
       ctx.imageSmoothingEnabled = width < bitmap.width;
       ctx.imageSmoothingQuality = "high";
       ctx.drawImage(bitmap, left, top, width, height);

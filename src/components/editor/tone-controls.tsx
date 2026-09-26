@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { useEditorActions, useEditorState } from "@/contexts/editor-context";
 import {
@@ -72,9 +73,19 @@ export function ToneControls() {
           id="tone-color-count-hint"
           className="text-paper-dim text-xs leading-relaxed"
         >
-          Black background; lit dots take the color of their brightness band.
+          Lit dots take the color of their brightness band.
         </p>
       </div>
+
+      <BackgroundField
+        background={settings.background}
+        disabled={disabled}
+        onPick={(background) => {
+          update({ background });
+          commitColor();
+        }}
+        onBackground={(background) => commit({ background })}
+      />
 
       <div className="flex items-center gap-2">
         <Checkbox
@@ -129,6 +140,54 @@ export function ToneControls() {
           />
         );
       })}
+    </div>
+  );
+}
+
+/** Color of the "off" pixels, or transparent to lay the dither over other art. */
+function BackgroundField({
+  background,
+  disabled,
+  onPick,
+  onBackground,
+}: {
+  background: string | null;
+  disabled: boolean;
+  /** While a color is being picked (renders once it settles). */
+  onPick: (color: string) => void;
+  onBackground: (background: string | null) => void;
+}) {
+  // Unchecking "Transparent" brings back the color it replaced (remembered
+  // when it was checked, so a reset in between still restores the default).
+  const [lastColor, setLastColor] = useState(
+    background ?? DEFAULT_SETTINGS.background ?? "#000000",
+  );
+  const transparent = background === null;
+  return (
+    <div className="flex items-center gap-3">
+      <Label htmlFor="tone-background" className="text-label text-paper-dim">
+        Background
+      </Label>
+      <input
+        id="tone-background"
+        type="color"
+        value={(background ?? lastColor).toLowerCase()}
+        disabled={disabled || transparent}
+        onChange={(event) => onPick(event.target.value)}
+        className="border-line-strong h-6 w-10 shrink-0 cursor-pointer rounded-sm border bg-transparent p-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+      />
+      <div className="ml-auto flex items-center gap-2">
+        <Checkbox
+          id="tone-transparent"
+          checked={transparent}
+          onCheckedChange={(checked) => {
+            if (checked === true && background) setLastColor(background);
+            onBackground(checked === true ? null : lastColor);
+          }}
+          disabled={disabled}
+        />
+        <Label htmlFor="tone-transparent">Transparent</Label>
+      </div>
     </div>
   );
 }

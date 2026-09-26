@@ -28,7 +28,15 @@ const TIPS = [
   },
   {
     title: "1-bit dot colors",
-    body: "In 1-bit mode, lit dots take the color of their brightness band (highlights, midtones, shadows) on a black background. “Shade by brightness” darkens each color with the original pixel’s brightness.",
+    body: "In 1-bit mode, lit dots take the color of their brightness band (highlights, midtones, shadows). “Shade by brightness” darkens each color with the original pixel’s brightness.",
+  },
+  {
+    title: "Background",
+    body: "The color of the unlit dots in 1-bit mode. Make it transparent to save a dither you can lay over other artwork; the canvas shows a checkerboard behind it.",
+  },
+  {
+    title: "Levels",
+    body: "Black point and white point pick the tones that become pure black and pure white; gamma lightens or darkens the midtones. Small changes here reshape a dither more than any other filter. Sharpen brings out fine edges before dithering.",
   },
   {
     title: "Animated GIF",

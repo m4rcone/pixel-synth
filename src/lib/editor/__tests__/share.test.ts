@@ -20,14 +20,19 @@ const changed: EditorSettings = {
   scale: 0.35,
   diffusion: 0.75,
   filters: {
+    blackPoint: 12,
+    whitePoint: 240,
+    gamma: 1.4,
     brightness: 1.2,
     contrast: -0.3,
     saturation: 1.4,
     blur: 1.5,
+    sharpen: 0.8,
     noise: 0.1,
   },
   colorCount: 3,
   preserveLuminance: true,
+  background: "#f4efe6",
   tones: {
     highlights: { color: "#ffeecc", range: 255 },
     midtones: { color: "#E53935", range: 150 },
@@ -77,7 +82,7 @@ describe("settings links", () => {
         v: 1,
         algorithm: "not-an-algorithm",
         scale: 50,
-        filters: { contrast: -9, blur: "a lot", noise: 0.5 },
+        filters: { contrast: -9, blur: "a lot", noise: 0.5, gamma: 40 },
         colorCount: 7,
         tones: {
           midtones: { color: "red", range: 999 },
@@ -95,6 +100,7 @@ describe("settings links", () => {
       ...DEFAULT_SETTINGS.filters,
       contrast: -1,
       noise: 0.5,
+      gamma: 3,
     });
     expect(settings.colorCount).toBe(DEFAULT_SETTINGS.colorCount);
     expect(settings.tones.midtones).toEqual({
@@ -107,6 +113,16 @@ describe("settings links", () => {
     expect(settings.color.extractCount).toBe(MAX_PALETTE_COLORS);
     expect(shared.custom).toBeNull();
     expect(shared.dithered).toBe(false);
+  });
+
+  it("carries a transparent background", () => {
+    const transparent = { ...DEFAULT_SETTINGS, background: null };
+    expect(
+      decodeSettings(encodeSettings(transparent, false))?.settings.background,
+    ).toBeNull();
+    expect(
+      decodeSettings(encode({ v: 1, background: "blue" }))?.settings.background,
+    ).toBe(DEFAULT_SETTINGS.background);
   });
 
   it("rejects codes it can't read", () => {
