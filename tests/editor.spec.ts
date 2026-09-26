@@ -351,3 +351,79 @@ test("'Report a bug' carries the settings, never the image", async ({
     page.getByRole("link", { name: /Suggest a feature/ }),
   ).toHaveAttribute("href", /\/discussions\/new\?category=ideas$/);
 });
+
+test("a settings link reopens the editor with the same look", async ({
+  page,
+  context,
+  browserName,
+}) => {
+  if (browserName === "chromium") {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  }
+  await page.goto("/editor?sample=1&algorithm=atkinson&palette=gameboy");
+  await page.getByRole("button", { name: "Apply dither" }).click();
+  const contrast = page.getByRole("slider", { name: "Contrast" });
+  await contrast.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(contrast).toHaveAttribute("aria-valuetext", "0.01");
+
+  await page.getByRole("button", { name: "Share settings" }).click();
+  const link = await page.getByLabel("Settings link").inputValue();
+  expect(new URL(link).pathname).toBe("/editor");
+  expect(link).not.toContain("sunset");
+  await page.getByRole("button", { name: "Copy link" }).click();
+  await expect(page.getByText("Link copied to the clipboard.")).toBeVisible();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(link);
+
+  const other = await context.newPage();
+  const { pathname, search } = new URL(link);
+  await other.goto(pathname + search);
+  await other.waitForLoadState("networkidle");
+  await other.getByRole("button", { name: "Try a sample image" }).click();
+
+  // Dithered right away, with every shared setting.
+  await expect(
+    other.getByRole("button", { name: "Reset", exact: true }),
+  ).toBeVisible();
+  await expect(other.getByRole("combobox", { name: "Algorithm" })).toHaveText(
+    "Atkinson",
+  );
+  await expect(other.getByRole("combobox", { name: "Palette" })).toContainText(
+    "Game Boy",
+  );
+  await expect(other.getByRole("slider", { name: "Contrast" })).toHaveAttribute(
+    "aria-valuetext",
+    "0.01",
+  );
+});
+
+test("an unreadable settings link says so", async ({ page }) => {
+  await page.goto("/editor?s=not-a-code");
+  await expect(
+    page.getByRole("alert").filter({ hasText: "settings link can’t be read" }),
+  ).toBeVisible();
+});
+
+test("a settings link's custom palette wins over the saved one", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "pixelsynth:custom-palette",
+      JSON.stringify(["#111111", "#222222", "#333333", "#444444", "#555555"]),
+    );
+  });
+  const code = Buffer.from(
+    JSON.stringify({
+      v: 1,
+      color: { mode: "palette", palette: "custom" },
+      custom: ["#000000", "#ff0000", "#ffffff"],
+    }),
+  ).toString("base64url");
+  await page.goto(`/editor?sample=1&s=${code}`);
+  // The custom palette's color editor is open by default.
+  await expect(page.getByLabel(/^Color \d+$/)).toHaveCount(3);
+  await expect(page.getByLabel("Color 2", { exact: true })).toHaveValue(
+    "#ff0000",
+  );
+});

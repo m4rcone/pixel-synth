@@ -5,6 +5,7 @@ import { ControlPanelActions } from "./control-panel-actions";
 import { DitherControls } from "./dither-controls";
 import { FilterControls } from "./filter-controls";
 import { HelpPopover } from "./help-popover";
+import { ShareSettings } from "./share-settings";
 import { ColorControls } from "./color-controls";
 
 const SECTIONS: {
@@ -40,7 +41,10 @@ export function ControlPanel({ className }: { className?: string }) {
         >
           Control panel
         </h2>
-        <HelpPopover />
+        <div className="flex items-center gap-1">
+          <ShareSettings />
+          <HelpPopover />
+        </div>
       </header>
 
       {/* Scrollable on large screens; focusable so keyboard users can scroll it. */}

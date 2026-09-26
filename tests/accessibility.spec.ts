@@ -150,6 +150,15 @@ test.describe("accessibility", () => {
     await expectNoAccessibilityViolations(page);
   });
 
+  test("the share settings popover has no axe violations", async ({ page }) => {
+    await page.goto("/editor");
+    await uploadTinyImage(page);
+    await page.getByRole("button", { name: "Share settings" }).click();
+    await expect(page.getByLabel("Settings link")).toBeVisible();
+    await page.waitForTimeout(400);
+    await expectNoAccessibilityViolations(page);
+  });
+
   test("slider values can be reset from the keyboard", async ({ page }) => {
     await page.goto("/editor");
     await uploadTinyImage(page);

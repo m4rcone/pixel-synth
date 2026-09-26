@@ -14,6 +14,7 @@ A free online dithering and pixel art tool. Turn any photo into dithered, 1-bit 
 - **Filters**: processing scale, brightness, contrast, noise and blur; the image re-renders as soon as you release a control.
 - **Easy input**: drop, paste or pick a PNG, JPEG, WebP, GIF, AVIF or BMP file, or try the built-in sample image (a sunset scene with a calibration strip).
 - **Crisp export**: save a PNG at ×1, ×2, ×4 or ×8, enlarged nearest-neighbor so every pixel stays a sharp block.
+- **Share settings**: copy a link that reopens the editor with the same look, for any image. It carries the settings only, never your image.
 - **Live before/after**: pan, zoom, pinch and compare the original with the result, with a split view or a toggle.
 - **Fast**: the pipeline runs in a Web Worker; a 4-megapixel image dithers in roughly 0.1–0.35 s on a recent laptop.
 - **100% client-side**: every pixel is computed on your device; nothing is uploaded. Analytics count page views only.
@@ -35,6 +36,7 @@ The editor accepts deep links, which can be combined:
 - `/editor?palette=<id>` switches to palette mode with that palette (e.g. `?palette=gameboy`)
 - `/editor?preset=pixel-art` applies the pixel art preset to the next image you load
 - `/editor?sample=1` opens the editor on the sample image
+- `/editor?s=<code>` reopens the editor with shared settings: the link icon in the control panel copies one for the current look (settings only, never the image)
 
 Every page has its own metadata, Open Graph image and structured data; `/sitemap.xml` lists all of them.
 

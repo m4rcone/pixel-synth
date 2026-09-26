@@ -53,6 +53,17 @@ export type EditorSettings = {
   color: ColorSettings;
 };
 
+/** Range of each filter, shared by the sliders and shared-link validation. */
+export const FILTER_LIMITS: Record<
+  keyof Filters,
+  { min: number; max: number }
+> = {
+  brightness: { min: 0, max: 2 },
+  contrast: { min: -1, max: 1 },
+  blur: { min: 0, max: 5 },
+  noise: { min: 0, max: 1 },
+};
+
 export const DEFAULT_FILTERS: Filters = {
   brightness: 1,
   contrast: 0,
