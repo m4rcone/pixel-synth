@@ -88,7 +88,7 @@ describe("settings links", () => {
     const shared = decodeSettings(
       encode({ v: 1, color: { mode: "palette", palette: "darkroom" } }),
     )!;
-    expect(shared.settings.color.palette).toBe("enhance");
+    expect(shared.settings.color.palette).toBe("pixelsynth");
   });
 
   it("clamps out-of-range values and drops invalid ones", () => {

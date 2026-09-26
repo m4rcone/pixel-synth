@@ -319,8 +319,8 @@ export const PALETTE_PRESETS = [
     colors: ["#f2ede4", "#ff48b0", "#0078bf", "#000000"],
   },
   {
-    id: "enhance",
-    name: "Enhance",
+    id: "pixelsynth",
+    name: "PixelSynth",
     description:
       "PixelSynth’s own colors: screen black, three scan blues and the reticle yellow, which only lands on warm tones.",
     group: "PixelSynth",
@@ -370,7 +370,7 @@ export function getPalettePreset(id: string): PalettePreset | undefined {
 /** Retired palette ids and their replacements, so old links keep working. */
 const PALETTE_ALIASES: Record<string, PaletteId> = {
   // The old identity's palette, replaced with the new one's.
-  darkroom: "enhance",
+  darkroom: "pixelsynth",
 };
 
 /** The current id for `id`: itself, or what replaced a retired one. */

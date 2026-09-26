@@ -337,10 +337,12 @@ test("?palette= switches to palette mode with that palette", async ({
   );
 });
 
-test("?palette=darkroom opens its replacement, Enhance", async ({ page }) => {
+test("?palette=darkroom opens its replacement, PixelSynth", async ({
+  page,
+}) => {
   await page.goto("/editor?palette=darkroom&sample=1");
   await expect(page.getByRole("combobox", { name: "Palette" })).toContainText(
-    "Enhance",
+    "PixelSynth",
   );
   await expect(
     page.getByRole("button", { name: "Color", exact: true }),
