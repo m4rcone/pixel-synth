@@ -1,8 +1,8 @@
 /**
  * Generated sample assets (see scripts/generate-previews.mjs). The sample is
- * a procedural synthwave sunset: a long sky gradient, lit clouds, a striped
- * sun, mountains and a neon grid over a glossy floor, lit in HDR so it spans
- * black to white (scripts/sample-scene.mjs). Used by the editor's "Try a
+ * a procedural synthwave sunset in the site's colors: a long sky gradient,
+ * lit clouds, a striped yellow sun, mountains and a blue-white grid over a
+ * glossy floor, lit in HDR so it spans black to white (scripts/sample-scene.mjs). Used by the editor's "Try a
  * sample image", the landing and the palette pages.
  */
 
@@ -11,8 +11,8 @@ import { pixelArtScale } from "@/lib/editor/pixel-art";
 import { PALETTE_PRESETS } from "@/lib/palettes";
 
 export const SAMPLE_IMAGE = {
-  src: "/samples/synthwave.png",
-  name: "synthwave.png",
+  src: "/samples/synthwave-sunset.png",
+  name: "synthwave-sunset.png",
   width: 1800,
   height: 1200,
 } as const;
@@ -23,8 +23,8 @@ export const SAMPLE_IMAGE = {
  * over one seamless loop. 256 colors, not dithered.
  */
 export const ANIMATED_SAMPLE = {
-  src: "/samples/synthwave.gif",
-  name: "synthwave.gif",
+  src: "/samples/synthwave-sunset.gif",
+  name: "synthwave-sunset.gif",
   width: 360,
   height: 240,
   frames: 36,
@@ -76,7 +76,7 @@ export const HERO_SIZE = { width: 480, height: 320 } as const;
 
 /** Image path pattern of a hero variant, for code that can't call `heroVariant`. */
 export const HERO_VARIANT_PATTERN =
-  "/landing/synthwave-{algorithm}-{palette}.png";
+  "/landing/synthwave-sunset-{algorithm}-{palette}.png";
 
 export function heroVariant(algorithm: string, palette: string) {
   return HERO_VARIANT_PATTERN.replace("{algorithm}", algorithm).replace(
@@ -86,15 +86,15 @@ export function heroVariant(algorithm: string, palette: string) {
 }
 
 export const HERO_ORIGINAL = {
-  src: "/landing/synthwave-original.png",
+  src: "/landing/synthwave-sunset-original.png",
   width: 960,
   height: 640,
 } as const;
 
 /** The animated sample dithered, and its first frame for when it's paused. */
 export const ANIMATED_DITHER = {
-  src: "/landing/synthwave-animated-bayer-4-4-pico8.gif",
-  still: "/landing/synthwave-animated-bayer-4-4-pico8.png",
+  src: "/landing/synthwave-sunset-animated-bayer-4-4-pico8.gif",
+  still: "/landing/synthwave-sunset-animated-bayer-4-4-pico8.png",
   algorithm: "bayer-4-4",
   palette: "pico8",
   width: ANIMATED_SAMPLE.width / 2,

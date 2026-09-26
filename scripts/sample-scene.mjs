@@ -1,10 +1,13 @@
-// Procedural sample image: a synthwave sunset. A long sky gradient from
-// indigo to orange with thin clouds lit from below, a striped sun with a
-// white-hot core, ridged mountains with a neon rim, and a glossy floor that
-// reflects the sky under a neon grid. Lit in high dynamic range, with bloom
-// and a filmic tone curve, so the lights reach white and the night sky black:
-// the image spans the full tonal range. Deterministic, so the sample and every
-// preview derived from it can be regenerated exactly.
+// Procedural sample image: a synthwave sunset in the site's colors. A long
+// sky gradient from the screen's near-black through navy and violet to a warm
+// horizon, thin clouds lit from below, a striped sun in the accent yellow with
+// a white-hot core, ridged mountains with a magenta rim, and a glossy floor
+// that reflects the sky (tinted teal) under a grid in the text's blue-white.
+// The warm band and the teal keep every hue in play, so palettes show what
+// they do. Lit in high dynamic range, with bloom and a filmic tone curve, so
+// the lights reach white and the night sky black: the image spans the full
+// tonal range. Deterministic, so the sample and every preview derived from it
+// can be regenerated exactly.
 //
 // The animation rolls the grid toward the camera by one cell, moves the sun's
 // stripes down by one period, drifts the clouds and ripples the reflection;
@@ -75,18 +78,18 @@ const CLOUDS = [
 ];
 
 function sky(px, py, t) {
-  let c = mix([14, 8, 42], [70, 20, 96], smooth(0, 0.3, py));
-  c = mix(c, [196, 48, 118], smooth(0.22, 0.48, py));
-  c = mix(c, [255, 132, 74], smooth(0.44, HORIZON, py));
-  c = mix(c, [255, 196, 128], smooth(0.56, HORIZON, py) * 0.8);
+  let c = mix([4, 7, 14], [16, 30, 62], smooth(0, 0.3, py));
+  c = mix(c, [66, 50, 124], smooth(0.22, 0.48, py));
+  c = mix(c, [232, 108, 92], smooth(0.44, HORIZON, py));
+  c = mix(c, [255, 198, 118], smooth(0.56, HORIZON, py) * 0.8);
   const d = Math.hypot(px - SUN.x, py - SUN.y);
-  c = add(c, [255, 150, 90], Math.exp(-d / 0.09) * 0.9);
-  c = add(c, [220, 70, 130], Math.exp(-d / 0.35) * 0.35);
+  c = add(c, [255, 190, 90], Math.exp(-d / 0.09) * 0.9);
+  c = add(c, [150, 70, 160], Math.exp(-d / 0.35) * 0.35);
   // Stars in the high sky, on a fixed grid (200 cells per frame height).
   const gx = Math.floor((px + 0.8) * 200);
   const gy = Math.floor(py * 200);
   if (py < 0.3 && hash(gx, gy) > 0.993) {
-    c = add(c, [255, 240, 255], 0.9 * (1 - py / 0.3) * hash(gx + 1, gy));
+    c = add(c, [207, 230, 255], 0.9 * (1 - py / 0.3) * hash(gx + 1, gy));
   }
   // The sun, with stripes (gaps) in its lower half.
   if (d < SUN.r) {
@@ -94,10 +97,10 @@ function sky(px, py, t) {
     const gap = k > 0 && fract((py - SUN.y) * 30 - t) < 0.1 + 0.55 * k;
     if (!gap) {
       const v = (py - SUN.y) / SUN.r;
-      c = mix([300, 250, 150], [300, 110, 90], smooth(-1, 0.9, v));
+      c = mix([330, 272, 82], [330, 120, 70], smooth(-1, 0.9, v));
       c = mix(
         c,
-        [420, 400, 330],
+        [420, 400, 300],
         Math.exp(-((d / (SUN.r * 0.35)) ** 2)) * 0.6 * (v < 0.1 ? 1 : 0),
       );
     }
@@ -111,9 +114,9 @@ function sky(px, py, t) {
     if (density <= 0) continue;
     const lit =
       Math.exp(-Math.abs(px - SUN.x) / 0.5) * smooth(0.1, HORIZON, py);
-    const under = mix([60, 24, 80], [255, 150, 130], lit);
+    const under = mix([22, 32, 70], [255, 168, 120], lit);
     const edge = smooth(0.72, 0.5, n) * band;
-    c = mix(c, add(under, [255, 190, 150], edge * lit * 0.6), density * 0.85);
+    c = mix(c, add(under, [255, 222, 160], edge * lit * 0.6), density * 0.85);
   }
   return c;
 }
@@ -135,19 +138,19 @@ function sample(px, py, t) {
     const far = ridge(px, HORIZON, 0.2 * side + 0.02, 3.7);
     const near = ridge(px, HORIZON, 0.12 * side + 0.01, 9.1);
     if (py > far) {
-      c = mix([150, 60, 130], [70, 26, 92], (py - far) / 0.12);
+      c = mix([62, 78, 136], [30, 40, 86], (py - far) / 0.12);
       c = mix(
         c,
-        [255, 140, 120],
+        [255, 170, 110],
         Math.exp(-(py - far) / 0.004) * 0.7 * (1 - side * 0.3),
       );
     }
     if (py > near) {
-      c = mix([34, 12, 50], [16, 6, 30], (py - near) / 0.08);
-      c = add(c, [255, 90, 180], Math.exp(-(py - near) / 0.003) * 0.9);
+      c = mix([12, 20, 40], [5, 8, 16], (py - near) / 0.08);
+      c = add(c, [255, 80, 170], Math.exp(-(py - near) / 0.003) * 0.9);
       c = add(
         c,
-        [120, 220, 255],
+        [120, 225, 255],
         Math.exp(-((py - near - 0.006) ** 2) / 0.00001) * 0.25,
       );
     }
@@ -160,13 +163,15 @@ function sample(px, py, t) {
   let reflection = sky(px + ripple, Math.max(0, HORIZON - (py - HORIZON)), t);
   reflection = add(
     reflection,
-    [255, 170, 120],
+    [255, 200, 110],
     Math.exp(-(((px - SUN.x) / (0.07 + (py - HORIZON) * 0.4)) ** 2)) *
       Math.exp(-(py - HORIZON) * 5) *
       0.9,
   );
+  // A teal tint on the reflection rounds out the hues, for the palettes.
+  reflection = [reflection[0] * 0.75, reflection[1] * 1.1, reflection[2]];
   let c = mix(
-    [10, 4, 22],
+    [4, 9, 18],
     mul(reflection, 0.55),
     0.35 + 0.4 * Math.exp(-(py - HORIZON) * 6),
   );
@@ -175,9 +180,9 @@ function sample(px, py, t) {
   const across = Math.exp(-((dx / (z * 7 * 0.0028 + 0.0015)) ** 2));
   const along = Math.exp(-((dz / (z * z * 0.08 + 0.003)) ** 2));
   const line = Math.max(across, along) * Math.exp(-z * 0.2);
-  c = add(c, [255, 70, 200], line * 1.1);
-  c = add(c, [255, 160, 240], line ** 4 * 0.8);
-  c = add(c, [255, 150, 170], Math.exp(-(((py - HORIZON) / 0.01) ** 2)) * 0.9);
+  c = add(c, [110, 200, 255], line * 1.1);
+  c = add(c, [207, 230, 255], line ** 4 * 0.8);
+  c = add(c, [255, 190, 140], Math.exp(-(((py - HORIZON) / 0.01) ** 2)) * 0.9);
   return c;
 }
 
