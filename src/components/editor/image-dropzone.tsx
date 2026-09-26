@@ -71,13 +71,13 @@ export function ImageDropzone() {
             "focus-within:border-safelight focus-within:ring-safelight focus-within:ring-2",
             isDragging
               ? "border-safelight bg-ink-raised/80"
-              : "border-line-strong bg-ink-raised/40 hover:border-safelight/60 hover:bg-ink-raised/70",
+              : "border-line-strong bg-ink-raised/40 hover:border-paper hover:bg-ink-raised/70",
           )}
         >
           <span
             aria-hidden="true"
             className={cn(
-              "border-line-strong group-hover:text-safelight grid size-14 place-items-center rounded-xl border transition-colors",
+              "border-line-strong group-hover:text-paper-hot grid size-14 place-items-center rounded-xl border transition-colors",
               isDragging ? "text-safelight" : "text-paper/50",
             )}
           >
@@ -85,7 +85,7 @@ export function ImageDropzone() {
           </span>
 
           <span className="flex flex-col gap-1.5">
-            <span className="font-display text-heading font-medium">
+            <span className="text-heading font-semibold">
               Drop an image to develop
             </span>
             <span className="text-paper-dim text-sm">

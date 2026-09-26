@@ -75,7 +75,7 @@ export default function EditorPage() {
           {error && (
             <div
               role="alert"
-              className="border-safelight/40 bg-safelight/10 text-paper m-4 mb-0 flex items-start justify-between gap-3 rounded-lg border px-4 py-3 text-sm"
+              className="border-danger/40 bg-danger/10 text-paper m-4 mb-0 flex items-start justify-between gap-3 rounded-lg border px-4 py-3 text-sm"
             >
               <p>{error}</p>
               <button

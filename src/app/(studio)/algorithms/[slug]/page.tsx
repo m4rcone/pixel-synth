@@ -116,7 +116,7 @@ export default async function AlgorithmPage({
 
           <div className="flex flex-col">
             <p className="text-paper-dim flex items-center gap-3 text-sm">
-              <span className="text-readout text-safelight">
+              <span className="text-readout text-paper-dim">
                 {String(index + 1).padStart(2, "0")}
               </span>
               <Link
@@ -128,7 +128,7 @@ export default async function AlgorithmPage({
             </p>
             <h1
               tabIndex={-1}
-              className="font-display text-title mt-3 font-medium focus:outline-hidden"
+              className="font-display text-glow text-title mt-3 font-normal focus:outline-hidden"
             >
               {algorithm.name}
             </h1>
@@ -167,10 +167,7 @@ export default async function AlgorithmPage({
           className="flex flex-col gap-6"
         >
           <div className="max-w-prose">
-            <h2
-              id="method-heading"
-              className="font-display text-heading font-medium"
-            >
+            <h2 id="method-heading" className="text-heading font-semibold">
               How it works
             </h2>
             <p className="text-paper-dim mt-2 leading-relaxed">
@@ -242,7 +239,7 @@ function PagerLink({
       className={`group border-line hover:border-line-strong focus-visible:ring-safelight flex flex-col gap-1 rounded-md border p-4 transition-colors focus-visible:ring-2 focus-visible:outline-none ${alignEnd ? "sm:items-end sm:text-right" : ""}`}
     >
       <span className="text-label text-paper-dim">{direction}</span>
-      <span className="font-display group-hover:text-safelight text-lg font-medium transition-colors">
+      <span className="group-hover:text-paper-hot text-lg font-semibold transition-colors">
         {name}
       </span>
     </Link>

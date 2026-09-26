@@ -54,7 +54,7 @@ export default function EditorRouteLayout({
       <SidebarInset
         id="main-content"
         tabIndex={-1}
-        className="relative min-h-svh focus:outline-hidden lg:h-svh lg:overflow-hidden"
+        className="scanlines relative min-h-svh focus:outline-hidden lg:h-svh lg:overflow-hidden"
       >
         {children}
       </SidebarInset>

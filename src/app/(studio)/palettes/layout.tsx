@@ -9,7 +9,7 @@ export default function PalettesLayout({
     <SidebarInset
       id="main-content"
       tabIndex={-1}
-      className="relative h-svh overflow-y-auto focus:outline-hidden"
+      className="scanlines relative h-svh overflow-y-auto focus:outline-hidden"
     >
       {children}
     </SidebarInset>

@@ -174,7 +174,7 @@ export function SaveButton() {
         aria-labelledby="save-title"
         className="flex w-80 flex-col gap-4"
       >
-        <h2 id="save-title" className="font-display text-lg font-medium">
+        <h2 id="save-title" className="text-lg font-semibold">
           {animation ? "Save animation" : "Save image"}
         </h2>
         {animation && (
@@ -246,7 +246,7 @@ export function SaveButton() {
             ` ×${tooLarge.join(", ×")} ${tooLarge.length > 1 ? "are" : "is"} too large ${saveGif ? "for a GIF this long" : "for browsers to draw"}.`}
         </p>
         {error && (
-          <p role="alert" className="text-safelight text-xs leading-relaxed">
+          <p role="alert" className="text-danger text-xs leading-relaxed">
             {error}
           </p>
         )}

@@ -110,7 +110,7 @@ export function CompareSlider({
             e.preventDefault();
             setReveal((r) => Math.min(100, Math.max(0, move(r))));
           }}
-          className="focus-visible:ring-safelight pointer-events-auto absolute top-1/2 left-1/2 grid size-9 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize place-items-center rounded-full border border-white/40 bg-black/65 text-white backdrop-blur-sm focus-visible:ring-2 focus-visible:outline-none"
+          className="focus-visible:ring-safelight pointer-events-auto absolute top-1/2 left-1/2 grid size-9 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize place-items-center border border-white/40 bg-black/65 text-white backdrop-blur-sm focus-visible:ring-2 focus-visible:outline-none"
         >
           <svg viewBox="0 0 16 16" aria-hidden="true" className="size-4">
             <path

@@ -27,7 +27,7 @@ export function GlobalHeader({ page, parent }: GlobalHeaderProps) {
           className="bg-line-strong mr-1 data-[orientation=vertical]:h-4"
         />
         <Breadcrumb>
-          <BreadcrumbList className="text-sm">
+          <BreadcrumbList className="text-caps">
             <BreadcrumbItem>
               <BreadcrumbLink
                 asChild

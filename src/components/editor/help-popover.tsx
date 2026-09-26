@@ -61,7 +61,7 @@ const TIPS = [
 ];
 
 const linkClass =
-  "text-paper hover:text-safelight focus-visible:ring-safelight decoration-line-strong rounded-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none";
+  "text-paper hover:text-paper-hot hover:decoration-paper-hot focus-visible:ring-safelight decoration-line-strong rounded-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none";
 
 export function HelpPopover() {
   return (

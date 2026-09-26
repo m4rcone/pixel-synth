@@ -89,8 +89,7 @@ function ConfirmButton({
           variant="outline"
           className={cn(
             "flex-1",
-            variant === "destructive" &&
-              "border-destructive/60 text-safelight hover:border-destructive hover:text-safelight",
+            variant === "destructive" && "text-danger hover:text-danger",
           )}
         >
           {icon}

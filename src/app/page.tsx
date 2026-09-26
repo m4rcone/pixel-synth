@@ -164,14 +164,14 @@ const homeStructuredData = [
 ];
 
 const navLink =
-  "rounded-sm px-2 py-1.5 text-sm text-paper-dim transition-colors hover:text-paper focus-visible:ring-2 focus-visible:ring-safelight focus-visible:outline-none";
+  "text-caps rounded-sm px-2 py-1.5 text-paper-dim transition-colors hover:text-paper focus-visible:ring-2 focus-visible:ring-safelight focus-visible:outline-none";
 
 const textLink =
-  "text-paper hover:text-safelight focus-visible:ring-safelight decoration-line-strong rounded-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none";
+  "text-paper hover:text-paper-hot hover:decoration-paper-hot focus-visible:ring-safelight decoration-line-strong rounded-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none";
 
 export default function HomePage() {
   return (
-    <div className="darkroom-grain relative min-h-svh overflow-x-clip">
+    <div className="scanlines relative min-h-svh overflow-x-clip">
       <StructuredData data={homeStructuredData} />
 
       <div
@@ -188,7 +188,7 @@ export default function HomePage() {
             aria-label="PixelSynth home"
             className="focus-visible:ring-safelight rounded-sm focus-visible:ring-2 focus-visible:outline-none"
           >
-            <Logo />
+            <Logo wordmarkClassName="max-sm:sr-only" />
           </Link>
           <nav
             aria-label="Primary"
@@ -215,15 +215,15 @@ export default function HomePage() {
             <div className="max-w-xl">
               <h1
                 tabIndex={-1}
-                className="font-display text-display font-medium focus:outline-hidden"
+                className="font-display text-display font-normal focus:outline-hidden"
               >
-                <span className="text-safelight mb-5 block font-sans text-base font-medium tracking-normal">
+                <span className="text-safelight tracking-caps mb-5 block font-sans text-sm font-semibold uppercase">
                   Online image dithering & pixel art converter
                 </span>
-                <span className="text-paper-dim block">Smooth in.</span>
-                <span className="dithered-text block pb-[0.08em]">
-                  Dither out.
+                <span className="text-paper-dim text-glow block">
+                  Smooth in.
                 </span>
+                <span className="text-glow block">Dither out.</span>
               </h1>
 
               <p className="text-paper-dim mt-8 max-w-md text-lg leading-relaxed">
@@ -259,7 +259,7 @@ export default function HomePage() {
               <div className="flex max-w-2xl flex-col gap-4">
                 <h2
                   id="palettes-heading"
-                  className="font-display text-title font-medium"
+                  className="font-display text-glow text-title font-normal"
                 >
                   Classic palettes, one click away
                 </h2>
@@ -320,7 +320,7 @@ export default function HomePage() {
             <div className="flex max-w-lg flex-col gap-5">
               <h2
                 id="pixel-art-heading"
-                className="font-display text-title font-medium"
+                className="font-display text-glow text-title font-normal"
               >
                 Photo to pixel art in one click
               </h2>
@@ -339,7 +339,7 @@ export default function HomePage() {
             <div className="mb-10 flex max-w-2xl flex-col gap-4">
               <h2
                 id="use-cases-heading"
-                className="font-display text-title font-medium"
+                className="font-display text-glow text-title font-normal"
               >
                 A darkroom for pixels
               </h2>
@@ -370,7 +370,7 @@ export default function HomePage() {
                     }
                   />
                   <div className="flex flex-col gap-2">
-                    <h3 className="font-display text-heading font-medium">
+                    <h3 className="text-heading font-semibold">
                       {useCase.title}
                     </h3>
                     <p className="text-paper-dim leading-relaxed">
@@ -394,7 +394,7 @@ export default function HomePage() {
           <section aria-labelledby="how-heading" className="pb-20">
             <h2
               id="how-heading"
-              className="font-display text-title mb-10 font-medium"
+              className="font-display text-glow text-title mb-10 font-normal"
             >
               How it works
             </h2>
@@ -403,11 +403,11 @@ export default function HomePage() {
                 <li key={step.title} className="border-line border-t pt-5">
                   <span
                     aria-hidden="true"
-                    className="text-readout text-safelight"
+                    className="text-readout text-paper-dim"
                   >
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                  <h3 className="font-display text-heading mt-3 font-medium">
+                  <h3 className="text-heading mt-3 font-semibold">
                     {step.title}
                   </h3>
                   <p className="text-paper-dim mt-2 leading-relaxed">
@@ -421,14 +421,14 @@ export default function HomePage() {
           <section aria-labelledby="faq-heading" className="pb-20">
             <h2
               id="faq-heading"
-              className="font-display text-title mb-8 font-medium"
+              className="font-display text-glow text-title mb-8 font-normal"
             >
               Frequently asked questions
             </h2>
             <div className="border-line max-w-3xl border-b">
               {HOME_FAQ.map((entry) => (
                 <details key={entry.question} className="border-line border-t">
-                  <summary className="marker:text-safelight focus-visible:ring-safelight cursor-pointer rounded-sm py-4 text-lg font-medium focus-visible:ring-2 focus-visible:outline-none">
+                  <summary className="marker:text-paper-dim focus-visible:ring-safelight cursor-pointer rounded-sm py-4 text-lg font-medium focus-visible:ring-2 focus-visible:outline-none">
                     {entry.question}
                   </summary>
                   <p className="text-paper-dim pb-5 leading-relaxed">
@@ -443,10 +443,7 @@ export default function HomePage() {
             aria-labelledby="cta-heading"
             className="border-line bg-ink-raised/60 mb-16 flex flex-col items-start gap-6 rounded-md border px-6 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-10"
           >
-            <p
-              id="cta-heading"
-              className="font-display text-heading max-w-md font-medium"
-            >
+            <p id="cta-heading" className="text-heading max-w-md font-semibold">
               Drop in an image. Pick an algorithm.{" "}
               <span className="text-paper-dim">Watch it develop.</span>
             </p>
@@ -471,7 +468,9 @@ function Fact({ value, label }: { value: string; label: string }) {
   return (
     <div className="flex flex-col gap-1">
       <dt className="text-paper-dim order-2 text-sm">{label}</dt>
-      <dd className="font-display text-heading order-1 font-medium">{value}</dd>
+      <dd className="font-display text-glow order-1 text-2xl font-normal">
+        {value}
+      </dd>
     </div>
   );
 }

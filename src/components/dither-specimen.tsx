@@ -76,7 +76,7 @@ export function DitherSpecimen() {
 
         <figcaption className="mt-3 flex items-start justify-between gap-3 px-1">
           <div className="min-w-0">
-            <p className="font-display truncate text-xl leading-tight font-medium">
+            <p className="truncate text-xl leading-tight font-semibold">
               {current.shortName}
             </p>
             <p className="text-paper-dim text-sm">

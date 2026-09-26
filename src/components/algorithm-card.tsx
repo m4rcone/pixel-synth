@@ -22,7 +22,7 @@ export function AlgorithmCard({
       aria-labelledby={titleId}
       // The title link is stretched over the whole card; the editor link sits
       // above it (z-10) and stays independently clickable.
-      className="group border-line bg-ink-raised hover:border-line-strong target:border-safelight relative flex h-full scroll-mt-20 flex-col overflow-hidden rounded-md border transition-colors"
+      className="group border-line-strong bg-ink-raised hover:border-paper target:border-safelight relative flex h-full scroll-mt-20 flex-col overflow-hidden rounded-md border transition-colors"
     >
       <div className="border-line bg-ink-sunken relative aspect-square w-full overflow-hidden border-b">
         <Image
@@ -38,20 +38,20 @@ export function AlgorithmCard({
       </div>
 
       <div className="flex flex-1 flex-col p-5">
-        <p className="text-paper-dim flex items-center justify-between text-sm">
-          <span className="text-readout text-safelight">
+        <p className="text-paper-dim flex items-center justify-between gap-3">
+          <span className="text-readout text-paper-dim">
             {String(frame).padStart(2, "0")}
           </span>
-          <span>
+          <span className="text-caps text-right">
             {getCategoryName(algorithm.category)},{" "}
             {algorithm.era === "classic" ? "classic" : "modern"}
           </span>
         </p>
 
-        <h3 id={titleId} className="font-display text-heading mt-3 font-medium">
+        <h3 id={titleId} className="text-heading mt-3 font-semibold">
           <Link
             href={`/algorithms/${algorithm.slug}`}
-            className="group-hover:text-safelight focus-visible:after:ring-safelight transition-colors after:absolute after:inset-0 after:rounded-md after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset"
+            className="group-hover:text-paper-hot focus-visible:after:ring-safelight transition-colors after:absolute after:inset-0 after:rounded-md after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset"
           >
             {algorithm.name}
           </Link>
@@ -94,7 +94,7 @@ export function AlgorithmCard({
           </span>
           <Link
             href={`/editor?algorithm=${algorithm.slug}`}
-            className="text-paper hover:text-safelight focus-visible:ring-safelight decoration-line-strong relative z-10 rounded-sm text-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
+            className="text-paper hover:text-paper-hot hover:decoration-paper-hot focus-visible:ring-safelight decoration-line-strong relative z-10 rounded-sm text-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
           >
             Use in the editor
             <span className="sr-only">: {algorithm.name}</span>

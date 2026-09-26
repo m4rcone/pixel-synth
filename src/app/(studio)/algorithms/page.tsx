@@ -65,7 +65,7 @@ export default function AlgorithmsPage() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <h1
               tabIndex={-1}
-              className="font-display text-title font-medium focus:outline-hidden"
+              className="font-display text-glow text-title font-normal focus:outline-hidden"
             >
               Dithering algorithms
             </h1>
@@ -84,7 +84,7 @@ export default function AlgorithmsPage() {
                 <li key={family.id}>
                   <a
                     href={`#family-${family.id}`}
-                    className="border-line-strong text-paper-dim hover:text-paper hover:border-paper/40 focus-visible:ring-safelight inline-flex h-9 items-center gap-2 rounded-full border px-3.5 text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                    className="border-line-strong text-paper-dim hover:text-paper hover:border-paper focus-visible:ring-safelight inline-flex h-9 items-center gap-2 border px-3.5 text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
                   >
                     {family.name}
                     <span className="text-readout">
@@ -107,7 +107,7 @@ export default function AlgorithmsPage() {
             <div className="mb-6 flex max-w-3xl flex-col gap-2">
               <h2
                 id={`family-${family.id}-heading`}
-                className="font-display text-heading font-medium"
+                className="text-heading font-semibold"
               >
                 {family.name}
               </h2>

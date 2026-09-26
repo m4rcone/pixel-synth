@@ -92,7 +92,7 @@ export default function PalettesPage() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <h1
               tabIndex={-1}
-              className="font-display text-title font-medium focus:outline-hidden"
+              className="font-display text-glow text-title font-normal focus:outline-hidden"
             >
               Color palettes
             </h1>
@@ -112,7 +112,7 @@ export default function PalettesPage() {
                 <li key={group}>
                   <a
                     href={`#group-${slug(group)}`}
-                    className="border-line-strong text-paper-dim hover:text-paper hover:border-paper/40 focus-visible:ring-safelight inline-flex h-9 items-center rounded-full border px-3.5 text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                    className="border-line-strong text-paper-dim hover:text-paper hover:border-paper focus-visible:ring-safelight inline-flex h-9 items-center border px-3.5 text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
                   >
                     {group === "Dynamic" ? "Your own colors" : group}
                   </a>
@@ -142,10 +142,7 @@ export default function PalettesPage() {
             </figcaption>
           </figure>
           <div className="flex flex-col gap-4">
-            <h2
-              id="pixel-art-heading"
-              className="font-display text-heading font-medium"
-            >
+            <h2 id="pixel-art-heading" className="text-heading font-semibold">
               Pixel art in one click
             </h2>
             <p className="text-paper-dim leading-relaxed">
@@ -175,7 +172,7 @@ export default function PalettesPage() {
             <div className="flex max-w-3xl flex-col gap-2">
               <h2
                 id={`group-${slug(group)}-heading`}
-                className="font-display text-heading font-medium"
+                className="text-heading font-semibold"
               >
                 {group}
               </h2>
@@ -218,7 +215,7 @@ export default function PalettesPage() {
           <div className="flex max-w-3xl flex-col gap-2">
             <h2
               id="group-dynamic-heading"
-              className="font-display text-heading font-medium"
+              className="text-heading font-semibold"
             >
               Your own colors
             </h2>
@@ -245,7 +242,7 @@ export default function PalettesPage() {
               >
                 <h3
                   id="palette-custom-title"
-                  className="font-display text-heading font-medium"
+                  className="text-heading font-semibold"
                 >
                   Custom
                 </h3>
@@ -258,7 +255,7 @@ export default function PalettesPage() {
                 </p>
                 <Link
                   href="/editor?palette=custom"
-                  className="text-paper hover:text-safelight focus-visible:ring-safelight decoration-line-strong mt-auto self-start rounded-sm text-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                  className="text-paper hover:text-paper-hot hover:decoration-paper-hot focus-visible:ring-safelight decoration-line-strong mt-auto self-start rounded-sm text-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
                 >
                   Build one in the editor
                 </Link>
@@ -296,7 +293,7 @@ function PaletteCard({
       id={`palette-${id}`}
       aria-labelledby={titleId}
       className={cn(
-        "border-line bg-ink-raised target:border-safelight flex h-full scroll-mt-20 flex-col overflow-hidden rounded-md border",
+        "border-line-strong bg-ink-raised target:border-safelight flex h-full scroll-mt-20 flex-col overflow-hidden rounded-md border",
         wide && "sm:flex-row",
       )}
     >
@@ -314,7 +311,7 @@ function PaletteCard({
       />
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div className="flex items-baseline justify-between gap-3">
-          <h3 id={titleId} className="font-display text-heading font-medium">
+          <h3 id={titleId} className="text-heading font-semibold">
             {name}
           </h3>
           <span className="text-readout text-paper-dim shrink-0">
@@ -342,7 +339,7 @@ function PaletteCard({
           </span>
           <Link
             href={`/editor?palette=${id}`}
-            className="text-paper hover:text-safelight focus-visible:ring-safelight decoration-line-strong rounded-sm text-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
+            className="text-paper hover:text-paper-hot hover:decoration-paper-hot focus-visible:ring-safelight decoration-line-strong rounded-sm text-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
           >
             Use in the editor
             <span className="sr-only">: {name}</span>
