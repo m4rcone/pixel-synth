@@ -1,6 +1,6 @@
 # PixelSynth
 
-A free online dithering and pixel art tool. Turn any photo into dithered, 1-bit or pixel art images right in your browser: pick one of 15 dithering algorithms, dither to a classic palette, tune the look and export a crisp PNG. No uploads, no accounts, no watermark.
+A free online dithering and pixel art tool. Turn any photo into dithered, 1-bit or pixel art images right in your browser: pick one of 15 dithering algorithms, dither to a classic palette like Game Boy, NES or PICO-8, tune the look, share it as a link and export a crisp PNG. No uploads, no accounts, no watermark.
 
 **Live:** https://pixelsynth.art
 

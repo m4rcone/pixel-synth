@@ -24,9 +24,9 @@ const algorithmName = (slug: string) => getAlgorithm(slug)?.name ?? slug;
 
 const SHOWCASE_PALETTES = [
   "gameboy",
+  "nes",
   "pico8",
   "cga-cyan-magenta",
-  "sepia",
   "riso",
   "cyanotype",
 ];
@@ -52,7 +52,7 @@ const USE_CASES: {
 }[] = [
   {
     title: "Pixel art & game assets",
-    text: "Shrink a photo to sprite size, snap it to PICO-8 or Game Boy and export at ×1 for your engine.",
+    text: "Shrink a photo to sprite size, snap it to PICO-8, NES or Game Boy and export at ×1 for your engine.",
     image: { ...PIXEL_ART_PREVIEW, pixelated: true },
     links: [
       {
@@ -225,7 +225,7 @@ export default function HomePage() {
 
               <p className="text-paper-dim mt-8 max-w-md text-lg leading-relaxed">
                 Turn any photo into dithered, 1-bit or pixel art images.{" "}
-                {ALGORITHMS.length} algorithms, Game Boy, PICO-8 and CGA
+                {ALGORITHMS.length} algorithms, Game Boy, NES, PICO-8 and CGA
                 palettes, crisp exports. Everything runs on your device.
               </p>
 
@@ -260,8 +260,8 @@ export default function HomePage() {
                   Classic palettes, one click away
                 </h2>
                 <p className="text-paper-dim text-lg leading-relaxed">
-                  Dither straight to the colors of the Game Boy, PICO-8, CGA or
-                  a risograph, or to colors taken from your own image.
+                  Dither straight to the colors of the Game Boy, NES, PICO-8,
+                  CGA or a risograph, or to colors taken from your own image.
                 </p>
               </div>
               <Link href="/palettes" className={`${textLink} text-sm`}>
@@ -341,8 +341,9 @@ export default function HomePage() {
               </h2>
               <p className="text-paper-dim text-lg leading-relaxed">
                 {ALGORITHMS.length} algorithms, from Floyd–Steinberg (1976) to
-                blue noise and halftone. Tune scale, contrast, noise and blur,
-                and map your own colors to shadows, midtones and highlights.
+                blue noise and halftone. Tune scale, contrast, saturation, noise
+                and blur, soften the error diffusion for cleaner areas, and map
+                your own colors to shadows, midtones and highlights.
               </p>
             </div>
             <ul className="grid gap-5 md:grid-cols-2">
@@ -359,8 +360,8 @@ export default function HomePage() {
                     unoptimized
                     className={
                       useCase.image.pixelated
-                        ? "border-line bg-ink-sunken aspect-3/2 w-34 shrink-0 rounded-xs border object-cover [image-rendering:pixelated]"
-                        : "border-line bg-ink-sunken aspect-3/2 w-34 shrink-0 rounded-xs border object-cover"
+                        ? "border-line bg-ink-sunken aspect-3/2 w-34 shrink-0 self-start rounded-xs border object-cover [image-rendering:pixelated]"
+                        : "border-line bg-ink-sunken aspect-3/2 w-34 shrink-0 self-start rounded-xs border object-cover"
                     }
                   />
                   <div className="flex flex-col gap-2">

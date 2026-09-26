@@ -50,6 +50,12 @@ export const HOME_FAQ: FaqEntry[] = [
     ],
   },
   {
+    question: "Can I share my settings?",
+    answer: [
+      "Yes. The link icon in the editor copies a link that reopens the editor with the same look for any image. It never includes your image.",
+    ],
+  },
+  {
     question: "Which formats are supported?",
     answer: [
       `${SUPPORTED_FORMATS_LABEL.replace(" or ", " and ")} in; PNG out, enlarged ×1 to ×8.`,
