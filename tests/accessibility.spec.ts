@@ -212,10 +212,11 @@ test.describe("accessibility", () => {
     await page.keyboard.press("Home");
     await expect(divider).toHaveAttribute("aria-valuenow", "0");
 
-    const chip = page.getByRole("button", { name: "Bayer 8×8" });
-    await chip.focus();
+    await page.getByRole("button", { name: "Next algorithm" }).focus();
     await page.keyboard.press("Enter");
-    await expect(chip).toHaveAttribute("aria-pressed", "true");
+    await expect(
+      page.getByRole("group", { name: "Algorithm" }).getByRole("status"),
+    ).toContainText("Jarvis–Judice–Ninke");
 
     await page.getByRole("button", { name: "Pause GIF" }).click();
     await expect(page.getByRole("button", { name: "Play GIF" })).toBeVisible();

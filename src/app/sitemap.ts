@@ -18,7 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: absoluteUrl("/"),
       lastModified,
       images: [
-        absoluteUrl(heroVariant("atkinson", "gameboy")),
+        absoluteUrl(heroVariant("floyd-steinberg", "1-bit")),
         absoluteUrl(HERO_ORIGINAL.src),
         absoluteUrl(ANIMATED_DITHER.src),
         absoluteUrl(siteConfig.previewImage),

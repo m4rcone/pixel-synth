@@ -10,7 +10,7 @@ test("every internal landing link resolves", async ({ page, request }) => {
   // Hero, algorithm grid, palette cartridges, modes, FAQ and footer.
   expect(hrefs).toEqual(
     expect.arrayContaining([
-      "/editor?sample=1&algorithm=atkinson&palette=gameboy",
+      "/editor?sample=1&algorithm=floyd-steinberg",
       "/algorithms/void-and-cluster",
       "/palettes#palette-darkroom",
       "/palettes#palette-pico8",
@@ -71,19 +71,33 @@ test("the pixel art button waits for the user's image", async ({ page }) => {
   );
 });
 
-test("the hero instrument links to the look it shows", async ({ page }) => {
+test("the hero steps through algorithms and palettes", async ({ page }) => {
   await page.goto("/");
   const hero = page.getByRole("figure").first();
-  await hero.getByRole("button", { name: "Bayer 2×2" }).click();
-  await hero.getByRole("button", { name: "1-bit" }).click();
+  const link = hero.getByRole("link", { name: "Open this look in the editor" });
 
+  // Opens on Floyd–Steinberg in 1-bit: the editor's defaults, no palette.
+  await expect(hero.getByRole("group", { name: "Algorithm" })).toContainText(
+    "Floyd–Steinberg01/17",
+  );
+  await expect(link).toHaveAttribute(
+    "href",
+    "/editor?sample=1&algorithm=floyd-steinberg",
+  );
+
+  await hero.getByRole("button", { name: "Next palette" }).click();
+  await hero.getByRole("button", { name: "Previous algorithm" }).click();
+
+  // Previous from the first algorithm wraps to the last.
   await expect(
-    hero.getByRole("img", { name: /dithered with Bayer 2×2 and the 1-bit/ }),
-  ).toHaveAttribute("src", "/landing/sunset-bayer-2-2-1-bit.png");
-  // 1-bit is the editor's default mode: no palette parameter.
-  await expect(
-    hero.getByRole("link", { name: "Open this look in the editor" }),
-  ).toHaveAttribute("href", "/editor?sample=1&algorithm=bayer-2-2");
+    hero.getByRole("img", {
+      name: /dithered with Line Screen and the Game Boy palette/,
+    }),
+  ).toHaveAttribute("src", "/landing/sunset-line-screen-gameboy.png");
+  await expect(link).toHaveAttribute(
+    "href",
+    "/editor?sample=1&algorithm=line-screen&palette=gameboy",
+  );
 });
 
 test("the CMYK link opens the sample separated into inks", async ({ page }) => {

@@ -1,17 +1,18 @@
 "use client";
 
-import { useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import Link from "next/link";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CompareSlider } from "@/components/compare-slider";
-import type { HeroAlgorithm, HeroPalette } from "@/lib/samples";
-import { cn } from "@/lib/utils";
 
 /** Real pixels between two ruler ticks. */
 const TICK = 20;
 
+export type HeroAlgorithmInfo = { id: string; name: string };
+
 /** Display facts about a hero palette; `param` is null for 1-bit. */
 export type HeroPaletteInfo = {
-  id: HeroPalette;
+  id: string;
   name: string;
   colors: number;
   param: string | null;
@@ -19,40 +20,63 @@ export type HeroPaletteInfo = {
 
 type Size = { width: number; height: number };
 
-const pad = (value: number) => String(value).padStart(3, "0");
+const pad = (value: number, length = 3) => String(value).padStart(length, "0");
+
+/** Wraps an index into `0…length - 1`. */
+const wrap = (index: number, length: number) =>
+  ((index % length) + length) % length;
 
 /**
  * The landing's before/after instrument: the sample image, pre-rendered for
- * every algorithm × palette pair, behind a keyboard-operable divider. Rulers
- * tick every 20 pixels of the 240×160 processing resolution and the readout
- * follows the pointer in those pixels.
+ * every algorithm × palette pair, behind a keyboard-operable divider. Two
+ * steppers walk through the algorithms and the palettes. Rulers tick every
+ * 20 pixels of the processing resolution and the readout follows the
+ * pointer in those pixels.
  */
 export function HeroInstrument({
   algorithms,
   palettes,
-  variants,
+  variantPattern,
   size,
   original,
 }: {
   // Everything comes in as data so the client bundle doesn't carry the
-  // algorithm and palette catalogs.
-  algorithms: { id: HeroAlgorithm; name: string }[];
+  // algorithm and palette catalogs. The first of each list is shown first.
+  algorithms: HeroAlgorithmInfo[];
   palettes: HeroPaletteInfo[];
-  /** Image of each pair, keyed `${algorithm}:${palette}`. */
-  variants: Record<string, string>;
+  /** Image path with `{algorithm}` and `{palette}` placeholders. */
+  variantPattern: string;
   size: Size;
   original: { src: string };
 }) {
-  const [algorithm, setAlgorithm] = useState(algorithms[0].id);
-  const [palette, setPalette] = useState(palettes[0].id);
+  const [algorithmIndex, setAlgorithmIndex] = useState(0);
+  const [paletteIndex, setPaletteIndex] = useState(0);
   const [point, setPoint] = useState<{ x: number; y: number } | null>(null);
 
-  const info = palettes.find((p) => p.id === palette) ?? palettes[0];
-  const algorithmName = (id: HeroAlgorithm) =>
-    algorithms.find((a) => a.id === id)?.name ?? id;
+  const algorithm = algorithms[algorithmIndex];
+  const palette = palettes[paletteIndex];
+  const variant = (a: number, p: number) =>
+    variantPattern
+      .replace("{algorithm}", algorithms[wrap(a, algorithms.length)].id)
+      .replace("{palette}", palettes[wrap(p, palettes.length)].id);
+
+  // Warm the cache with the neighbors, so a step swaps instantly.
+  useEffect(() => {
+    for (const [a, p] of [
+      [algorithmIndex - 1, paletteIndex],
+      [algorithmIndex + 1, paletteIndex],
+      [algorithmIndex, paletteIndex - 1],
+      [algorithmIndex, paletteIndex + 1],
+    ]) {
+      new window.Image().src = variant(a, p);
+    }
+    // `variant` only reads props that never change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [algorithmIndex, paletteIndex]);
+
   const editorLink =
-    `/editor?sample=1&algorithm=${algorithm}` +
-    (info.param ? `&palette=${info.param}` : "");
+    `/editor?sample=1&algorithm=${algorithm.id}` +
+    (palette.param ? `&palette=${palette.param}` : "");
 
   return (
     <figure className="flex w-full min-w-0 flex-col gap-4">
@@ -74,8 +98,8 @@ export function HeroInstrument({
               alt: "The sample image before dithering: a sunset over hills and a lake, a red sphere and a calibration strip",
             }}
             after={{
-              src: variants[`${algorithm}:${palette}`],
-              alt: `The same image dithered with ${algorithmName(algorithm)} and the ${info.name} palette, ${size.width} × ${size.height} pixels`,
+              src: variant(algorithmIndex, paletteIndex),
+              alt: `The same image dithered with ${algorithm.name} ${palette.param ? `and the ${palette.name} palette` : "in 1-bit black and white"}, ${size.width} × ${size.height} pixels`,
             }}
             width={size.width}
             height={size.height}
@@ -87,18 +111,28 @@ export function HeroInstrument({
         </div>
       </div>
 
-      <ChipRow
-        label="Algorithm"
-        options={algorithms.map((a) => [a.id, a.name] as const)}
-        value={algorithm}
-        onChange={setAlgorithm}
-      />
-      <ChipRow
-        label="Palette"
-        options={palettes.map((p) => [p.id, p.name] as const)}
-        value={palette}
-        onChange={setPalette}
-      />
+      <div className="flex flex-col gap-2">
+        <Stepper
+          label="Algorithm"
+          noun="algorithm"
+          value={algorithm.name}
+          index={algorithmIndex}
+          count={algorithms.length}
+          onStep={(step) =>
+            setAlgorithmIndex((i) => wrap(i + step, algorithms.length))
+          }
+        />
+        <Stepper
+          label="Palette"
+          noun="palette"
+          value={palette.name}
+          index={paletteIndex}
+          count={palettes.length}
+          onStep={(step) =>
+            setPaletteIndex((i) => wrap(i + step, palettes.length))
+          }
+        />
+      </div>
 
       <figcaption className="text-readout text-paper-dim flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         {/* Pointer readout: visual only, it tracks the mouse. */}
@@ -108,8 +142,7 @@ export function HeroInstrument({
             : "X — · Y —"}
         </span>
         <span>
-          {size.width} × {size.height} · {algorithmName(algorithm)} ·{" "}
-          {info.name} · {info.colors} colors
+          {size.width} × {size.height} · {palette.colors} colors
         </span>
         <Link
           href={editorLink}
@@ -122,42 +155,61 @@ export function HeroInstrument({
   );
 }
 
-function ChipRow<T extends string>({
+const stepButton =
+  "text-paper hover:text-paper-hot hover:border-paper border-line-strong focus-visible:outline-safelight grid size-11 shrink-0 place-items-center border transition-colors outline-none focus-visible:outline-2 focus-visible:outline-offset-2 [&_svg]:size-4";
+
+/** `‹ value ›` with a position counter; steps wrap around the ends. */
+function Stepper({
   label,
-  options,
+  noun,
   value,
-  onChange,
+  index,
+  count,
+  onStep,
 }: {
   label: string;
-  options: (readonly [T, string])[];
-  value: T;
-  onChange: (value: T) => void;
+  noun: string;
+  value: string;
+  index: number;
+  count: number;
+  onStep: (step: -1 | 1) => void;
 }) {
   return (
     <div
       role="group"
       aria-label={label}
-      className="flex flex-wrap items-center gap-1.5"
+      className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-3"
     >
-      <span aria-hidden="true" className="text-caps text-paper-dim w-22">
+      <span aria-hidden="true" className="text-caps text-paper-dim sm:w-22">
         {label}
       </span>
-      {options.map(([id, name]) => (
+      <div className="flex w-full min-w-0 items-center sm:flex-1">
         <button
-          key={id}
           type="button"
-          aria-pressed={id === value}
-          onClick={() => onChange(id)}
-          className={cn(
-            "text-label focus-visible:outline-safelight h-8 border px-2.5 transition-colors outline-none focus-visible:outline-2 focus-visible:outline-offset-2",
-            id === value
-              ? "bg-paper text-ink border-paper"
-              : "border-line-strong text-paper hover:border-paper",
-          )}
+          aria-label={`Previous ${noun}`}
+          onClick={() => onStep(-1)}
+          className={stepButton}
         >
-          {name}
+          <ChevronLeft aria-hidden="true" />
         </button>
-      ))}
+        <output
+          aria-live="polite"
+          className="border-line-strong bg-ink flex h-11 min-w-0 flex-1 items-center justify-between gap-3 border-y px-3"
+        >
+          <span className="truncate text-sm font-semibold">{value}</span>
+          <span className="text-readout text-paper-dim shrink-0">
+            {pad(index + 1, 2)}/{pad(count, 2)}
+          </span>
+        </output>
+        <button
+          type="button"
+          aria-label={`Next ${noun}`}
+          onClick={() => onStep(1)}
+          className={stepButton}
+        >
+          <ChevronRight aria-hidden="true" />
+        </button>
+      </div>
     </div>
   );
 }

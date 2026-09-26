@@ -4,7 +4,9 @@
  * spectrum), used by the editor's "Try a sample image" and the palette pages.
  */
 
+import { ALGORITHMS, type AlgorithmId } from "@/lib/algorithms";
 import { pixelArtScale } from "@/lib/editor/pixel-art";
+import { PALETTE_PRESETS } from "@/lib/palettes";
 
 export const SAMPLE_IMAGE = {
   src: "/samples/sunset.png",
@@ -53,27 +55,28 @@ export const EXTRACTED_PREVIEW_COLORS = 8;
 
 /**
  * Landing hero: the sample at 240×160, one image per algorithm × palette
- * pair (1-bit is the editor's default black-and-white mode, not a palette),
- * plus the undithered original at twice that size for the "before" side.
+ * pair, every algorithm and every preset palette plus 1-bit (the editor's
+ * default black-and-white mode, not a palette), in catalog order. The first
+ * of each list is what the hero opens on. Also the undithered original at
+ * twice that size for the "before" side.
  */
-export const HERO_ALGORITHMS = [
-  "atkinson",
-  "floyd-steinberg",
-  "bayer-8-8",
-  "bayer-2-2",
-] as const;
-export const HERO_PALETTES = [
-  "gameboy",
-  "cga-cyan-magenta",
-  "cyanotype",
+export const HERO_ALGORITHMS: readonly AlgorithmId[] = ALGORITHMS.map(
+  (algorithm) => algorithm.slug,
+);
+export const HERO_PALETTES: readonly string[] = [
   "1-bit",
-] as const;
-export type HeroAlgorithm = (typeof HERO_ALGORITHMS)[number];
-export type HeroPalette = (typeof HERO_PALETTES)[number];
+  ...PALETTE_PRESETS.map((palette) => palette.id),
+];
 export const HERO_SIZE = { width: 240, height: 160 } as const;
 
-export function heroVariant(algorithm: HeroAlgorithm, palette: HeroPalette) {
-  return `/landing/sunset-${algorithm}-${palette}.png`;
+/** Image path pattern of a hero variant, for code that can't call `heroVariant`. */
+export const HERO_VARIANT_PATTERN = "/landing/sunset-{algorithm}-{palette}.png";
+
+export function heroVariant(algorithm: string, palette: string) {
+  return HERO_VARIANT_PATTERN.replace("{algorithm}", algorithm).replace(
+    "{palette}",
+    palette,
+  );
 }
 
 export const HERO_ORIGINAL = {

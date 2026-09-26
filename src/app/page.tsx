@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AnimatedGifDemo } from "@/components/landing/animated-gif-demo";
 import {
   HeroInstrument,
+  type HeroAlgorithmInfo,
   type HeroPaletteInfo,
 } from "@/components/landing/hero-instrument";
 import { Logo } from "@/components/logo";
@@ -33,6 +34,7 @@ import {
   HERO_ORIGINAL,
   HERO_PALETTES,
   HERO_SIZE,
+  HERO_VARIANT_PATTERN,
   heroVariant,
   PALETTE_PREVIEW_SIZE,
   palettePreview,
@@ -57,7 +59,7 @@ const CMYK_LINK = `/editor?sample=1&${SHARE_PARAM}=${encodeSettings(
 const paletteName = (id: string) => getPalettePreset(id)?.name ?? id;
 const algorithmName = (slug: string) => getAlgorithm(slug)?.shortName ?? slug;
 
-const HERO_ALGORITHM_LIST = HERO_ALGORITHMS.map((id) => ({
+const HERO_ALGORITHM_LIST: HeroAlgorithmInfo[] = HERO_ALGORITHMS.map((id) => ({
   id,
   name: algorithmName(id),
 }));
@@ -68,15 +70,6 @@ const HERO_PALETTE_LIST = HERO_PALETTES.map((id): HeroPaletteInfo => {
     ? { id, name: preset.name, colors: preset.colors.length, param: id }
     : { id, name: "1-bit", colors: 2, param: null };
 });
-
-const HERO_VARIANTS = Object.fromEntries(
-  HERO_ALGORITHMS.flatMap((algorithm) =>
-    HERO_PALETTES.map((palette) => [
-      `${algorithm}:${palette}`,
-      heroVariant(algorithm, palette),
-    ]),
-  ),
-);
 
 const MAX_EXPORT_FACTOR = EXPORT_FACTORS.at(-1);
 const INPUT_FORMATS = SUPPORTED_IMAGE_TYPES.map((type) =>
@@ -219,7 +212,7 @@ const homeStructuredData = [
     operatingSystem: "Web",
     isAccessibleForFree: true,
     image: absoluteUrl(siteConfig.previewImage),
-    screenshot: absoluteUrl(heroVariant("atkinson", "gameboy")),
+    screenshot: absoluteUrl(heroVariant("floyd-steinberg", "1-bit")),
     featureList: [
       `${ALGORITHMS.length} dithering algorithms`,
       `${PALETTE_PRESETS.length} color palettes`,
@@ -349,7 +342,7 @@ export default function HomePage() {
             <HeroInstrument
               algorithms={HERO_ALGORITHM_LIST}
               palettes={HERO_PALETTE_LIST}
-              variants={HERO_VARIANTS}
+              variantPattern={HERO_VARIANT_PATTERN}
               size={HERO_SIZE}
               original={HERO_ORIGINAL}
             />
