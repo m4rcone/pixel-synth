@@ -269,14 +269,6 @@ export default function HomePage() {
             <Link href="/editor" className={navLink}>
               Editor
             </Link>
-            <a
-              href={siteConfig.links.repository}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${navLink} max-sm:hidden`}
-            >
-              GitHub<span className="sr-only"> (opens in a new tab)</span>
-            </a>
           </nav>
           <p className="text-caps text-paper-dim flex items-center gap-2 max-lg:hidden">
             <span aria-hidden="true" className="bg-safelight size-2" />
