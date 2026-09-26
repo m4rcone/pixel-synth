@@ -6,9 +6,17 @@ import Image from "next/image";
 type CompareSliderProps = {
   before: { src: string; alt: string };
   after: { src: string; alt: string };
+  /** Size of both images; the frame takes their aspect ratio. */
+  width?: number;
+  height?: number;
+  /** `sizes` of the (optimized) "before" image. */
+  beforeSizes?: string;
+  labels?: { before: string; after: string };
   /** Initial share of the "before" image shown, in percent. */
   initial?: number;
   onDraggingChange?: (dragging: boolean) => void;
+  /** Pointer position over the images as fractions (0–1), null when it leaves. */
+  onPointerPosition?: (point: { x: number; y: number } | null) => void;
 };
 
 /**
@@ -19,8 +27,13 @@ type CompareSliderProps = {
 export function CompareSlider({
   before,
   after,
+  width = 250,
+  height = 250,
+  beforeSizes = "(max-width: 480px) 100vw, 424px",
+  labels = { before: "Source", after: "Dithered" },
   initial = 38,
   onDraggingChange,
+  onPointerPosition,
 }: CompareSliderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [reveal, setReveal] = useState(initial);
@@ -43,21 +56,32 @@ export function CompareSlider({
   return (
     <div
       ref={containerRef}
-      className="bg-ink-sunken relative aspect-square w-full cursor-ew-resize touch-none overflow-hidden rounded-xs select-none"
+      className="bg-ink-sunken relative w-full cursor-ew-resize touch-none overflow-hidden select-none"
+      style={{ aspectRatio: `${width} / ${height}` }}
       onPointerDown={(e) => {
         e.currentTarget.setPointerCapture(e.pointerId);
         setDragging(true);
         setFromClientX(e.clientX);
       }}
-      onPointerMove={(e) => dragging && setFromClientX(e.clientX)}
+      onPointerMove={(e) => {
+        if (dragging) setFromClientX(e.clientX);
+        if (onPointerPosition) {
+          const rect = e.currentTarget.getBoundingClientRect();
+          onPointerPosition({
+            x: Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width)),
+            y: Math.min(1, Math.max(0, (e.clientY - rect.top) / rect.height)),
+          });
+        }
+      }}
+      onPointerLeave={() => onPointerPosition?.(null)}
       onPointerUp={() => setDragging(false)}
       onPointerCancel={() => setDragging(false)}
     >
       <Image
         src={after.src}
         alt={after.alt}
-        width={250}
-        height={250}
+        width={width}
+        height={height}
         unoptimized
         priority
         draggable={false}
@@ -66,10 +90,10 @@ export function CompareSlider({
       <Image
         src={before.src}
         alt={before.alt}
-        width={250}
-        height={250}
+        width={width}
+        height={height}
         // Continuous-tone PNG: served as WebP (≈ 3 KB instead of 112 KB).
-        sizes="(max-width: 480px) 100vw, 424px"
+        sizes={beforeSizes}
         quality={95}
         priority
         draggable={false}
@@ -77,11 +101,11 @@ export function CompareSlider({
         style={{ clipPath: `inset(0 ${100 - reveal}% 0 0)` }}
       />
 
-      <span className="text-label pointer-events-none absolute bottom-2 left-2 rounded-xs bg-black/60 px-1.5 py-0.5 text-white/90">
-        Source
+      <span className="text-caps bg-ink text-paper pointer-events-none absolute bottom-2 left-2 px-1.5 py-0.5">
+        {labels.before}
       </span>
-      <span className="text-label pointer-events-none absolute right-2 bottom-2 rounded-xs bg-black/60 px-1.5 py-0.5 text-white/90">
-        Dithered
+      <span className="text-caps bg-ink text-paper pointer-events-none absolute right-2 bottom-2 px-1.5 py-0.5">
+        {labels.after}
       </span>
 
       <div

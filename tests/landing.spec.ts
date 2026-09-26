@@ -7,13 +7,17 @@ test("every internal landing link resolves", async ({ page, request }) => {
     .evaluateAll((links) => [
       ...new Set(links.map((link) => link.getAttribute("href")!)),
     ]);
-  // Palette thumbnails, use cases, FAQ and footer.
+  // Hero, algorithm grid, palette cartridges, modes, FAQ and footer.
   expect(hrefs).toEqual(
     expect.arrayContaining([
+      "/editor?sample=1&algorithm=atkinson&palette=gameboy",
+      "/algorithms/void-and-cluster",
+      "/palettes#palette-darkroom",
       "/palettes#palette-pico8",
       "/algorithms/clustered-dot-halftone-ordered",
       "/algorithms/blue-noise",
       "/editor?preset=pixel-art",
+      "/editor?sample=animated",
     ]),
   );
 
@@ -25,13 +29,13 @@ test("every internal landing link resolves", async ({ page, request }) => {
   }
 });
 
-test("a palette thumbnail opens that palette in the gallery", async ({
+test("a palette cartridge opens that palette in the gallery", async ({
   page,
 }) => {
   await page.goto("/");
   await page.waitForLoadState("networkidle");
   await page
-    .getByRole("region", { name: "Classic palettes, one click away" })
+    .getByRole("region", { name: "Retro palettes: Game Boy, NES, PICO-8, CGA" })
     .getByRole("link", { name: "PICO-8" })
     .click();
 
@@ -65,4 +69,28 @@ test("the pixel art button waits for the user's image", async ({ page }) => {
   await expect(page.getByRole("combobox", { name: "Palette" })).toContainText(
     "PICO-8",
   );
+});
+
+test("the hero instrument links to the look it shows", async ({ page }) => {
+  await page.goto("/");
+  const hero = page.getByRole("figure").first();
+  await hero.getByRole("button", { name: "Bayer 2×2" }).click();
+  await hero.getByRole("button", { name: "1-bit" }).click();
+
+  await expect(
+    hero.getByRole("img", { name: /dithered with Bayer 2×2 and the 1-bit/ }),
+  ).toHaveAttribute("src", "/landing/sunset-bayer-2-2-1-bit.png");
+  // 1-bit is the editor's default mode: no palette parameter.
+  await expect(
+    hero.getByRole("link", { name: "Open this look in the editor" }),
+  ).toHaveAttribute("href", "/editor?sample=1&algorithm=bayer-2-2");
+});
+
+test("the CMYK link opens the sample separated into inks", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: "Try CMYK separation" }).click();
+  await expect(page).toHaveURL(/\/editor\?sample=1&s=/);
+  await expect(
+    page.getByRole("button", { name: "CMYK", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
 });
