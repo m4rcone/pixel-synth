@@ -11,7 +11,8 @@ const nextConfig: NextConfig = {
   // Next blocks its dev resources there and the page never hydrates.
   allowedDevOrigins: ["127.0.0.1"],
   images: {
-    // 95 keeps smooth gradients (the source sphere) free of WebP blocking.
+    // 95 keeps smooth gradients (the undithered "before" images) free of WebP
+    // blocking.
     qualities: [75, 95],
   },
 };

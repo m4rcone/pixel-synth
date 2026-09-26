@@ -51,7 +51,7 @@ export function NavMain({
                 >
                   <span
                     aria-hidden="true"
-                    className={`bg-safelight absolute top-1/2 -left-2 h-4 w-0.5 -translate-y-1/2 rounded-full transition-opacity ${
+                    className={`bg-safelight absolute top-1/2 -left-2 h-4 w-0.5 -translate-y-1/2 transition-opacity ${
                       isActive ? "opacity-100" : "opacity-0"
                     }`}
                   />
@@ -60,7 +60,7 @@ export function NavMain({
                       className={`h-4 w-4 shrink-0 ${isActive ? "text-safelight" : ""}`}
                     />
                   )}
-                  <span className="text-sm">{item.title}</span>
+                  <span className="text-caps">{item.title}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

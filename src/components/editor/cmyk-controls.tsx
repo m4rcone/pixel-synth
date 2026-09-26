@@ -32,7 +32,7 @@ export function CmykControls() {
             <li key={ink.id} className="flex flex-col gap-1">
               <span
                 aria-hidden="true"
-                className="border-line-strong block h-3.5 rounded-xs border"
+                className="border-line-strong block h-3.5 border"
                 style={{ background: ink.color }}
               />
               <span className="text-readout text-paper-dim flex flex-col">

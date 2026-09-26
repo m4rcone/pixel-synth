@@ -13,11 +13,10 @@ import {
   siteConfig,
 } from "@/lib/site";
 
-const description =
-  "Explore the dithering algorithms available in PixelSynth and preview how each technique transforms an image.";
+const description = `Compare ${ALGORITHMS.length} dithering algorithms on one image: Floyd–Steinberg, Atkinson, Bayer, blue noise, halftone and more, each with its kernel or threshold matrix.`;
 
 export const metadata: Metadata = pageMetadata({
-  title: "Dithering Algorithms",
+  title: "Dithering Algorithms Compared",
   description,
   path: "/algorithms",
 });
@@ -65,7 +64,7 @@ export default function AlgorithmsPage() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <h1
               tabIndex={-1}
-              className="font-display text-title font-medium focus:outline-hidden"
+              className="font-display text-glow text-title font-normal focus:outline-hidden"
             >
               Dithering algorithms
             </h1>
@@ -74,9 +73,10 @@ export default function AlgorithmsPage() {
             </Button>
           </div>
           <p className="text-paper-dim max-w-2xl text-lg leading-relaxed">
-            {ALGORITHMS.length} techniques, each shown on the same sphere.
-            Compare error diffusion, ordered dithering, blue-noise, noise-based
-            techniques and halftone screens before applying them in the editor.
+            {ALGORITHMS.length} techniques, each shown on the same specimen: a
+            CRT terminal on a checkered table. Compare error diffusion, ordered,
+            noise-based and halftone screen dithering before applying them in
+            the editor.
           </p>
           <nav aria-label="Algorithm families">
             <ul className="flex flex-wrap gap-2">
@@ -84,7 +84,7 @@ export default function AlgorithmsPage() {
                 <li key={family.id}>
                   <a
                     href={`#family-${family.id}`}
-                    className="border-line-strong text-paper-dim hover:text-paper hover:border-paper/40 focus-visible:ring-safelight inline-flex h-9 items-center gap-2 rounded-full border px-3.5 text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                    className="border-line-strong text-paper-dim hover:text-paper hover:border-paper focus-visible:ring-safelight inline-flex h-9 items-center gap-2 border px-3.5 text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
                   >
                     {family.name}
                     <span className="text-readout">
@@ -107,7 +107,7 @@ export default function AlgorithmsPage() {
             <div className="mb-6 flex max-w-3xl flex-col gap-2">
               <h2
                 id={`family-${family.id}-heading`}
-                className="font-display text-heading font-medium"
+                className="text-heading font-semibold"
               >
                 {family.name}
               </h2>
@@ -115,7 +115,7 @@ export default function AlgorithmsPage() {
                 {family.description}
               </p>
             </div>
-            <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,16rem),1fr))] gap-5">
+            <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,13rem),1fr))] gap-4">
               {family.algorithms.map((algorithm) => {
                 const frame = frameOf.get(algorithm.slug)!;
                 return (

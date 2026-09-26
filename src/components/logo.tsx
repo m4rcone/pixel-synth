@@ -25,7 +25,6 @@ export function LogoMark({ className }: { className?: string }) {
         y="0.5"
         width="23"
         height="23"
-        rx="3.5"
         fill="none"
         stroke="var(--line-strong)"
       />
@@ -45,11 +44,22 @@ export function LogoMark({ className }: { className?: string }) {
 }
 
 /** Mark + wordmark. The visible name doubles as the link's accessible name. */
-export function Logo({ className }: { className?: string }) {
+export function Logo({
+  className,
+  wordmarkClassName,
+}: {
+  className?: string;
+  wordmarkClassName?: string;
+}) {
   return (
     <span className={cn("flex items-center gap-2.5", className)}>
       <LogoMark />
-      <span className="font-display text-xl leading-none font-medium tracking-tight">
+      <span
+        className={cn(
+          "tracking-caps text-sm leading-none font-semibold uppercase",
+          wordmarkClassName,
+        )}
+      >
         PixelSynth
       </span>
     </span>

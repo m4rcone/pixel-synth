@@ -6,7 +6,7 @@ import { useEditorActions, useEditorState } from "@/contexts/editor-context";
 import { isAlgorithmId } from "@/lib/algorithms";
 import type { EditorSettings } from "@/lib/editor/settings";
 import { decodeSettings, SHARE_PARAM } from "@/lib/editor/share";
-import { defaultMatch, isPaletteId } from "@/lib/palettes";
+import { defaultMatch, isPaletteId, resolvePaletteId } from "@/lib/palettes";
 import { useLoadSample } from "@/hooks/use-load-sample";
 import { usePixelArtPreset } from "@/hooks/use-pixel-art-preset";
 
@@ -25,7 +25,8 @@ import { usePixelArtPreset } from "@/hooks/use-pixel-art-preset";
 export function SettingsFromUrl() {
   const params = useSearchParams();
   const algorithm = params.get("algorithm");
-  const palette = params.get("palette");
+  const paletteParam = params.get("palette");
+  const palette = paletteParam && resolvePaletteId(paletteParam);
   const preset = params.get("preset");
   const sampleParam = params.get("sample");
   const sample =

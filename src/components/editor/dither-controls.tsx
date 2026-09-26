@@ -311,7 +311,7 @@ function WidthField({
           if (event.key === "Enter") submit();
         }}
         aria-describedby="output-height"
-        className="border-input text-readout focus-visible:ring-safelight h-8 w-20 rounded-md border bg-transparent px-2 text-right focus-visible:ring-2 focus-visible:outline-none"
+        className="border-input text-readout focus-visible:ring-safelight h-8 w-20 border bg-transparent px-2 text-right focus-visible:ring-2 focus-visible:outline-none"
       />
       <span id="output-height" className="text-readout text-paper-dim">
         × {height} px

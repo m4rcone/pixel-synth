@@ -63,7 +63,7 @@ export function CanvasToolbar({ onStatusChange }: CanvasToolbarProps) {
               className="text-label text-safelight flex items-center gap-1.5"
             >
               <LoaderCircle className="size-3.5 animate-spin" />
-              <span className="hidden sm:inline">Developing</span>
+              <span className="hidden sm:inline">Processing</span>
             </span>
           )}
         </div>

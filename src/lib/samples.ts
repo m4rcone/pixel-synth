@@ -1,28 +1,34 @@
 /**
  * Generated sample assets (see scripts/generate-previews.mjs). The sample is
- * a procedural sunset scene with a calibration strip (grayscale ramp + hue
- * spectrum), used by the editor's "Try a sample image" and the palette pages.
+ * a procedural synthwave sunset in the site's colors: a long sky gradient,
+ * lit clouds, a striped yellow sun, mountains and a blue-white grid over a
+ * glossy floor, lit in HDR so it spans black to white
+ * (scripts/sample-scene.mjs). Used by the editor's "Try a sample image", the
+ * landing and the palette pages.
  */
 
+import { ALGORITHMS, type AlgorithmId } from "@/lib/algorithms";
 import { pixelArtScale } from "@/lib/editor/pixel-art";
+import { PALETTE_PRESETS } from "@/lib/palettes";
 
 export const SAMPLE_IMAGE = {
-  src: "/samples/sunset.png",
-  name: "sunset.png",
+  src: "/samples/synthwave-sunset.png",
+  name: "synthwave-sunset.png",
   width: 1800,
   height: 1200,
 } as const;
 
 /**
- * Animated sample: the same scene without the strip, the sun rising and
- * setting over one seamless loop. 256 colors, not dithered.
+ * Animated sample: the same scene with the grid rolling toward the camera,
+ * the sun's stripes moving down, drifting clouds and a rippling reflection,
+ * over one seamless loop. 256 colors, not dithered.
  */
 export const ANIMATED_SAMPLE = {
-  src: "/samples/sunset.gif",
-  name: "sunset.gif",
+  src: "/samples/synthwave-sunset.gif",
+  name: "synthwave-sunset.gif",
   width: 360,
   height: 240,
-  frames: 24,
+  frames: 36,
   /** Milliseconds per frame. */
   delay: 80,
 } as const;
@@ -50,3 +56,48 @@ export const PIXEL_ART_PREVIEW = {
 /** Preview settings shared by the generator and the page copy. */
 export const PALETTE_PREVIEW_ALGORITHM = "floyd-steinberg" as const;
 export const EXTRACTED_PREVIEW_COLORS = 8;
+
+/**
+ * Landing hero: the sample at 480×320, one image per algorithm × palette
+ * pair, every algorithm and every preset palette plus 1-bit (the editor's
+ * default black-and-white mode, not a palette), in catalog order. The first
+ * of each list is what the hero opens on. 480 px is where every algorithm
+ * reads well (halftone screens need it to form dots) and the hero shows it
+ * 1:1, so no scaling beats against ordered patterns. Also the undithered
+ * original at twice that size for the "before" side.
+ */
+export const HERO_ALGORITHMS: readonly AlgorithmId[] = ALGORITHMS.map(
+  (algorithm) => algorithm.slug,
+);
+export const HERO_PALETTES: readonly string[] = [
+  "1-bit",
+  ...PALETTE_PRESETS.map((palette) => palette.id),
+];
+export const HERO_SIZE = { width: 480, height: 320 } as const;
+
+/** Image path pattern of a hero variant, for code that can't call `heroVariant`. */
+export const HERO_VARIANT_PATTERN =
+  "/landing/synthwave-sunset-{algorithm}-{palette}.png";
+
+export function heroVariant(algorithm: string, palette: string) {
+  return HERO_VARIANT_PATTERN.replace("{algorithm}", algorithm).replace(
+    "{palette}",
+    palette,
+  );
+}
+
+export const HERO_ORIGINAL = {
+  src: "/landing/synthwave-sunset-original.png",
+  width: 960,
+  height: 640,
+} as const;
+
+/** The animated sample dithered, and its first frame for when it's paused. */
+export const ANIMATED_DITHER = {
+  src: "/landing/synthwave-sunset-animated-bayer-4-4-pico8.gif",
+  still: "/landing/synthwave-sunset-animated-bayer-4-4-pico8.png",
+  algorithm: "bayer-4-4",
+  palette: "pico8",
+  width: ANIMATED_SAMPLE.width / 2,
+  height: ANIMATED_SAMPLE.height / 2,
+} as const;

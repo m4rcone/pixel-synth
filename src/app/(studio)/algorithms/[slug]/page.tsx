@@ -9,9 +9,12 @@ import { StructuredData } from "@/components/structured-data";
 import { Button } from "@/components/ui/button";
 import {
   ALGORITHMS,
+  ditheringName,
   getAlgorithm,
   getCategory,
+  PREVIEW_SIZE,
   PREVIEW_SOURCE,
+  type Algorithm,
 } from "@/lib/algorithms";
 import {
   absoluteUrl,
@@ -28,9 +31,14 @@ export function generateStaticParams(): Params[] {
   return ALGORITHMS.map(({ slug }) => ({ slug }));
 }
 
-function describe(name: string, description: string) {
-  return `${description} See how ${name} dithering renders an image and try it in the PixelSynth editor.`;
+/** Meta description: the lede's first sentence and a call to action. */
+function describe(algorithm: Algorithm) {
+  const [lede] = algorithm.description.split(/(?<=\.) /);
+  return `${lede} See it before and after, then try it free in your browser.`;
 }
+
+/** "Atkinson Dithering", "Random Dithering". */
+const title = (algorithm: Algorithm) => `${ditheringName(algorithm)} Dithering`;
 
 export async function generateMetadata({
   params,
@@ -40,8 +48,8 @@ export async function generateMetadata({
   const algorithm = getAlgorithm((await params).slug);
   if (!algorithm) return {};
   return pageMetadata({
-    title: `${algorithm.name} dithering`,
-    description: describe(algorithm.name, algorithm.description),
+    title: title(algorithm),
+    description: describe(algorithm),
     path: `/algorithms/${algorithm.slug}`,
   });
 }
@@ -64,8 +72,8 @@ export default async function AlgorithmPage({
     {
       "@context": "https://schema.org",
       "@type": "TechArticle",
-      headline: `${algorithm.name} dithering`,
-      description: describe(algorithm.name, algorithm.description),
+      headline: title(algorithm),
+      description: describe(algorithm),
       url: absoluteUrl(path),
       image: absoluteUrl(algorithm.preview),
       inLanguage: "en",
@@ -100,35 +108,39 @@ export default async function AlgorithmPage({
       />
 
       <article className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 py-10 sm:px-8">
-        <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,26rem)_1fr] lg:gap-14">
-          <div className="border-line-strong bg-ink-raised rounded-md border p-3">
+        {/* 400 px specimen + 12 px padding + 1 px border on each side: shown 1:1. */}
+        <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,26.625rem)_1fr] lg:gap-14">
+          <div className="border-line-strong bg-ink-sunken border p-3">
             <CompareSlider
               after={{
                 src: algorithm.preview,
-                alt: `Sphere dithered with ${algorithm.name}`,
+                alt: `A CRT terminal on a checkered table, dithered with ${algorithm.name} in 1-bit`,
               }}
               before={{
                 src: PREVIEW_SOURCE,
-                alt: "The same sphere before dithering",
+                alt: "The same terminal before dithering",
               }}
+              width={PREVIEW_SIZE}
+              height={PREVIEW_SIZE}
+              beforeSizes={`(max-width: 480px) 100vw, ${PREVIEW_SIZE}px`}
             />
           </div>
 
           <div className="flex flex-col">
             <p className="text-paper-dim flex items-center gap-3 text-sm">
-              <span className="text-readout text-safelight">
+              <span className="text-readout text-paper-dim">
                 {String(index + 1).padStart(2, "0")}
               </span>
               <Link
                 href={`/algorithms#family-${category.id}`}
-                className="hover:text-paper focus-visible:ring-safelight rounded-sm underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:outline-none"
+                className="hover:text-paper focus-visible:ring-safelight underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:outline-none"
               >
                 {category.name}
               </Link>
             </p>
             <h1
               tabIndex={-1}
-              className="font-display text-title mt-3 font-medium focus:outline-hidden"
+              className="font-display text-glow text-title mt-3 font-normal focus:outline-hidden"
             >
               {algorithm.name}
             </h1>
@@ -167,10 +179,7 @@ export default async function AlgorithmPage({
           className="flex flex-col gap-6"
         >
           <div className="max-w-prose">
-            <h2
-              id="method-heading"
-              className="font-display text-heading font-medium"
-            >
+            <h2 id="method-heading" className="text-heading font-semibold">
               How it works
             </h2>
             <p className="text-paper-dim mt-2 leading-relaxed">
@@ -239,10 +248,10 @@ function PagerLink({
   return (
     <Link
       href={href}
-      className={`group border-line hover:border-line-strong focus-visible:ring-safelight flex flex-col gap-1 rounded-md border p-4 transition-colors focus-visible:ring-2 focus-visible:outline-none ${alignEnd ? "sm:items-end sm:text-right" : ""}`}
+      className={`group border-line hover:border-line-strong focus-visible:ring-safelight flex flex-col gap-1 border p-4 transition-colors focus-visible:ring-2 focus-visible:outline-none ${alignEnd ? "sm:items-end sm:text-right" : ""}`}
     >
       <span className="text-label text-paper-dim">{direction}</span>
-      <span className="font-display group-hover:text-safelight text-lg font-medium transition-colors">
+      <span className="group-hover:text-paper-hot text-lg font-semibold transition-colors">
         {name}
       </span>
     </Link>

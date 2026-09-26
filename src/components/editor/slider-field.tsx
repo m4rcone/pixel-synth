@@ -56,7 +56,7 @@ export function SliderField({
               type="button"
               onClick={() => onCommit(defaultValue)}
               aria-label={`Reset ${label.toLowerCase()} to default`}
-              className="text-paper-dim hover:text-paper hover:bg-accent focus-visible:ring-safelight grid size-6 place-items-center rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-hidden"
+              className="text-paper-dim hover:text-paper hover:bg-accent focus-visible:ring-safelight grid size-6 place-items-center transition-colors focus-visible:ring-2 focus-visible:outline-hidden"
             >
               <RotateCcw className="size-3.5" aria-hidden="true" />
             </button>

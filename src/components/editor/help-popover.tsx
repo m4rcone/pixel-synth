@@ -61,7 +61,7 @@ const TIPS = [
 ];
 
 const linkClass =
-  "text-paper hover:text-safelight focus-visible:ring-safelight decoration-line-strong rounded-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none";
+  "text-paper hover:text-paper-hot hover:decoration-paper-hot focus-visible:ring-safelight decoration-line-strong  font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none";
 
 export function HelpPopover() {
   return (
@@ -70,7 +70,7 @@ export function HelpPopover() {
         <button
           type="button"
           aria-label="Editor help"
-          className="text-paper-dim hover:text-paper hover:bg-accent focus-visible:ring-safelight grid size-9 place-items-center rounded-md transition-colors focus-visible:ring-2 focus-visible:outline-none"
+          className="text-paper-dim hover:text-paper hover:bg-accent focus-visible:ring-safelight grid size-9 place-items-center transition-colors focus-visible:ring-2 focus-visible:outline-none"
         >
           <CircleHelp className="size-4.5" aria-hidden="true" />
         </button>

@@ -1,19 +1,9 @@
 import Link from "next/link";
-import { ALGORITHMS, getAlgorithm } from "@/lib/algorithms";
-import { getPalettePreset, PALETTE_PRESETS } from "@/lib/palettes";
+import { ALGORITHMS } from "@/lib/algorithms";
+import { PALETTE_PRESETS } from "@/lib/palettes";
 import { BUG_REPORT_URL, FEATURE_IDEA_URL } from "@/lib/feedback";
 import { siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
-
-const algorithmLink = (slug: string) => ({
-  label: getAlgorithm(slug)?.name ?? slug,
-  href: `/algorithms/${slug}`,
-});
-
-const paletteLink = (id: string) => ({
-  label: getPalettePreset(id)?.name ?? id,
-  href: `/palettes#palette-${id}`,
-});
 
 const COLUMNS: {
   title: string;
@@ -23,46 +13,46 @@ const COLUMNS: {
     title: "Editor",
     links: [
       { label: "Open the editor", href: "/editor" },
+      { label: "Try the sample", href: "/editor?sample=1" },
+      { label: "Try an animated GIF", href: "/editor?sample=animated" },
       { label: "Pixel art preset", href: "/editor?preset=pixel-art" },
-      { label: "Try a sample", href: "/editor?sample=1" },
     ],
   },
   {
-    title: "Algorithms",
-    links: [
-      algorithmLink("floyd-steinberg"),
-      algorithmLink("atkinson"),
-      algorithmLink("bayer-8-8"),
-      { label: `All ${ALGORITHMS.length} algorithms`, href: "/algorithms" },
-    ],
+    title: `${ALGORITHMS.length} algorithms`,
+    links: ALGORITHMS.map((algorithm) => ({
+      label: algorithm.shortName,
+      href: `/algorithms/${algorithm.slug}`,
+    })),
   },
   {
-    title: "Palettes",
-    links: [
-      paletteLink("gameboy"),
-      paletteLink("pico8"),
-      paletteLink("cga-cyan-magenta"),
-      { label: `All ${PALETTE_PRESETS.length} palettes`, href: "/palettes" },
-    ],
+    title: `${PALETTE_PRESETS.length} palettes`,
+    links: PALETTE_PRESETS.map((palette) => ({
+      label: palette.name,
+      href: `/palettes#palette-${palette.id}`,
+    })),
   },
   {
     title: "About",
     links: [
-      { label: "Suggest a feature", href: FEATURE_IDEA_URL, external: true },
-      { label: "Report a bug", href: BUG_REPORT_URL, external: true },
       {
         label: "Source on GitHub",
         href: siteConfig.links.repository,
         external: true,
       },
+      { label: "Suggest a feature", href: FEATURE_IDEA_URL, external: true },
+      { label: "Report a bug", href: BUG_REPORT_URL, external: true },
     ],
   },
 ];
 
 const linkClass =
-  "text-paper-dim hover:text-paper focus-visible:ring-safelight rounded-sm text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none";
+  "text-paper-dim hover:text-paper focus-visible:ring-safelight  text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none";
 
-/** Site map footer for the landing and the catalog pages (not the editor). */
+/**
+ * Site index for the landing and the catalog pages (not the editor): every
+ * algorithm and palette, so each page links to all of them.
+ */
 export function SiteFooter({ className }: { className?: string }) {
   return (
     <footer className={cn("border-line border-t pt-10 pb-7", className)}>
@@ -70,7 +60,9 @@ export function SiteFooter({ className }: { className?: string }) {
         <ul className="grid grid-cols-2 gap-8 sm:grid-cols-4">
           {COLUMNS.map((column) => (
             <li key={column.title} className="flex flex-col gap-3">
-              <h2 className="text-label text-paper">{column.title}</h2>
+              {/* A column title, not a heading: the site map stays out of
+                  each page's outline. */}
+              <p className="text-caps text-paper">{column.title}</p>
               <ul className="flex flex-col gap-2">
                 {column.links.map((link) => (
                   <li key={link.href}>
@@ -97,7 +89,7 @@ export function SiteFooter({ className }: { className?: string }) {
         </ul>
       </nav>
       <div className="border-line text-paper-dim mt-10 flex flex-col gap-2 border-t pt-7 text-sm sm:flex-row sm:justify-between">
-        <p>© 2026 PixelSynth — a dithering image editor</p>
+        <p>© 2026 PixelSynth: Dithering & Pixel Art Tool</p>
         <p>Runs entirely in your browser.</p>
       </div>
     </footer>

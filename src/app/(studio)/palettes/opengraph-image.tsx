@@ -2,7 +2,7 @@ import { PALETTE_PRESETS } from "@/lib/palettes";
 import { OG_SIZE, renderOgImage } from "@/lib/og-image";
 import { palettePreview, PALETTE_PREVIEW_SIZE } from "@/lib/samples";
 
-export const alt = "A sunset scene dithered with the PICO-8 palette";
+export const alt = "A synthwave sunset dithered with the PICO-8 palette";
 export const size = OG_SIZE;
 export const contentType = "image/png";
 

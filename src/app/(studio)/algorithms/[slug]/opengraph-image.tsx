@@ -1,7 +1,7 @@
 import { ALGORITHMS, getAlgorithm, getCategoryName } from "@/lib/algorithms";
 import { OG_SIZE, renderOgImage } from "@/lib/og-image";
 
-export const alt = "A sphere rendered with this dithering algorithm";
+export const alt = "A CRT terminal rendered with this dithering algorithm";
 export const size = OG_SIZE;
 export const contentType = "image/png";
 

@@ -32,12 +32,12 @@ export function ControlPanel({ className }: { className?: string }) {
   return (
     <section
       aria-labelledby="control-panel-heading"
-      className={cn("bg-ink flex flex-col", className)}
+      className={cn("bg-ink-raised scanlines flex flex-col", className)}
     >
       <header className="border-line flex h-14 shrink-0 items-center justify-between border-b px-4">
         <h2
           id="control-panel-heading"
-          className="font-display text-xl font-medium tracking-tight"
+          className="text-caps text-paper font-semibold"
         >
           Control panel
         </h2>
@@ -61,7 +61,7 @@ export function ControlPanel({ className }: { className?: string }) {
           >
             <h3
               id={`panel-${id}-heading`}
-              className="text-paper flex items-center gap-2 text-sm font-semibold"
+              className="text-caps text-paper flex items-center gap-2 font-semibold"
             >
               <Icon className="text-paper-dim size-4" aria-hidden="true" />
               {title}
@@ -71,7 +71,7 @@ export function ControlPanel({ className }: { className?: string }) {
         ))}
       </div>
 
-      <footer className="border-line bg-ink sticky bottom-0 border-t p-3 lg:static">
+      <footer className="border-line bg-ink-raised sticky bottom-0 border-t p-3 lg:static">
         <ControlPanelActions />
       </footer>
     </section>

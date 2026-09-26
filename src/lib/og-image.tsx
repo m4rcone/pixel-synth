@@ -1,13 +1,20 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
+import { PREVIEW_SIZE } from "@/lib/algorithms";
 
 export const OG_SIZE = { width: 1200, height: 630 };
 
-const INK = "#120d0c";
-const PAPER = "#ece4d6";
-const PAPER_DIM = "#a0948a";
-const SAFELIGHT = "#ee5140";
+// The Enhance tokens (globals.css); next/og can't read CSS variables.
+const INK = "#05080d";
+const INK_SUNKEN = "#0b0b0b";
+const PAPER = "#cfe6ff";
+const PAPER_DIM = "#7b9cbc";
+const SAFELIGHT = "#ffd23f";
+const LINE_STRONG = "rgba(207,230,255,0.34)";
+// Chrome-only scanlines, as in the `scanlines` utility.
+const SCANLINES =
+  "repeating-linear-gradient(to bottom, transparent 0px, transparent 2px, rgba(207,230,255,0.045) 2px, rgba(207,230,255,0.045) 3px)";
 
 // Same cells as the logo mark (a 4×4 Bayer-dithered ramp).
 const MARK = [
@@ -32,14 +39,14 @@ export async function renderOgImage({
   title,
   subtitle,
   image,
-  imageSize = { width: 250, height: 250 },
+  imageSize = { width: PREVIEW_SIZE, height: PREVIEW_SIZE },
 }: {
   eyebrow: string;
   title: string;
   subtitle: string;
   /** Path under /public of a preview image. */
   image: string;
-  /** Intrinsic size of `image` (default 250×250); it's fitted into 500×500. */
+  /** Intrinsic size of `image` (default: an algorithm specimen); it's fitted into 500×500. */
   imageSize?: { width: number; height: number };
 }) {
   const src = await publicDataUrl(image);
@@ -56,6 +63,7 @@ export async function renderOgImage({
         height: "100%",
         display: "flex",
         background: INK,
+        backgroundImage: SCANLINES,
         color: PAPER,
         padding: 64,
         gap: 56,
@@ -76,8 +84,7 @@ export async function renderOgImage({
               height: 40,
               position: "relative",
               display: "flex",
-              border: `1.5px solid rgba(236,228,214,0.3)`,
-              borderRadius: 6,
+              border: `1.5px solid ${LINE_STRONG}`,
             }}
           >
             {MARK.map(([x, y]) => (
@@ -94,11 +101,20 @@ export async function renderOgImage({
               />
             ))}
           </div>
-          <div style={{ fontSize: 32, letterSpacing: -0.5 }}>PixelSynth</div>
+          <div style={{ fontSize: 30, letterSpacing: 4 }}>PIXELSYNTH</div>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          <div style={{ fontSize: 26, color: SAFELIGHT }}>{eyebrow}</div>
+          <div
+            style={{
+              fontSize: 24,
+              letterSpacing: 3,
+              textTransform: "uppercase",
+              color: SAFELIGHT,
+            }}
+          >
+            {eyebrow}
+          </div>
           <div
             style={{
               fontSize: title.length > 22 ? 64 : 80,
@@ -130,8 +146,8 @@ export async function renderOgImage({
         height={drawn.height}
         style={{
           alignSelf: "center",
-          border: `1.5px solid rgba(236,228,214,0.26)`,
-          borderRadius: 4,
+          background: INK_SUNKEN,
+          border: `1.5px solid ${LINE_STRONG}`,
           imageRendering: "pixelated",
         }}
       />

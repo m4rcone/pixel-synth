@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { StructuredData } from "@/components/structured-data";
 import { SidebarInset } from "@/components/ui/sidebar";
+import { ALGORITHMS } from "@/lib/algorithms";
 import {
   absoluteUrl,
   breadcrumbStructuredData,
@@ -8,11 +9,10 @@ import {
   siteConfig,
 } from "@/lib/site";
 
-const description =
-  "Upload an image and transform it with interactive dithering controls, tone mapping, and browser-based rendering.";
+const description = `Open a photo or GIF and dither it in your browser: ${ALGORITHMS.length} algorithms, retro palettes, CMYK, filters and PNG or GIF export. Nothing is uploaded.`;
 
 export const metadata: Metadata = pageMetadata({
-  title: "Editor",
+  title: "Dithering Editor",
   description,
   path: "/editor",
 });
@@ -54,7 +54,7 @@ export default function EditorRouteLayout({
       <SidebarInset
         id="main-content"
         tabIndex={-1}
-        className="relative min-h-svh focus:outline-hidden lg:h-svh lg:overflow-hidden"
+        className="scanlines relative min-h-svh focus:outline-hidden lg:h-svh lg:overflow-hidden"
       >
         {children}
       </SidebarInset>

@@ -74,7 +74,7 @@ test.describe("accessibility", () => {
       page.getByRole("application", { name: "Original image canvas" }),
     ).toBeVisible();
     await expect(page.locator('[aria-live="polite"]')).toContainText(
-      "Image uploaded",
+      "Image loaded",
     );
   });
 
@@ -200,7 +200,9 @@ test.describe("accessibility", () => {
     await expect(contrast).toHaveAttribute("aria-valuetext", "0.00");
   });
 
-  test("landing specimen is operable without a pointer", async ({ page }) => {
+  test("landing instrument and GIF are operable without a pointer", async ({
+    page,
+  }) => {
     await page.goto("/");
 
     const divider = page.getByRole("slider", {
@@ -210,16 +212,14 @@ test.describe("accessibility", () => {
     await page.keyboard.press("Home");
     await expect(divider).toHaveAttribute("aria-valuenow", "0");
 
-    const pause = page.getByRole("button", { name: "Pause slideshow" });
-    await pause.click();
+    await page.getByRole("button", { name: "Next algorithm" }).focus();
+    await page.keyboard.press("Enter");
     await expect(
-      page.getByRole("button", { name: "Play slideshow" }),
-    ).toBeVisible();
+      page.getByRole("group", { name: "Algorithm" }).getByRole("status"),
+    ).toContainText("Jarvis–Judice–Ninke");
 
-    await page.getByRole("button", { name: "Bayer 8×8" }).click();
-    await expect(
-      page.getByRole("button", { name: "Bayer 8×8" }),
-    ).toHaveAttribute("aria-pressed", "true");
+    await page.getByRole("button", { name: "Pause GIF" }).click();
+    await expect(page.getByRole("button", { name: "Play GIF" })).toBeVisible();
   });
 });
 

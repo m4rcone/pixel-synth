@@ -84,6 +84,13 @@ describe("settings links", () => {
     expect(decodeSettings(encodeSettings(preset, false))?.custom).toBeNull();
   });
 
+  it("reads a retired palette id as its replacement", () => {
+    const shared = decodeSettings(
+      encode({ v: 1, color: { mode: "palette", palette: "darkroom" } }),
+    )!;
+    expect(shared.settings.color.palette).toBe("pixelsynth");
+  });
+
   it("clamps out-of-range values and drops invalid ones", () => {
     const shared = decodeSettings(
       encode({

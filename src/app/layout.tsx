@@ -1,29 +1,24 @@
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Newsreader } from "next/font/google";
+import { Azeret_Mono, Sixtyfour } from "next/font/google";
 import { RouteFocusManager } from "@/components/route-focus-manager";
 import { siteConfig } from "@/lib/site";
 import { Analytics } from "@vercel/analytics/next";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Display face for titles and large numbers; the SCAN axis draws the
+// scanline inside the letter. The only preloaded font.
+const sixtyfour = Sixtyfour({
+  variable: "--font-sixtyfour",
   subsets: ["latin"],
+  axes: ["SCAN"],
 });
 
-// Only small readouts (years, frame numbers) use it: not worth a preload.
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+// Body, UI and readouts. Not preloaded: the fallback's size-adjust keeps the
+// swap from shifting layout.
+const azeretMono = Azeret_Mono({
+  variable: "--font-azeret-mono",
   subsets: ["latin"],
   preload: false,
-});
-
-// Display serif; the optical-size axis keeps large headlines crisp.
-// Upright only: the site never sets italic (it would cost another ~140 KB).
-const newsreader = Newsreader({
-  variable: "--font-newsreader",
-  subsets: ["latin"],
-  style: ["normal"],
-  axes: ["opsz"],
 });
 
 export const metadata: Metadata = {
@@ -68,8 +63,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  // Dark-only UI: the browser chrome matches the safelit-black page.
-  themeColor: "#120d0c",
+  // Dark-only UI: the browser chrome matches the screen-black page.
+  themeColor: "#05080d",
   colorScheme: "dark",
 };
 
@@ -81,12 +76,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${geistSans.variable} ${geistMono.variable} ${newsreader.variable}`}
+      className={`dark ${sixtyfour.variable} ${azeretMono.variable}`}
     >
       <body className="font-sans antialiased">
         <a
           href="#main-content"
-          className="bg-ink-raised text-paper ring-safelight fixed top-3 left-3 z-50 -translate-y-20 rounded-md border px-4 py-2 text-sm font-medium transition-transform focus:translate-y-0 focus:ring-2 focus:outline-hidden"
+          className="bg-ink-raised text-paper ring-safelight fixed top-3 left-3 z-50 -translate-y-20 border px-4 py-2 text-sm font-medium transition-transform focus:translate-y-0 focus:ring-2 focus:outline-hidden"
         >
           Skip to content
         </a>

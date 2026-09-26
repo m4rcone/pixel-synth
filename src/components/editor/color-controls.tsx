@@ -312,14 +312,14 @@ function CustomPaletteEditor({
                 onChange(next);
                 settle();
               }}
-              className="border-line-strong block size-8 cursor-pointer rounded-sm border bg-transparent p-0.5 disabled:cursor-not-allowed"
+              className="border-line-strong block size-8 cursor-pointer border bg-transparent p-0.5 disabled:cursor-not-allowed"
             />
             {colors.length > MIN_PALETTE_COLORS && (
               <button
                 type="button"
                 onClick={() => onCommit(colors.filter((_, i) => i !== index))}
                 aria-label={`Remove color ${index + 1}`}
-                className="bg-ink-raised border-input text-paper-dim hover:text-paper focus-visible:ring-safelight absolute -top-1.5 -right-1.5 grid size-4 place-items-center rounded-full border opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:outline-none"
+                className="bg-ink-raised border-input text-paper-dim hover:text-paper focus-visible:ring-safelight absolute -top-1.5 -right-1.5 grid size-4 place-items-center border opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:outline-none"
               >
                 <X className="size-2.5" aria-hidden="true" />
               </button>
@@ -332,7 +332,7 @@ function CustomPaletteEditor({
               type="button"
               onClick={() => onCommit([...colors, colors.at(-1) ?? "#ffffff"])}
               aria-label="Add color"
-              className="border-input text-paper-dim hover:text-paper hover:border-paper/60 focus-visible:ring-safelight grid size-8 place-items-center rounded-sm border border-dashed transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed"
+              className="border-input text-paper-dim hover:text-paper hover:border-paper/60 focus-visible:ring-safelight grid size-8 place-items-center border border-dashed transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed"
             >
               <Plus className="size-4" aria-hidden="true" />
             </button>
@@ -356,7 +356,7 @@ function SwatchStrip({
   return (
     <span
       aria-hidden="true"
-      className={`flex h-3.5 overflow-hidden rounded-xs shadow-[inset_0_0_0_1px_var(--line-strong)] ${className ?? "w-full"}`}
+      className={`flex h-3.5 overflow-hidden shadow-[inset_0_0_0_1px_var(--line-strong)] ${className ?? "w-full"}`}
     >
       {colors.map((color, index) => (
         <span key={index} className="flex-1" style={{ background: color }} />

@@ -32,7 +32,7 @@ export const PALETTE_PRESETS = [
     id: "gameboy",
     name: "Game Boy",
     description:
-      "The four greens of the original 1989 handheld’s screen. Matches by brightness, so any image stays readable.",
+      "The four greens of the original 1989 handheld’s screen. Any image stays readable, because tones map by brightness.",
     group: "Consoles & computers",
     match: "brightness",
     colors: ["#0f380f", "#306230", "#8bac0f", "#9bbc0f"],
@@ -42,7 +42,7 @@ export const PALETTE_PRESETS = [
     id: "gameboy-pocket",
     name: "Game Boy Pocket",
     description:
-      "The four near-grays of the 1996 Game Boy Pocket, which dropped the original’s green screen. Matches by brightness.",
+      "The four near-grays of the 1996 Game Boy Pocket, which dropped the original’s green screen.",
     group: "Consoles & computers",
     match: "brightness",
     colors: ["#181818", "#4a5138", "#8c926b", "#c5caa4"],
@@ -74,71 +74,15 @@ export const PALETTE_PRESETS = [
     ],
   },
   {
-    // The PPU builds colors as a composite TV signal, so there is no official
-    // RGB set. These are the 54 distinct entries of the NTSC approximation in
-    // Wikipedia's "List of video game console palettes", in PPU order.
-    id: "nes",
-    name: "NES",
+    // Hi-Res YIQ values converted to sRGB, as in Wikipedia's "List of 8-bit
+    // computer hardware graphics".
+    id: "apple-ii",
+    name: "Apple II hi-res",
     description:
-      "The 54 colors of the Nintendo Entertainment System. The console made them as a TV signal, so there is no official RGB set: these follow a common NTSC approximation.",
+      "The six colors of the Apple II’s high-resolution mode (1977): black, white, green, purple, orange and blue.",
     group: "Consoles & computers",
     match: "color",
-    colors: [
-      "#59595f",
-      "#00008f",
-      "#18008f",
-      "#3f0077",
-      "#550055",
-      "#550011",
-      "#550000",
-      "#442200",
-      "#333300",
-      "#113300",
-      "#003311",
-      "#004444",
-      "#004466",
-      "#000000",
-      "#080808",
-      "#aaaaaa",
-      "#0044dd",
-      "#5511ee",
-      "#7700ee",
-      "#9900bb",
-      "#aa0055",
-      "#993300",
-      "#884400",
-      "#666600",
-      "#336600",
-      "#006600",
-      "#006655",
-      "#005588",
-      "#eeeeee",
-      "#4488ff",
-      "#7777ff",
-      "#9944ff",
-      "#bb44ee",
-      "#cc5599",
-      "#dd6644",
-      "#cc8800",
-      "#bbaa00",
-      "#77bb00",
-      "#22bb22",
-      "#22bb77",
-      "#22bbcc",
-      "#444444",
-      "#99ccff",
-      "#aaaaff",
-      "#bb99ff",
-      "#dd99ff",
-      "#ee99dd",
-      "#eeaaaa",
-      "#eebb99",
-      "#eedd88",
-      "#bbdd88",
-      "#99dd99",
-      "#99ddbb",
-      "#99ddee",
-    ],
+    colors: ["#000000", "#31d200", "#ce2dff", "#ff5600", "#00a9ff", "#ffffff"],
   },
   {
     id: "cga-cyan-magenta",
@@ -263,15 +207,71 @@ export const PALETTE_PRESETS = [
     ],
   },
   {
-    // Hi-Res YIQ values converted to sRGB, as in Wikipedia's "List of 8-bit
-    // computer hardware graphics".
-    id: "apple-ii",
-    name: "Apple II hi-res",
+    // The PPU builds colors as a composite TV signal, so there is no official
+    // RGB set. These are the 54 distinct entries of the NTSC approximation in
+    // Wikipedia's "List of video game console palettes", in PPU order.
+    id: "nes",
+    name: "NES",
     description:
-      "The six colors of the Apple II’s high-resolution mode (1977): black, white, green, purple, orange and blue.",
+      "The 54 colors of the Nintendo Entertainment System. The console made them as a TV signal, so there is no official RGB set: these follow a common NTSC approximation.",
     group: "Consoles & computers",
     match: "color",
-    colors: ["#000000", "#31d200", "#ce2dff", "#ff5600", "#00a9ff", "#ffffff"],
+    colors: [
+      "#59595f",
+      "#00008f",
+      "#18008f",
+      "#3f0077",
+      "#550055",
+      "#550011",
+      "#550000",
+      "#442200",
+      "#333300",
+      "#113300",
+      "#003311",
+      "#004444",
+      "#004466",
+      "#000000",
+      "#080808",
+      "#aaaaaa",
+      "#0044dd",
+      "#5511ee",
+      "#7700ee",
+      "#9900bb",
+      "#aa0055",
+      "#993300",
+      "#884400",
+      "#666600",
+      "#336600",
+      "#006600",
+      "#006655",
+      "#005588",
+      "#eeeeee",
+      "#4488ff",
+      "#7777ff",
+      "#9944ff",
+      "#bb44ee",
+      "#cc5599",
+      "#dd6644",
+      "#cc8800",
+      "#bbaa00",
+      "#77bb00",
+      "#22bb22",
+      "#22bb77",
+      "#22bbcc",
+      "#444444",
+      "#99ccff",
+      "#aaaaff",
+      "#bb99ff",
+      "#dd99ff",
+      "#ee99dd",
+      "#eeaaaa",
+      "#eebb99",
+      "#eedd88",
+      "#bbdd88",
+      "#99dd99",
+      "#99ddbb",
+      "#99ddee",
+    ],
   },
   {
     id: "grayscale-4",
@@ -319,13 +319,15 @@ export const PALETTE_PRESETS = [
     colors: ["#f2ede4", "#ff48b0", "#0078bf", "#000000"],
   },
   {
-    id: "darkroom",
-    name: "Darkroom",
+    id: "pixelsynth",
+    name: "PixelSynth",
     description:
-      "PixelSynth’s own colors: darkroom black, safelight red and paper.",
+      "PixelSynth’s own colors: screen black, three scan blues and the reticle yellow, which only lands on warm tones.",
     group: "PixelSynth",
-    match: "brightness",
-    colors: ["#120d0c", "#ee5140", "#ece4d6"],
+    match: "color",
+    // The deep blue fills the gap between black (L* 2) and the dim blue
+    // (L* 63), so shadows and midtones don't dither from black alone.
+    colors: ["#05080d", "#2a4260", "#7b9cbc", "#cfe6ff", "#ffd23f"],
   },
 ] as const satisfies readonly PalettePreset[];
 
@@ -363,6 +365,17 @@ const presets = new Map<string, PalettePreset>(
 
 export function getPalettePreset(id: string): PalettePreset | undefined {
   return presets.get(id);
+}
+
+/** Retired palette ids and their replacements, so old links keep working. */
+const PALETTE_ALIASES: Record<string, PaletteId> = {
+  // The old identity's palette, replaced with the new one's.
+  darkroom: "pixelsynth",
+};
+
+/** The current id for `id`: itself, or what replaced a retired one. */
+export function resolvePaletteId(id: string): string {
+  return PALETTE_ALIASES[id] ?? id;
 }
 
 export function isPaletteId(id: string): id is PaletteId {

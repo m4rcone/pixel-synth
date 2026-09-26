@@ -240,7 +240,7 @@ function MatrixTable({
                   className="text-readout size-10 text-center"
                   // Heat stays in the dark range so paper text keeps ≥ 5:1.
                   style={{
-                    background: `rgb(236 228 214 / ${(0.04 + t * 0.32).toFixed(3)})`,
+                    background: `rgb(207 230 255 / ${(0.04 + t * 0.32).toFixed(3)})`,
                   }}
                 >
                   {rank}

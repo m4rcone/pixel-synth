@@ -136,15 +136,15 @@ test("catalog cards open the algorithm page from anywhere on the card", async ({
 }) => {
   await page.goto("/algorithms");
   await page.waitForLoadState("networkidle");
-  // Click where the card's description is, not its title.
-  const description = page.getByText("An optimized version of JJN");
-  await description.scrollIntoViewIfNeeded();
-  const box = await description.boundingBox();
+  // Click the card's preview, not its title.
+  const preview = page.getByAltText(/dithered with Stucki$/);
+  await preview.scrollIntoViewIfNeeded();
+  const box = await preview.boundingBox();
   await page.mouse.click(box!.x + box!.width / 2, box!.y + box!.height / 2);
   await expect(page).toHaveURL(/\/algorithms\/stucki$/);
 });
 
-const SPHERE = "public/250/sphere-250.png";
+const SPHERE = "tests/fixtures/sphere-250.png";
 
 test("palette mode dithers to a preset and names the export", async ({
   page,
@@ -337,6 +337,18 @@ test("?palette= switches to palette mode with that palette", async ({
   );
 });
 
+test("?palette=darkroom opens its replacement, PixelSynth", async ({
+  page,
+}) => {
+  await page.goto("/editor?palette=darkroom&sample=1");
+  await expect(page.getByRole("combobox", { name: "Palette" })).toContainText(
+    "PixelSynth",
+  );
+  await expect(
+    page.getByRole("button", { name: "Color", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+});
+
 test("palette cards open the editor with that palette", async ({ page }) => {
   await page.goto("/palettes");
   await page.waitForLoadState("networkidle");
@@ -458,7 +470,7 @@ test("a settings link reopens the editor with the same look", async ({
   await page.getByRole("button", { name: "Share settings" }).click();
   const link = await page.getByLabel("Settings link").inputValue();
   expect(new URL(link).pathname).toBe("/editor");
-  expect(link).not.toContain("sunset");
+  expect(link).not.toContain("synthwave");
   await page.getByRole("button", { name: "Copy link" }).click();
   await expect(page.getByText("Link copied to the clipboard.")).toBeVisible();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(link);
