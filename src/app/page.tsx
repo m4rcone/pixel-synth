@@ -17,7 +17,7 @@ import {
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
 const SAMPLE_LINK = "/editor?sample=1";
-const PIXEL_ART_LINK = "/editor?sample=1&preset=pixel-art";
+const PIXEL_ART_LINK = "/editor?preset=pixel-art";
 
 const paletteName = (id: string) => getPalettePreset(id)?.name ?? id;
 const algorithmName = (slug: string) => getAlgorithm(slug)?.name ?? slug;

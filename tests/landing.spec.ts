@@ -13,7 +13,7 @@ test("every internal landing link resolves", async ({ page, request }) => {
       "/palettes#palette-pico8",
       "/algorithms/clustered-dot-halftone-ordered",
       "/algorithms/blue-noise",
-      "/editor?sample=1&preset=pixel-art",
+      "/editor?preset=pixel-art",
     ]),
   );
 
@@ -48,4 +48,21 @@ test("the FAQ opens from the keyboard", async ({ page }) => {
   await expect(
     page.getByText("Every pixel is processed in your browser."),
   ).toBeVisible();
+});
+
+test("the pixel art button waits for the user's image", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: "Try the pixel art preset" }).click();
+  await expect(page).toHaveURL(/\/editor\?preset=pixel-art$/);
+
+  // Nothing is loaded for the user: the upload area is shown.
+  // Client-side navigation: the editor is hydrated already.
+  await expect(page.getByLabel(/drop an image/i)).toBeAttached();
+  await page.getByRole("button", { name: "Try a sample image" }).click();
+
+  // Sample 1800×1200 → 136×91, dithered right away.
+  await expect(page.getByLabel("Output size")).toHaveValue("136");
+  await expect(page.getByRole("combobox", { name: "Palette" })).toContainText(
+    "PICO-8",
+  );
 });

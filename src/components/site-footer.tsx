@@ -22,7 +22,7 @@ const COLUMNS: {
     title: "Editor",
     links: [
       { label: "Open the editor", href: "/editor" },
-      { label: "Pixel art preset", href: "/editor?sample=1&preset=pixel-art" },
+      { label: "Pixel art preset", href: "/editor?preset=pixel-art" },
       { label: "Try a sample", href: "/editor?sample=1" },
     ],
   },

@@ -45,7 +45,7 @@ export const HOME_FAQ: FaqEntry[] = [
       "Choose the ",
       { text: "Game Boy palette", href: "/palettes#palette-gameboy" },
       ", or apply the ",
-      { text: "pixel art preset", href: "/editor?sample=1&preset=pixel-art" },
+      { text: "pixel art preset", href: "/editor?preset=pixel-art" },
       " and switch its palette to Game Boy.",
     ],
   },

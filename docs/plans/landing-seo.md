@@ -59,7 +59,7 @@ Order and content (keep the design system; the dithered H1 stays the page's one 
    - Facts `<dl>`: `15 Algorithms`, `13 Palettes`, `0 Uploads` (replaces `Families` / `Local`).
 2. **Before/after comparator** (kept): `DitherSpecimen` as is.
 3. **Palettes** (new) — heading `Classic palettes, one click away`; text `Dither straight to the colors of the Game Boy, PICO-8, CGA or a risograph, or to colors taken from your own image.` Six thumbnails from `palettePreview(id)`: gameboy, pico8, cga-cyan-magenta, sepia, riso, cyanotype. Each links to `/palettes#palette-<id>` in phase 1 (switch to `/palettes/<id>` in phase 2). Link `See all 13 palettes` → `/palettes`. Thumbnails are downscaled: no `pixelated` below their natural size.
-4. **Pixel art** (new) — `PIXEL_ART_PREVIEW` image (pixelated, enlarged); heading `Photo to pixel art in one click`; text `The pixel art preset shrinks any image to about 128 × 96 pixels, snaps it to PICO-8 with a 2×2 Bayer pattern and exports crisp at ×4 or ×8.`; button `Try the pixel art preset` → `/editor?sample=1&preset=pixel-art`.
+4. **Pixel art** (new) — `PIXEL_ART_PREVIEW` image (pixelated, enlarged); heading `Photo to pixel art in one click`; text `The pixel art preset shrinks any image to about 128 × 96 pixels, snaps it to PICO-8 with a 2×2 Bayer pattern and exports crisp at ×4 or ×8.`; button `Try the pixel art preset` → `/editor?preset=pixel-art` (waits for the user's image, like the one on `/palettes`).
 5. **Use cases** (new; replaces the three `FEATURES` cards — reuse their facts, drop the cards) — 2×2 grid, each with a small preview and internal links:
    - `Pixel art & game assets` — `Shrink a photo to sprite size, snap it to PICO-8 or Game Boy and export at ×1 for your engine.` → PICO-8 palette, pixel art preset.
    - `Print, zines & risograph` — `Split tones into ink-friendly dots with newsprint, sepia, cyanotype and riso palettes.` → riso palette, `/algorithms/clustered-dot-halftone-ordered`.
@@ -75,7 +75,7 @@ Order and content (keep the design system; the dithered H1 stays the page's one 
    - `Which formats are supported?` — `PNG, JPEG, WebP, GIF, AVIF and BMP in; PNG out, enlarged ×1 to ×8.` (derive from `SUPPORTED_FORMATS_LABEL`)
 8. **Final CTA** (changed): keep `Drop in an image. Pick an algorithm. Watch it develop.`, add `Try it with a sample` next to `Start dithering`.
 9. **Footer site map** (changed) — a shared `SiteFooter` component, four columns:
-   - Editor: Open the editor · Pixel art preset (`/editor?sample=1&preset=pixel-art`) · Try a sample (`/editor?sample=1`)
+   - Editor: Open the editor · Pixel art preset (`/editor?preset=pixel-art`, waits for the user's image like the one on `/palettes`) · Try a sample (`/editor?sample=1`)
    - Algorithms: Floyd–Steinberg · Atkinson · Bayer 8×8 · All 15
    - Palettes: Game Boy · PICO-8 · CGA cyan/magenta · All 13
    - About: What is dithering? (add in phase 3) · Source on GitHub (`siteConfig.links.repository`)
