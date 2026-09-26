@@ -43,8 +43,10 @@ Use the `/verify` command to run the whole gate before committing.
 
 ## Conventions
 
-- **Design tokens only.** Use the Tailwind theme tokens (`bg-ink`, `text-paper-dim`, `text-safelight`, `text-label`, …) instead of arbitrary values like `text-[10px]` or `text-[var(--x)]`. Add a token before adding a one-off value.
-- **Dark only.** The identity is a photographic darkroom: ink black, paper off-white, a single red safelight accent, mono uppercase technical labels, serif display type. There is no light theme.
+- **Design tokens only.** Use the Tailwind theme tokens (`bg-ink`, `text-paper-dim`, `text-safelight`, `text-label`, `text-caps`, …) instead of arbitrary values like `text-[10px]` or `text-[var(--x)]`. Add a token before adding a one-off value. The token names (`ink`, `paper`, `safelight`) predate the current identity and are due for a rename; their values are the console's.
+- **Dark only.** The identity ("Enhance") is an 80s image-analysis console: near-black blue screen (`ink`), blue-white scan text (`paper`), square corners, and a single yellow reticle accent (`safelight`) reserved for focus, the cursor over an image and active or processing states, never decoration and never the only cue. Hover goes to white (`paper-hot`); error text uses `danger`. There is no light theme.
+- **Type.** Sixtyfour (`font-display`, SCAN axis) only for titles from 28px up and numbers from 22px up, always with `text-glow`; everything else is Azeret Mono. Control labels are sentence case (`text-label`); section heads, card meta and column titles are tracked caps (`text-caps`). Primary buttons have a cut corner, secondary buttons corner brackets.
+- **Effects stay in the chrome.** `scanlines` is a static background layer for chrome surfaces (panels, headers, the landing); glow only on Sixtyfour. Neither ever goes over the user's image: images sit on the neutral `ink-sunken` well (#0B0B0B), enlarged nearest-neighbor. Contrast is measured without the glow.
 - **Keep it light.** Ask before adding runtime dependencies. Prefer platform APIs (Canvas 2D, WebGL, Workers) over graphics libraries.
 - **Accessibility is a gate.** Every route must pass axe; interactive canvases need keyboard equivalents; respect `prefers-reduced-motion`; auto-advancing or moving content needs a pause control.
 - **Preserve URLs.** `/`, `/editor`, `/algorithms` and the `#algorithm-<slug>` anchors are public; do not break them.
