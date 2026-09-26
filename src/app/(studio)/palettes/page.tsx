@@ -8,6 +8,8 @@ import { StructuredData } from "@/components/structured-data";
 import { Button } from "@/components/ui/button";
 import extractedColors from "@/data/sample-extracted-palette.json";
 import {
+  MAX_PALETTE_COLORS,
+  MIN_PALETTE_COLORS,
   PALETTE_GROUPS,
   PALETTE_PRESETS,
   type PaletteGroup,
@@ -230,7 +232,7 @@ export default function PalettesPage() {
               <PaletteCard
                 id="extracted"
                 name="From image"
-                description={`Picks the ${EXTRACTED_PREVIEW_COLORS} most representative colors of your image (2 to 32, median cut). These are the ones found in the sample.`}
+                description={`Picks the ${EXTRACTED_PREVIEW_COLORS} most representative colors of your image (${MIN_PALETTE_COLORS} to ${MAX_PALETTE_COLORS}, median cut). These are the ones found in the sample.`}
                 colors={extractedColors}
                 match="color"
               />
@@ -248,10 +250,11 @@ export default function PalettesPage() {
                   Custom
                 </h3>
                 <p className="text-paper-dim text-sm leading-relaxed">
-                  Build a palette of 2 to 32 colors with the color picker, or
-                  start from any palette above with “Edit colors”. It is saved
-                  in your browser. Use it for brand colors or for systems not
-                  listed here, like the NES.
+                  Build a palette of {MIN_PALETTE_COLORS} to{" "}
+                  {MAX_PALETTE_COLORS} colors with the color picker, or start
+                  from any palette above with “Edit colors”. It is saved in your
+                  browser. Use it for brand colors or for systems not listed
+                  here.
                 </p>
                 <Link
                   href="/editor?palette=custom"

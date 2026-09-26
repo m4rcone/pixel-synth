@@ -7,7 +7,7 @@ A free online dithering and pixel art tool. Turn any photo into dithered, 1-bit 
 ## Features
 
 - **15 dithering algorithms**: error diffusion (Floyd–Steinberg, Stucki, Atkinson…), ordered (Bayer, clustered dot, void-and-cluster, blue noise) and noise-based. Each has its own page showing its kernel or threshold matrix, with a before/after comparison.
-- **Color palettes**: dither straight to 13 classic palettes (Game Boy, PICO-8, CGA, EGA, ZX Spectrum, C64, sepia, cyanotype, riso…), a palette extracted from your image (2 to 32 colors) or your own custom colors. Match by color or by brightness.
+- **Color palettes**: dither straight to 17 classic palettes (Game Boy, Game Boy Pocket, PICO-8, NES, CGA, EGA, ZX Spectrum, C64, MSX, Apple II, sepia, cyanotype, riso…), a palette extracted from your image (2 to 64 colors) or your own custom colors. Match by color or by brightness.
 - **Palette gallery**: every palette previewed on the same sample image at `/palettes`, one click from the editor.
 - **Pixel art preset**: one click shrinks any image to about 128 × 96 pixels' worth of detail, whatever its shape, and applies PICO-8 with a 2×2 Bayer pattern. Set the output width in pixels, or pick the nearest-color "None" option to skip dithering.
 - **1-bit dot colors**: tint the dots of a classic 1-bit dither by brightness band (shadows, midtones, highlights), optionally shaded by the original brightness.

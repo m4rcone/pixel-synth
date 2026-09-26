@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { MAX_PALETTE_COLORS } from "@/lib/palettes";
 import { DEFAULT_SETTINGS, type EditorSettings } from "../settings";
 import {
   decodeSettings,
@@ -103,7 +104,7 @@ describe("settings links", () => {
     expect(settings.tones.highlights.range).toBe(255);
     expect(settings.color.mode).toBe("mono");
     expect(settings.color.palette).toBe(DEFAULT_SETTINGS.color.palette);
-    expect(settings.color.extractCount).toBe(32);
+    expect(settings.color.extractCount).toBe(MAX_PALETTE_COLORS);
     expect(shared.custom).toBeNull();
     expect(shared.dithered).toBe(false);
   });

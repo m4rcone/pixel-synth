@@ -142,7 +142,7 @@ test("palette mode dithers to a preset and names the export", async ({
 
   await page.getByRole("button", { name: "Palette", exact: true }).click();
   await page.getByRole("combobox", { name: "Palette" }).click();
-  await page.getByRole("option", { name: /Game Boy/ }).click();
+  await page.getByRole("option", { name: "Game Boy", exact: true }).click();
   // Game Boy defaults to matching by brightness.
   await expect(
     page.getByRole("button", { name: "Brightness", exact: true }),
@@ -448,4 +448,10 @@ test("error diffusion strength shows only for diffusion algorithms", async ({
   await saturation.focus();
   await page.keyboard.press("Home");
   await expect(saturation).toHaveAttribute("aria-valuetext", "-1.00");
+});
+
+test("editing the NES palette keeps all 54 colors", async ({ page }) => {
+  await page.goto("/editor?sample=1&palette=nes");
+  await page.getByRole("button", { name: "Edit colors" }).click();
+  await expect(page.getByLabel(/^Color \d+$/)).toHaveCount(54);
 });
