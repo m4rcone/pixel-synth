@@ -108,7 +108,7 @@ const STEPS = [
   },
   {
     title: "Choose the look",
-    text: "An algorithm, 1-bit or a palette, filters and size.",
+    text: "An algorithm, 1-bit, a palette or CMYK, filters and size.",
   },
   {
     title: "Export",

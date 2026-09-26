@@ -95,6 +95,13 @@ export function getMethod(algorithm: DitherChoice): Method {
 /** Seed shared by every random dither so grain is stable across renders. */
 export const RANDOM_SEED = 0x5eed;
 
+/**
+ * Mask shift per phase step: odd and unequal, so successive phases land on
+ * different cells of every mask size (2 to 64).
+ */
+const PHASE_SHIFT_X = 29;
+const PHASE_SHIFT_Y = 17;
+
 /** A screen's parameters and which way its dots point. */
 export type ScreenOptions = ScreenSettings & {
   /**
@@ -109,7 +116,9 @@ export type ScreenOptions = ScreenSettings & {
  * Error diffusion works on a float copy, so accumulated error is never
  * clipped — the classic bug when diffusing into 8-bit storage. `diffusion`
  * scales the error passed on (1 = the classic algorithm); `screen` shapes
- * the halftone screens.
+ * the halftone screens. `phase` shifts the threshold mask and reseeds random
+ * dither, so layers dithered with the same algorithm (CMYK inks) don't all
+ * put their dots on the same pixels.
  */
 export function dither(
   gray: Float32Array,
@@ -118,6 +127,7 @@ export function dither(
   algorithm: DitherChoice,
   diffusion = 1,
   screen: ScreenOptions = { ...DEFAULT_SETTINGS.screen, light: false },
+  phase = 0,
 ): Uint8Array {
   const method = getMethod(algorithm);
   const out = new Uint8Array(width * height);
@@ -146,10 +156,13 @@ export function dither(
   if (method.kind === "ordered") {
     const { size, ranks } = method.matrix();
     const levels = size * size;
+    const shiftX = phase * PHASE_SHIFT_X;
+    const shiftY = phase * PHASE_SHIFT_Y;
     for (let y = 0; y < height; y++) {
-      const row = (y % size) * size;
+      const row = ((y + shiftY) % size) * size;
       for (let x = 0; x < width; x++) {
-        const threshold = ((ranks[row + (x % size)] + 0.5) / levels) * 255;
+        const threshold =
+          ((ranks[row + ((x + shiftX) % size)] + 0.5) / levels) * 255;
         out[y * width + x] = gray[y * width + x] < threshold ? 0 : 255;
       }
     }
@@ -158,7 +171,7 @@ export function dither(
 
   if (method.kind === "random") {
     // Seeded, so tweaking another setting doesn't reshuffle the grain.
-    const random = createRandom(RANDOM_SEED);
+    const random = createRandom(RANDOM_SEED + phase);
     for (let p = 0; p < out.length; p++) {
       out[p] = gray[p] < random() * 255 ? 0 : 255;
     }

@@ -1,4 +1,5 @@
 import { getPalettePreset } from "@/lib/palettes";
+import { ditherCmyk } from "./cmyk";
 import { dither } from "./dither";
 import { applyFilters } from "./filters";
 import { ditherToPalette, extractPalette } from "./palette-dither";
@@ -30,7 +31,7 @@ export type RenderOptions = {
 /**
  * The full image pipeline, as a pure function:
  *
- *   source → (downscale) → filters → dither (mono + tone map | palette)
+ *   source → (downscale) → filters → dither (mono + tone map | palette | CMYK)
  *
  * Without `dither`, only the filters are applied (live preview before the
  * user commits to dithering).
@@ -43,6 +44,10 @@ export function renderPixels(
   let pixels = prepare(source, settings, shouldDither);
 
   if (!shouldDither) return { pixels, palette: null };
+
+  if (settings.color.mode === "cmyk") {
+    return { pixels: ditherCmyk(pixels, settings), palette: null };
+  }
 
   if (settings.color.mode === "palette") {
     const palette = fixedPalette ?? resolvePalette(pixels, settings);

@@ -70,15 +70,25 @@ export const MIN_SCALE = 0.05;
 /** A catalog algorithm, or "none": plain nearest-color quantization. */
 export type DitherChoice = AlgorithmId | "none";
 
+export const COLOR_MODES = ["mono", "palette", "cmyk"] as const;
+
 export type ColorSettings = {
-  /** "mono": 1-bit dither + tone mapping. "palette": dither to a palette. */
-  mode: "mono" | "palette";
+  /**
+   * "mono": 1-bit dither + tone mapping. "palette": dither to a palette.
+   * "cmyk": each process ink dithered on its own, overprinted on paper.
+   */
+  mode: (typeof COLOR_MODES)[number];
   palette: PaletteId;
   match: PaletteMatch;
   /** Number of colors extracted when `palette` is "extracted". */
   extractCount: number;
   /** User-edited colors for the "custom" palette. */
   custom: string[];
+  /**
+   * CMYK: share (0–1) of the gray that cyan, magenta and yellow have in
+   * common that black ink prints instead (gray component replacement).
+   */
+  black: number;
 };
 
 export type EditorSettings = {
@@ -160,6 +170,7 @@ export const DEFAULT_SETTINGS: EditorSettings = {
     match: "color",
     extractCount: DEFAULT_EXTRACT_COUNT,
     custom: DEFAULT_CUSTOM_COLORS,
+    black: 0.5,
   },
 };
 

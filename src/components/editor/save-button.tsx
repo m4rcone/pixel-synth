@@ -69,8 +69,13 @@ export function SaveButton() {
 
   function fileName(extension: string) {
     if (status !== "dithered") return `pixelsynth-filtered.${extension}`;
+    const { mode } = settings.color;
     const palette =
-      settings.color.mode === "palette" ? `-${settings.color.palette}` : "";
+      mode === "palette"
+        ? `-${settings.color.palette}`
+        : mode === "cmyk"
+          ? "-cmyk"
+          : "";
     const size = factor > 1 ? `-${factor}x` : "";
     return `pixelsynth-${settings.algorithm}${palette}${size}.${extension}`;
   }
