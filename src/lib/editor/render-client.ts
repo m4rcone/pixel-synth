@@ -75,6 +75,14 @@ export class RenderClient {
           return request.reject(toError(data));
       }
     };
+    // A worker that fails to load or crashes never answers: fail what it
+    // was doing and render on the main thread from now on.
+    this.worker.onerror = (event) => {
+      console.error("Render worker failed", event.message || event);
+      this.worker?.terminate();
+      this.worker = null;
+      this.rejectPending(new Error("Render worker failed"));
+    };
   }
 
   /** One frame for a still image, every frame for an animation. */
@@ -167,9 +175,11 @@ export class RenderClient {
 
   dispose() {
     this.worker?.terminate();
-    this.pending.forEach(({ reject }) =>
-      reject(new Error("Renderer disposed")),
-    );
+    this.rejectPending(new Error("Renderer disposed"));
+  }
+
+  private rejectPending(error: Error) {
+    this.pending.forEach(({ reject }) => reject(error));
     this.pending.clear();
   }
 

@@ -37,6 +37,18 @@ test("renders a dithered image and offers a download", async ({ page }) => {
   );
 });
 
+test("a render worker that fails to load falls back to the main thread", async ({
+  page,
+}) => {
+  await page.route(/worker/i, (route) => route.abort());
+  await page.goto("/editor");
+  await upload(page);
+  await page.getByRole("button", { name: "Apply dither" }).click();
+  await expect(page.locator('[aria-live="polite"]')).toContainText(
+    "Rendered image is ready",
+  );
+});
+
 test("?algorithm= preselects the algorithm from the catalog", async ({
   page,
 }) => {
@@ -726,6 +738,10 @@ test("levels points can't cross and gamma sits in the middle", async ({
   await gamma.focus();
   await page.keyboard.press("ArrowRight");
   await expect(gamma).not.toHaveAttribute("aria-valuetext", "1.00");
+  // The lowest gamma stays on the slider (1/3, not a rounded 0.33).
+  await page.keyboard.press("Home");
+  await expect(gamma).toHaveAttribute("aria-valuenow", "-1");
+  await expect(gamma).toHaveAttribute("aria-valuetext", "0.33");
 
   // Moving one point never moves the other's thumb or changes its range.
   await black.focus();

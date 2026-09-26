@@ -92,7 +92,8 @@ export function SaveButton() {
     link.href = url;
     link.download = name;
     link.click();
-    setTimeout(() => URL.revokeObjectURL(url), 0);
+    // Revoking right away can cancel a large download in Safari.
+    setTimeout(() => URL.revokeObjectURL(url), 60_000);
     setOpen(false);
   }
 

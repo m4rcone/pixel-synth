@@ -35,7 +35,12 @@ const gammaScale = {
   // Rounded so the ends are exactly -1 and 1 (slider steps start there).
   toSlider: (gamma: number) =>
     Math.round((Math.log(gamma) / LOG_3) * 1e6) / 1e6,
-  fromSlider: (position: number) => Math.round(3 ** position * 100) / 100,
+  // Clamped: 1/3 would round to 0.33, below the limit (and off the slider).
+  fromSlider: (position: number) =>
+    Math.min(
+      FILTER_LIMITS.gamma.max,
+      Math.max(FILTER_LIMITS.gamma.min, Math.round(3 ** position * 100) / 100),
+    ),
 };
 
 const FILTER_FIELDS: FilterField[] = [
