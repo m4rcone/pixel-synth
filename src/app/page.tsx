@@ -94,6 +94,9 @@ export default function HomePage() {
             <Link href="/algorithms" className={navLink}>
               Algorithms
             </Link>
+            <Link href="/palettes" className={navLink}>
+              Palettes
+            </Link>
             <Link href="/editor" className={navLink}>
               Editor
             </Link>

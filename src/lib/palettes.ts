@@ -21,6 +21,7 @@ export type PaletteGroup =
 export type PalettePreset = {
   id: string;
   name: string;
+  description: string;
   group: PaletteGroup;
   match: PaletteMatch;
   colors: readonly string[];
@@ -30,6 +31,8 @@ export const PALETTE_PRESETS = [
   {
     id: "gameboy",
     name: "Game Boy",
+    description:
+      "The four greens of the original 1989 handheld’s screen. Matches by brightness, so any image stays readable.",
     group: "Consoles & computers",
     match: "brightness",
     colors: ["#0f380f", "#306230", "#8bac0f", "#9bbc0f"],
@@ -37,6 +40,8 @@ export const PALETTE_PRESETS = [
   {
     id: "pico8",
     name: "PICO-8",
+    description:
+      "The 16 colors of the PICO-8 fantasy console, a staple of indie pixel art.",
     group: "Consoles & computers",
     match: "color",
     colors: [
@@ -61,6 +66,8 @@ export const PALETTE_PRESETS = [
   {
     id: "cga-cyan-magenta",
     name: "CGA cyan/magenta",
+    description:
+      "IBM PC CGA palette 1 at high intensity (1981): the look of early DOS games.",
     group: "Consoles & computers",
     match: "color",
     colors: ["#000000", "#55ffff", "#ff55ff", "#ffffff"],
@@ -68,6 +75,8 @@ export const PALETTE_PRESETS = [
   {
     id: "cga-green-red",
     name: "CGA green/red",
+    description:
+      "CGA palette 0 at high intensity: green, red and yellow on black.",
     group: "Consoles & computers",
     match: "color",
     colors: ["#000000", "#55ff55", "#ff5555", "#ffff55"],
@@ -75,6 +84,7 @@ export const PALETTE_PRESETS = [
   {
     id: "ega",
     name: "EGA",
+    description: "The 16 default colors of the IBM EGA adapter (1984).",
     group: "Consoles & computers",
     match: "color",
     colors: [
@@ -99,6 +109,8 @@ export const PALETTE_PRESETS = [
   {
     id: "zx-spectrum",
     name: "ZX Spectrum",
+    description:
+      "The Sinclair ZX Spectrum’s 8 normal and 7 bright colors (black appears once).",
     group: "Consoles & computers",
     match: "color",
     colors: [
@@ -123,6 +135,8 @@ export const PALETTE_PRESETS = [
     // "Pepto" calibration, the one most emulators use.
     id: "c64",
     name: "Commodore 64",
+    description:
+      "The Commodore 64’s 16 colors in the “Pepto” calibration most emulators use.",
     group: "Consoles & computers",
     match: "color",
     colors: [
@@ -147,6 +161,7 @@ export const PALETTE_PRESETS = [
   {
     id: "grayscale-4",
     name: "Grayscale 4",
+    description: "Black, two grays and white: the next step after 1-bit.",
     group: "Print & photo",
     match: "brightness",
     colors: ["#000000", "#555555", "#aaaaaa", "#ffffff"],
@@ -154,6 +169,8 @@ export const PALETTE_PRESETS = [
   {
     id: "newsprint",
     name: "Newsprint",
+    description:
+      "Ink on yellowed newsprint. Still 1-bit, without pure black or white.",
     group: "Print & photo",
     match: "brightness",
     colors: ["#1c1a17", "#efe6d2"],
@@ -161,6 +178,8 @@ export const PALETTE_PRESETS = [
   {
     id: "sepia",
     name: "Sepia",
+    description:
+      "Four tones of darkroom sepia toning, from deep brown to paper.",
     group: "Print & photo",
     match: "brightness",
     colors: ["#2b1d14", "#6b4a2f", "#b08a5f", "#efe3cf"],
@@ -168,6 +187,8 @@ export const PALETTE_PRESETS = [
   {
     id: "cyanotype",
     name: "Cyanotype",
+    description:
+      "Prussian blue on paper, from the photographic process of 1842.",
     group: "Print & photo",
     match: "brightness",
     colors: ["#0e2a47", "#1f4e79", "#6f9fc8", "#e8eef2"],
@@ -176,6 +197,8 @@ export const PALETTE_PRESETS = [
     // Official Riso ink colors (Fluorescent Pink, Blue) plus black on paper.
     id: "riso",
     name: "Riso pink & blue",
+    description:
+      "Official Riso Fluorescent Pink and Blue inks plus black, printed on paper.",
     group: "Print & photo",
     match: "brightness",
     colors: ["#f2ede4", "#ff48b0", "#0078bf", "#000000"],
@@ -183,6 +206,8 @@ export const PALETTE_PRESETS = [
   {
     id: "darkroom",
     name: "Darkroom",
+    description:
+      "PixelSynth’s own colors: darkroom black, safelight red and paper.",
     group: "PixelSynth",
     match: "brightness",
     colors: ["#120d0c", "#ee5140", "#ece4d6"],

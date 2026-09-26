@@ -32,14 +32,22 @@ export async function renderOgImage({
   title,
   subtitle,
   image,
+  imageSize = { width: 250, height: 250 },
 }: {
   eyebrow: string;
   title: string;
   subtitle: string;
-  /** Path under /public of a 250×250 preview. */
+  /** Path under /public of a preview image. */
   image: string;
+  /** Intrinsic size of `image` (default 250×250); it's fitted into 500×500. */
+  imageSize?: { width: number; height: number };
 }) {
   const src = await publicDataUrl(image);
+  const fit = 500 / Math.max(imageSize.width, imageSize.height);
+  const drawn = {
+    width: Math.round(imageSize.width * fit),
+    height: Math.round(imageSize.height * fit),
+  };
 
   return new ImageResponse(
     <div
@@ -118,8 +126,8 @@ export async function renderOgImage({
       {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
       <img
         src={src}
-        width={500}
-        height={500}
+        width={drawn.width}
+        height={drawn.height}
         style={{
           alignSelf: "center",
           border: `1.5px solid rgba(236,228,214,0.26)`,

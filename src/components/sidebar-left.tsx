@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Aperture, LayoutGrid } from "lucide-react";
+import { Aperture, LayoutGrid, Palette } from "lucide-react";
 import { Logo } from "@/components/logo";
 
 import { NavMain } from "@/components/nav-main";
@@ -26,6 +26,11 @@ const data = {
       title: "Algorithms",
       url: "/algorithms",
       icon: LayoutGrid,
+    },
+    {
+      title: "Palettes",
+      url: "/palettes",
+      icon: Palette,
     },
   ],
 };
