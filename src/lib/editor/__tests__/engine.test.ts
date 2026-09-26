@@ -8,6 +8,7 @@ import { ditherToPalette, extractPalette } from "../palette-dither";
 import { renderPixels } from "../pipeline";
 import { createPixels, type Pixels } from "../pixels";
 import { resizeArea, resizeNearest } from "../resize";
+import { BAND_BLEND } from "../tone-mapping";
 import {
   DEFAULT_FILTERS,
   DEFAULT_SETTINGS,
@@ -441,7 +442,7 @@ describe("renderPixels", () => {
     );
   });
 
-  it("each band covers the luminance up to its bound", () => {
+  it("each band covers the luminance up to its bound, blended at the edge", () => {
     // A pure ramp, 1 pixel per level; Bayer lights some pixels in each band.
     const src = gradient(256, 4);
     const tones = (shadows: number, midtones: number) => ({
@@ -472,9 +473,10 @@ describe("renderPixels", () => {
       colorCount: 3,
       tones: tones(60, 150),
     });
-    expect(bands.get("30,136,229")).toBeLessThanOrEqual(60);
-    expect(bands.get("229,57,53")).toBeLessThanOrEqual(150);
-    expect(bands.get("229,57,53")).toBeGreaterThan(60);
+    const blend = BAND_BLEND / 2;
+    expect(bands.get("30,136,229")).toBeLessThanOrEqual(60 + blend);
+    expect(bands.get("229,57,53")).toBeLessThanOrEqual(150 + blend);
+    expect(bands.get("229,57,53")).toBeGreaterThan(60 + blend);
     expect(bands.get("255,255,255")).toBe(255);
 
     // Crossed ranges (e.g. from a shared link): shadows stop at the
@@ -484,8 +486,43 @@ describe("renderPixels", () => {
       colorCount: 3,
       tones: tones(200, 150),
     });
-    expect(crossed.get("30,136,229")).toBeLessThanOrEqual(150);
+    expect(crossed.get("30,136,229")).toBeLessThanOrEqual(150 + blend);
     expect(crossed.get("255,255,255")).toBe(255);
+  });
+
+  it("mixes two bands only near their boundary", () => {
+    // Flat columns of luminance 0–255; which dot colors each column uses.
+    const src = gradient(256, 64);
+    const { pixels } = renderPixels(
+      src,
+      {
+        ...DEFAULT_SETTINGS,
+        algorithm: "bayer-4-4",
+        colorCount: 2,
+        tones: {
+          ...DEFAULT_SETTINGS.tones,
+          midtones: { ...DEFAULT_SETTINGS.tones.midtones, range: 128 },
+        },
+      },
+      { dither: true },
+    );
+    const colorsAt = (x: number) => {
+      const found = new Set<string>();
+      for (let y = 0; y < 64; y++) {
+        const i = (y * 256 + x) * 4;
+        const key = `${pixels.data[i]},${pixels.data[i + 1]},${pixels.data[i + 2]}`;
+        if (key !== "0,0,0") found.add(key);
+      }
+      return found;
+    };
+    const mid = "229,57,53";
+    const high = "255,255,255";
+    const blend = BAND_BLEND / 2;
+    expect(colorsAt(128 - blend - 4)).toEqual(new Set([mid]));
+    expect(colorsAt(128 + blend + 4)).toEqual(new Set([high]));
+    for (const x of [124, 128, 132]) {
+      expect(colorsAt(x)).toEqual(new Set([mid, high]));
+    }
   });
 
   it("orders crossed tone bands", () => {

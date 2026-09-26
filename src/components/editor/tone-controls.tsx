@@ -99,7 +99,8 @@ export function ToneControls() {
           id="tone-color-count-hint"
           className="text-paper-dim text-xs leading-relaxed"
         >
-          Each dot takes the color of its brightness band.
+          Each dot takes the color of its brightness band; neighboring bands
+          blend where they meet.
         </p>
       </div>
 

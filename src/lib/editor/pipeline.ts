@@ -67,7 +67,7 @@ export function renderPixels(
     settings.diffusion,
   );
   const out = createPixels(pixels.width, pixels.height);
-  toneMap(bits, gray, pixels.data, out.data, settings);
+  toneMap(bits, gray, pixels.data, out.data, pixels.width, settings);
   pixels = out;
   return { pixels, palette: null };
 }

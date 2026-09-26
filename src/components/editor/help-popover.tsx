@@ -28,7 +28,7 @@ const TIPS = [
   },
   {
     title: "1-bit dot colors",
-    body: "In 1-bit mode, each dot takes the color of its brightness band (highlights, midtones, shadows).",
+    body: "In 1-bit mode, each dot takes the color of its brightness band (highlights, midtones, shadows); neighboring bands blend where they meet, with no hard edge.",
   },
   {
     title: "Background",

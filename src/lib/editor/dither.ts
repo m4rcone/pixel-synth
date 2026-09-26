@@ -21,6 +21,12 @@ const lazy = <T>(make: () => T) => {
   return () => (value ??= make());
 };
 
+/**
+ * The large blue-noise mask behind Blue Noise; tone mapping also uses it to
+ * blend band colors.
+ */
+export const blueNoiseMatrix = lazy(() => voidAndCluster(64, 1.9, 11));
+
 const METHODS: Record<AlgorithmId, Method> = {
   "floyd-steinberg": {
     kind: "diffusion",
@@ -60,7 +66,7 @@ const METHODS: Record<AlgorithmId, Method> = {
   // Large blue-noise mask: no visible tiling.
   "blue-noise": {
     kind: "ordered",
-    matrix: lazy(() => voidAndCluster(64, 1.9, 11)),
+    matrix: blueNoiseMatrix,
   },
   "random-dither": { kind: "random" },
   // Classic small void-and-cluster array: organic, with a faint period.
