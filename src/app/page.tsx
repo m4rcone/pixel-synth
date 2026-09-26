@@ -683,21 +683,19 @@ function FamilyCard({ category }: { category: AlgorithmCategory }) {
             {[lead.author, lead.year].filter(Boolean).join(" · ")}
           </p>
         </div>
-        <p className="text-paper-dim flex-1 text-sm leading-relaxed">
-          {family.description}
-        </p>
-        {others.length > 0 && (
-          <p className="text-readout text-paper-dim border-line border-t pt-3">
-            <span className="text-caps">Also </span>
-            {others.map((algorithm) => algorithm.shortName).join(", ")}
-          </p>
-        )}
-        <Link
-          href={`/algorithms#family-${category}`}
-          className={`${textLink} relative z-10 self-start text-sm`}
-        >
-          All {members.length} {family.name.toLowerCase()} algorithms
-        </Link>
+        <div className="border-line mt-auto border-t pt-3">
+          <Link
+            href={`/algorithms#family-${category}`}
+            className={`${textLink} relative z-10 text-sm`}
+          >
+            +{others.length} more
+            <span className="sr-only">
+              {" "}
+              {family.name.toLowerCase()}{" "}
+              {others.length === 1 ? "algorithm" : "algorithms"}
+            </span>
+          </Link>
+        </div>
       </div>
     </li>
   );
