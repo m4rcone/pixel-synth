@@ -347,11 +347,13 @@ export default function HomePage() {
           </section>
 
           <section aria-label="Specifications" className="pb-20">
-            <dl className="border-line-strong bg-ink-raised grid grid-cols-2 border sm:grid-cols-3 lg:grid-cols-6">
+            {/* Cells on a 1 px gap over the line color: one hairline between
+                cells at every column count, none doubled against the frame. */}
+            <dl className="border-line-strong bg-line grid grid-cols-2 gap-px border sm:grid-cols-3 lg:grid-cols-6">
               {SPECS.map((spec) => (
                 <div
                   key={spec.label}
-                  className="border-line flex flex-col gap-2 border-t border-l p-4"
+                  className="bg-ink-raised flex flex-col gap-2 p-4"
                 >
                   <dt className="text-caps text-paper-dim order-2">
                     {spec.label}
@@ -452,9 +454,9 @@ export default function HomePage() {
                 Photo to pixel art in one click
               </h2>
               <p className="text-paper-dim text-lg leading-relaxed">
-                The pixel art preset shrinks any image to about 128 × 96 pixels,
-                snaps it to PICO-8 with a 2×2 Bayer pattern and exports crisp at
-                ×4 or ×8.
+                The pixel art preset shrinks any image to about 128 × 96 pixels’
+                worth of detail, whatever its shape, snaps it to PICO-8 with a
+                2×2 Bayer pattern and exports crisp at ×4 or ×8.
               </p>
               <Button asChild size="lg" className="self-start">
                 <Link href={PIXEL_ART_LINK}>Try the pixel art preset</Link>

@@ -28,10 +28,10 @@ import {
   siteConfig,
 } from "@/lib/site";
 
-const description = `Dither images to ${PALETTE_PRESETS.length} classic color palettes — Game Boy, PICO-8, CGA, EGA, ZX Spectrum, Commodore 64, sepia, cyanotype and more — or to colors taken from your own image.`;
+const description = `Dither images to ${PALETTE_PRESETS.length} retro color palettes, with every hex value: Game Boy, NES, PICO-8, CGA, ZX Spectrum, Commodore 64, riso, cyanotype or your own colors.`;
 
 export const metadata: Metadata = pageMetadata({
-  title: "Color Palettes",
+  title: "Retro Color Palettes: Game Boy, NES, PICO-8",
   description,
   path: "/palettes",
 });
@@ -40,7 +40,7 @@ const GROUP_NOTES: Record<Exclude<PaletteGroup, "Dynamic">, string> = {
   "Consoles & computers":
     "Hardware palettes, with hex values from each system’s reference.",
   "Print & photo":
-    "Inks and photographic processes. Single-hue, so they match by brightness.",
+    "Inks, papers and photographic processes. They follow a tone ramp, so they match by brightness.",
   PixelSynth: "The colors of this site.",
 };
 
@@ -53,7 +53,7 @@ const structuredData = [
   {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: `Color Palettes | ${siteConfig.name}`,
+    name: `Retro Color Palettes | ${siteConfig.name}`,
     url: absoluteUrl("/palettes"),
     description,
     inLanguage: "en",
@@ -126,7 +126,7 @@ export default function PalettesPage() {
           aria-labelledby="pixel-art-heading"
           className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]"
         >
-          <figure className="border-line-strong bg-ink-raised rounded-md border p-3">
+          <figure className="border-line-strong bg-ink-sunken border p-3">
             <Image
               src={PIXEL_ART_PREVIEW.src}
               alt={`The sample image at ${PIXEL_ART_PREVIEW.width} by ${PIXEL_ART_PREVIEW.height} pixels, PICO-8 palette, 2×2 Bayer pattern`}
@@ -134,7 +134,7 @@ export default function PalettesPage() {
               height={PIXEL_ART_PREVIEW.height}
               unoptimized
               priority
-              className="w-full rounded-xs [image-rendering:pixelated]"
+              className="w-full [image-rendering:pixelated]"
             />
             <figcaption className="text-readout text-paper-dim mt-2">
               {PIXEL_ART_PREVIEW.width} × {PIXEL_ART_PREVIEW.height} px, shown
@@ -238,7 +238,7 @@ export default function PalettesPage() {
               <article
                 id="palette-custom"
                 aria-labelledby="palette-custom-title"
-                className="border-line bg-ink-raised flex h-full scroll-mt-20 flex-col gap-3 rounded-md border p-5"
+                className="border-line bg-ink-raised flex h-full scroll-mt-20 flex-col gap-3 border p-5"
               >
                 <h3
                   id="palette-custom-title"
@@ -255,7 +255,7 @@ export default function PalettesPage() {
                 </p>
                 <Link
                   href="/editor?palette=custom"
-                  className="text-paper hover:text-paper-hot hover:decoration-paper-hot focus-visible:ring-safelight decoration-line-strong mt-auto self-start rounded-sm text-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                  className="text-paper hover:text-paper-hot hover:decoration-paper-hot focus-visible:ring-safelight decoration-line-strong mt-auto self-start text-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
                 >
                   Build one in the editor
                 </Link>
@@ -293,7 +293,7 @@ function PaletteCard({
       id={`palette-${id}`}
       aria-labelledby={titleId}
       className={cn(
-        "border-line-strong bg-ink-raised target:border-safelight flex h-full scroll-mt-20 flex-col overflow-hidden rounded-md border",
+        "border-line-strong bg-ink-raised target:border-safelight flex h-full scroll-mt-20 flex-col overflow-hidden border",
         wide && "sm:flex-row",
       )}
     >
@@ -326,7 +326,7 @@ function PaletteCard({
             <li
               key={`${color}-${index}`}
               title={color}
-              className="size-6 rounded-xs shadow-[inset_0_0_0_1px_var(--line-strong)]"
+              className="size-6 shadow-[inset_0_0_0_1px_var(--line-strong)]"
               style={{ background: color }}
             >
               <span className="sr-only">{color}</span>
@@ -339,7 +339,7 @@ function PaletteCard({
           </span>
           <Link
             href={`/editor?palette=${id}`}
-            className="text-paper hover:text-paper-hot hover:decoration-paper-hot focus-visible:ring-safelight decoration-line-strong rounded-sm text-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
+            className="text-paper hover:text-paper-hot hover:decoration-paper-hot focus-visible:ring-safelight decoration-line-strong text-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
           >
             Use in the editor
             <span className="sr-only">: {name}</span>

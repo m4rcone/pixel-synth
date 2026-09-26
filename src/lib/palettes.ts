@@ -32,7 +32,7 @@ export const PALETTE_PRESETS = [
     id: "gameboy",
     name: "Game Boy",
     description:
-      "The four greens of the original 1989 handheld’s screen. Matches by brightness, so any image stays readable.",
+      "The four greens of the original 1989 handheld’s screen. Any image stays readable, because tones map by brightness.",
     group: "Consoles & computers",
     match: "brightness",
     colors: ["#0f380f", "#306230", "#8bac0f", "#9bbc0f"],
@@ -42,7 +42,7 @@ export const PALETTE_PRESETS = [
     id: "gameboy-pocket",
     name: "Game Boy Pocket",
     description:
-      "The four near-grays of the 1996 Game Boy Pocket, which dropped the original’s green screen. Matches by brightness.",
+      "The four near-grays of the 1996 Game Boy Pocket, which dropped the original’s green screen.",
     group: "Consoles & computers",
     match: "brightness",
     colors: ["#181818", "#4a5138", "#8c926b", "#c5caa4"],

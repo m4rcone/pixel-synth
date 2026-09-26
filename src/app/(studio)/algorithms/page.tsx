@@ -13,11 +13,10 @@ import {
   siteConfig,
 } from "@/lib/site";
 
-const description =
-  "Explore the dithering algorithms available in PixelSynth and preview how each technique transforms an image.";
+const description = `Compare ${ALGORITHMS.length} dithering algorithms on one image: Floyd–Steinberg, Atkinson, Bayer, blue noise, halftone and more, each with its kernel or threshold matrix.`;
 
 export const metadata: Metadata = pageMetadata({
-  title: "Dithering Algorithms",
+  title: "Dithering Algorithms Compared",
   description,
   path: "/algorithms",
 });
@@ -75,9 +74,9 @@ export default function AlgorithmsPage() {
           </div>
           <p className="text-paper-dim max-w-2xl text-lg leading-relaxed">
             {ALGORITHMS.length} techniques, each shown on the same specimen: a
-            CRT terminal on a checkered table. Compare error diffusion, ordered
-            dithering, blue-noise, noise-based techniques and halftone screens
-            before applying them in the editor.
+            CRT terminal on a checkered table. Compare error diffusion, ordered,
+            noise-based and halftone screen dithering before applying them in
+            the editor.
           </p>
           <nav aria-label="Algorithm families">
             <ul className="flex flex-wrap gap-2">

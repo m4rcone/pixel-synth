@@ -39,7 +39,7 @@ export type AlgorithmInfo = {
   slug: string;
   /** Full display name. */
   name: string;
-  /** Compact name for tight UI (marquee, selects). */
+  /** Compact name for tight UI (selects, steppers, footer). */
   shortName: string;
   category: AlgorithmCategory;
   era: "classic" | "modern";
@@ -75,7 +75,7 @@ export const ALGORITHMS = [
     category: "error-diffusion",
     era: "classic",
     description:
-      "Spreads the error over 12 pixels, creating smoother and more natural textures, though at a slower speed.",
+      "Spreads the error over 12 neighbors for smoother, more natural textures, at a slower speed.",
     complexity: "high",
     year: "1976",
     author: "J.F. Jarvis, C.N. Judice & W.H. Ninke",
@@ -159,7 +159,7 @@ export const ALGORITHMS = [
     category: "error-diffusion",
     era: "classic",
     description:
-      "Creates crisp, retro-style dot patterns. Uses fewer diffusion pixels, resulting in a distinct stippled appearance.",
+      "Passes on only 3/4 of the error, so highlights and shadows clip to clean white and black. The crisp, stippled look of the early Macintosh.",
     complexity: "low",
     year: "1984",
     author: "Bill Atkinson (Apple)",
@@ -229,7 +229,7 @@ export const ALGORITHMS = [
     category: "ordered",
     era: "modern",
     description:
-      "Uses a blue-noise matrix for balanced error distribution. Avoids visible patterns, producing a natural look.",
+      "Compares each pixel with a tiled blue-noise threshold matrix. Dots spread evenly with no visible grid, for a fine, natural grain.",
     complexity: "high",
     year: "1993",
     author: "Robert Ulichney",
@@ -243,7 +243,7 @@ export const ALGORITHMS = [
     category: "noise",
     era: "modern",
     description:
-      "Applies purely random thresholds, producing a grainy texture with noticeable noise characteristics.",
+      "Compares each pixel with a random threshold, for a coarse, grainy texture.",
     complexity: "low",
     year: null,
     author: null,
@@ -271,7 +271,7 @@ export const ALGORITHMS = [
     category: "screen",
     era: "classic",
     description:
-      "Round, square or diamond dots on an angled grid, growing with the shadows like newspaper and offset print. Set the screen size and angle.",
+      "Round, square or diamond dots on an angled grid that grow with the shadows, like newsprint. Set the screen size and angle.",
     complexity: "medium",
     year: "1880s",
     author: "Frederic Ives",
@@ -322,6 +322,11 @@ export function isAlgorithmId(value: string): value is AlgorithmId {
 
 export function getCategory(category: AlgorithmCategory) {
   return ALGORITHM_CATEGORIES.find((c) => c.id === category)!;
+}
+
+/** Name before the word "dithering": "Random Dither" reads "Random". */
+export function ditheringName(algorithm: Pick<AlgorithmInfo, "name">) {
+  return algorithm.name.replace(/ Dither$/, "");
 }
 
 export function getCategoryName(category: AlgorithmCategory) {

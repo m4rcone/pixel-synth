@@ -47,7 +47,7 @@ const COLUMNS: {
 ];
 
 const linkClass =
-  "text-paper-dim hover:text-paper focus-visible:ring-safelight rounded-sm text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none";
+  "text-paper-dim hover:text-paper focus-visible:ring-safelight  text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none";
 
 /**
  * Site index for the landing and the catalog pages (not the editor): every
@@ -60,7 +60,9 @@ export function SiteFooter({ className }: { className?: string }) {
         <ul className="grid grid-cols-2 gap-8 sm:grid-cols-4">
           {COLUMNS.map((column) => (
             <li key={column.title} className="flex flex-col gap-3">
-              <h2 className="text-caps text-paper">{column.title}</h2>
+              {/* A column title, not a heading: the site map stays out of
+                  each page's outline. */}
+              <p className="text-caps text-paper">{column.title}</p>
               <ul className="flex flex-col gap-2">
                 {column.links.map((link) => (
                   <li key={link.href}>
