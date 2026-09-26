@@ -260,14 +260,14 @@ export default function HomePage() {
             <Logo wordmarkClassName="max-sm:sr-only" />
           </Link>
           <nav aria-label="Primary" className="flex items-center sm:gap-2">
+            <Link href="/editor" className={navLink}>
+              Editor
+            </Link>
             <Link href="/algorithms" className={navLink}>
               Algorithms
             </Link>
             <Link href="/palettes" className={navLink}>
               Palettes
-            </Link>
-            <Link href="/editor" className={navLink}>
-              Editor
             </Link>
           </nav>
           <p className="text-caps text-paper-dim flex items-center gap-2 max-lg:hidden">

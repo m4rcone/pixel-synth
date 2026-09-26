@@ -109,6 +109,17 @@ export function HeroInstrument({
             onPointerPosition={setPoint}
           />
         </div>
+        {/* Pointer readout, centered under the image: visual only, it tracks
+            the mouse. The idle text has as many characters as a reading, so
+            its (monospaced) width never changes. */}
+        <p
+          aria-hidden="true"
+          className="text-readout text-paper mt-3 text-center whitespace-pre"
+        >
+          {point
+            ? `X ${pad(Math.min(size.width - 1, Math.floor(point.x * size.width)))} · Y ${pad(Math.min(size.height - 1, Math.floor(point.y * size.height)))}`
+            : "X --- · Y ---"}
+        </p>
       </div>
 
       <div className="flex flex-col gap-2">
@@ -134,25 +145,15 @@ export function HeroInstrument({
         />
       </div>
 
-      <figcaption className="text-readout text-paper-dim flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+      <figcaption className="text-readout text-paper-dim flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
         <Link
           href={editorLink}
           className="text-paper hover:text-paper-hot decoration-line-strong hover:decoration-paper-hot focus-visible:outline-safelight self-start underline underline-offset-4 outline-none focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           Open this look in the editor
         </Link>
-        <span className="flex flex-col gap-1 sm:items-end">
-          <span>
-            {size.width} × {size.height} · {palette.colors} colors
-          </span>
-          {/* Pointer readout: visual only, it tracks the mouse. The idle
-              text has as many characters as a reading, so its (monospaced)
-              width never changes and nothing reflows on hover. */}
-          <span aria-hidden="true" className="text-paper whitespace-pre">
-            {point
-              ? `X ${pad(Math.min(size.width - 1, Math.floor(point.x * size.width)))} · Y ${pad(Math.min(size.height - 1, Math.floor(point.y * size.height)))}`
-              : "X --- · Y ---"}
-          </span>
+        <span>
+          {size.width} × {size.height} · {palette.colors} colors
         </span>
       </figcaption>
     </figure>
