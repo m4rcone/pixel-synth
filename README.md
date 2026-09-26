@@ -14,7 +14,7 @@ A free online dithering and pixel art tool. Turn any photo into dithered, 1-bit 
 - **Filters**: processing scale, brightness, contrast, saturation, noise and blur; the image re-renders as soon as you release a control.
 - **Error diffusion strength**: pass on less of each pixel's rounding error for flatter, cleaner areas with fewer stray dots (error diffusion algorithms).
 - **Easy input**: drop, paste or pick a PNG, JPEG, WebP, GIF, AVIF or BMP file, or try the built-in sample image (a sunset scene with a calibration strip).
-- **Crisp export**: save a PNG at ×1, ×2, ×4 or ×8, enlarged nearest-neighbor so every pixel stays a sharp block.
+- **Crisp export**: save a PNG at ×1, ×2, ×4 or ×8, enlarged nearest-neighbor so every pixel stays a sharp block. Dithered images are saved as indexed PNGs (1 to 8 bits per pixel, transparency kept), several times smaller than a browser's RGBA PNG with identical pixels.
 - **Share settings**: copy a link that reopens the editor with the same look, for any image. It carries the settings only, never your image.
 - **Live before/after**: pan, zoom, pinch and compare the original with the result, with a split view or a toggle.
 - **Fast**: the pipeline runs in a Web Worker; a 4-megapixel image dithers in roughly 0.1–0.35 s on a recent laptop.

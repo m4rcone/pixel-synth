@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { readFileSync } from "node:fs";
 import AxeBuilder from "@axe-core/playwright";
 
 // 4×4 RGB gradient
@@ -470,11 +471,13 @@ test("the save dialog blocks sizes browsers can't draw", async ({ page }) => {
 });
 
 test("a failed export says so and keeps the dialog open", async ({ page }) => {
-  // What browsers do past their canvas limits: no blob, no error.
+  // What browsers do past their canvas limits: no blob, no error. The
+  // indexed PNG path is blocked too, so both ways of saving fail.
   await page.addInitScript(() => {
     HTMLCanvasElement.prototype.toBlob = function (callback) {
       callback(null);
     };
+    window.CompressionStream = undefined as never;
   });
   await page.goto("/editor?sample=1");
   await page.getByRole("button", { name: "Apply dither" }).click();
@@ -488,4 +491,35 @@ test("a failed export says so and keeps the dialog open", async ({ page }) => {
   await expect(dialog).toBeVisible();
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
+});
+
+test("exports are indexed PNGs at the smallest bit depth", async ({ page }) => {
+  await page.goto("/editor?sample=1&palette=gameboy");
+  await page.getByRole("button", { name: "Apply dither" }).click();
+  const header = async (factor: string) => {
+    await page.getByRole("button", { name: "Save", exact: true }).click();
+    const dialog = page.getByRole("dialog", { name: "Save image" });
+    await dialog
+      .getByRole("button", { name: new RegExp(`^${factor}x,`) })
+      .click();
+    const download = page.waitForEvent("download");
+    await dialog.getByRole("button", { name: "Save PNG" }).click();
+    const png = readFileSync((await (await download).path())!);
+    // IHDR data: width, height, bit depth, color type.
+    return {
+      width: png.readUInt32BE(16),
+      height: png.readUInt32BE(20),
+      depth: png[24],
+      colorType: png[25],
+    };
+  };
+
+  // Game Boy: 4 colors, 2 bits per pixel, palette color type.
+  expect(await header("1")).toEqual({
+    width: 1800,
+    height: 1200,
+    depth: 2,
+    colorType: 3,
+  });
+  expect(await header("2")).toMatchObject({ width: 3600, height: 2400 });
 });

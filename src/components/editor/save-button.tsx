@@ -22,6 +22,7 @@ export function SaveButton() {
   const [open, setOpen] = useState(false);
   const [factor, setFactor] = useState<ExportFactor>(1);
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const width = result?.width ?? 0;
   const height = result?.height ?? 0;
@@ -34,41 +35,35 @@ export function SaveButton() {
     return `pixelsynth-${settings.algorithm}${palette}${size}.png`;
   }
 
-  // Browsers fail silently past their canvas limits (a null context or
-  // blob): say so and keep the dialog open to pick a smaller size.
   function fail() {
     setError(
       `Your browser couldn’t create a ${width * factor} × ${height * factor} image. Choose a smaller size.`,
     );
   }
 
-  function save() {
+  async function save() {
     if (!result) return;
     setError(null);
-    // Enlarge without smoothing: each pixel becomes a crisp k×k block.
-    const canvas = document.createElement("canvas");
-    canvas.width = width * factor;
-    canvas.height = height * factor;
-    const name = fileName();
+    setSaving(true);
     try {
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return fail();
-      ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(result, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob((blob) => {
-        // Release the (possibly huge) canvas memory right away.
-        canvas.width = canvas.height = 0;
-        if (!blob) return fail();
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = name;
-        link.click();
-        setTimeout(() => URL.revokeObjectURL(url), 0);
-        setOpen(false);
-      }, "image/png");
+      // Indexed PNG first (dithered output has few colors); the canvas PNG
+      // covers images with more than 256 colors and browsers without
+      // CompressionStream.
+      const blob =
+        (await indexedPng(result, factor).catch(() => null)) ??
+        (await canvasPng(result, factor));
+      if (!blob) return fail();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName();
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+      setOpen(false);
     } catch {
       fail();
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -146,10 +141,47 @@ export function SaveButton() {
             {error}
           </p>
         )}
-        <Button onClick={save} className="self-end">
-          Save PNG
+        <Button onClick={save} disabled={saving} className="self-end">
+          {saving ? "Saving…" : "Save PNG"}
         </Button>
       </PopoverContent>
     </Popover>
+  );
+}
+
+/** The rendered image as an indexed PNG, or null past 256 colors. */
+async function indexedPng(result: ImageBitmap, factor: number) {
+  const { width, height } = result;
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  if (!ctx) return null;
+  ctx.drawImage(result, 0, 0);
+  const { data } = ctx.getImageData(0, 0, width, height);
+  // Loaded on demand: only needed when saving.
+  const { encodeIndexedPng } = await import("@/lib/editor/png");
+  return encodeIndexedPng({ data, width, height }, factor);
+}
+
+/**
+ * The browser's own RGBA PNG, enlarged on a canvas without smoothing so each
+ * pixel becomes a crisp block. Null past the browser's canvas limits, where
+ * browsers fail silently (a null context or blob).
+ */
+function canvasPng(result: ImageBitmap, factor: number): Promise<Blob | null> {
+  const canvas = document.createElement("canvas");
+  canvas.width = result.width * factor;
+  canvas.height = result.height * factor;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return Promise.resolve(null);
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(result, 0, 0, canvas.width, canvas.height);
+  return new Promise((resolve) =>
+    canvas.toBlob((blob) => {
+      // Release the (possibly huge) canvas memory right away.
+      canvas.width = canvas.height = 0;
+      resolve(blob);
+    }, "image/png"),
   );
 }
