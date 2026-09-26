@@ -3,7 +3,7 @@
 import { RotateCcw, Sparkles, Trash2 } from "lucide-react";
 import { useCanvasContext } from "@/contexts/canvas-context";
 import { useEditorActions, useEditorState } from "@/contexts/editor-context";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
   AlertDialog,
@@ -105,11 +105,7 @@ function ConfirmButton({
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
-            className={
-              variant === "destructive"
-                ? buttonVariants({ variant: "destructive" })
-                : undefined
-            }
+            variant={variant === "destructive" ? "destructive" : undefined}
           >
             {label}
           </AlertDialogAction>
