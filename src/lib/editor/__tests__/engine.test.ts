@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { ALGORITHMS } from "@/lib/algorithms";
 import { PALETTE_PRESETS } from "@/lib/palettes";
-import { dither, getMethod } from "../dither";
+import { dither, getMethod, type ScreenOptions } from "../dither";
 import { applyFilters } from "../filters";
 import { bayerMatrix, ERROR_KERNELS, voidAndCluster } from "../matrices";
 import { ditherToPalette, extractPalette } from "../palette-dither";
@@ -14,6 +14,7 @@ import {
   DEFAULT_SETTINGS,
   dotsAreInk,
   orderedTones,
+  SCREEN_SHAPES,
   type EditorSettings,
 } from "../settings";
 
@@ -411,6 +412,157 @@ describe("diffusion strength", () => {
     expect(
       ditherToPalette(src, "floyd-steinberg", colors, "brightness", 0).data,
     ).toEqual(ditherToPalette(src, "none", colors, "brightness").data);
+  });
+});
+
+describe("halftone screens", () => {
+  const SIZE = 96;
+  const field = (value: number) => new Float32Array(SIZE * SIZE).fill(value);
+  const screen = (
+    algorithm: "halftone" | "line-screen",
+    value: number,
+    options: Partial<ScreenOptions> = {},
+  ) =>
+    dither(field(value), SIZE, SIZE, algorithm, 1, {
+      ...DEFAULT_SETTINGS.screen,
+      light: false,
+      ...options,
+    });
+  const litShare = (bits: Uint8Array) =>
+    bits.filter((b) => b === 255).length / bits.length;
+  const cases = [
+    ...SCREEN_SHAPES.map((shape) => ["halftone", shape] as const),
+    ["line-screen", "round"] as const,
+  ];
+
+  it("the catalog's screen family is what the engine screens", () => {
+    for (const algorithm of ALGORITHMS) {
+      expect(getMethod(algorithm.slug).kind === "screen", algorithm.slug).toBe(
+        algorithm.category === "screen",
+      );
+    }
+  });
+
+  it.each(cases)("%s (%s) reproduces the tone at any angle", (slug, shape) => {
+    for (const angle of [0, 22.5, 45, 75, 105]) {
+      for (const value of [32, 128, 200]) {
+        for (const light of [false, true]) {
+          const bits = screen(slug, value, { shape, angle, light });
+          expect(litShare(bits), `${angle}° ${value} ${light}`).toBeCloseTo(
+            value / 255,
+            1,
+          );
+        }
+      }
+    }
+  });
+
+  it.each(cases)("%s (%s) keeps black and white solid", (slug, shape) => {
+    for (const light of [false, true]) {
+      expect(litShare(screen(slug, 0, { shape, light }))).toBe(0);
+      expect(litShare(screen(slug, 255, { shape, light }))).toBe(1);
+    }
+  });
+
+  it("gains a gray level with every pixel of the cell", () => {
+    // Mirrored pixels don't tie: an 8 px cell has 64 thresholds, 65 levels.
+    const levels = new Set<number>();
+    for (let value = 0; value <= 255; value++) {
+      levels.add(litShare(screen("halftone", value, { angle: 0 })));
+    }
+    expect(levels.size).toBe(65);
+  });
+
+  // Distance of each marked pixel to the nearest cell center, at 0°.
+  const spread = (bits: Uint8Array, mark: number, size: number) => {
+    let farthest = 0;
+    bits.forEach((b, p) => {
+      if (b !== mark) return;
+      const dx = ((((p % SIZE) + 0.5) % size) - size / 2) ** 2;
+      const dy = (((((p / SIZE) | 0) + 0.5) % size) - size / 2) ** 2;
+      farthest = Math.max(farthest, Math.sqrt(dx + dy));
+    });
+    return farthest;
+  };
+
+  it("grows the dots from the cell center, as ink or as light", () => {
+    const options = { angle: 0, size: 12, shape: "square" as const };
+    // 10% ink: small dark squares on light.
+    const ink = screen("halftone", 230, options);
+    expect(spread(ink, 0, 12)).toBeLessThan(3);
+    // 10% light: small lit squares on dark.
+    const light = screen("halftone", 25, { ...options, light: true });
+    expect(spread(light, 255, 12)).toBeLessThan(3);
+    // Without the flip, those lit pixels would sit on the cell edges.
+    expect(spread(screen("halftone", 25, options), 255, 12)).toBeGreaterThan(5);
+  });
+
+  it("draws lines along the angle", () => {
+    const flat = screen("line-screen", 100, { angle: 0 });
+    for (let y = 0; y < SIZE; y++) {
+      const row = flat.subarray(y * SIZE, (y + 1) * SIZE);
+      expect(row.every((b) => b === row[0])).toBe(true);
+    }
+    const upright = screen("line-screen", 100, { angle: 90 });
+    for (let y = 0; y < SIZE; y++) {
+      for (let x = 0; x < SIZE; x++) {
+        expect(upright[y * SIZE + x]).toBe(flat[x * SIZE + y]);
+      }
+    }
+  });
+
+  it("gives palettes darker dots between neighboring colors", () => {
+    const run = (value: number, match: "color" | "brightness") => {
+      const gray = createPixels(SIZE, SIZE);
+      for (let i = 0; i < gray.data.length; i += 4)
+        gray.data.set([value, value, value, 255], i);
+      const out = ditherToPalette(
+        gray,
+        "halftone",
+        ["#000000", "#ffffff"],
+        match,
+        1,
+        { ...DEFAULT_SETTINGS.screen, angle: 0, size: 12, shape: "square" },
+      );
+      return new Uint8Array(SIZE * SIZE).map((_, p) => out.data[p * 4]);
+    };
+    const ramp = run(230, "brightness");
+    expect(litShare(ramp)).toBeCloseTo(230 / 255, 1);
+    expect(spread(ramp, 0, 12)).toBeLessThan(3);
+    // Color matching nudges less, like every threshold method.
+    expect(spread(run(200, "color"), 0, 12)).toBeLessThan(3);
+  });
+
+  it("follows the dots of the tone map", () => {
+    // Dark dots on paper and light dots on black are both centered dots.
+    const src = createPixels(SIZE, SIZE);
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      algorithm: "halftone" as const,
+      screen: { size: 12, angle: 0, shape: "square" as const },
+    };
+    const dots = (value: number, overrides: Partial<EditorSettings>) => {
+      for (let i = 0; i < src.data.length; i += 4)
+        src.data.set([value, value, value, 255], i);
+      const { pixels } = renderPixels(
+        src,
+        { ...settings, ...overrides },
+        { dither: true },
+      );
+      const bits = new Uint8Array(SIZE * SIZE).map((_, p) =>
+        pixels.data[p * 4] < 128 ? 0 : 255,
+      );
+      return bits;
+    };
+    const paper = dots(230, {
+      background: "#ffffff",
+      tones: {
+        ...DEFAULT_SETTINGS.tones,
+        highlights: { color: "#000000", range: 255 },
+      },
+    });
+    expect(spread(paper, 0, 12)).toBeLessThan(3);
+    expect(spread(dots(25, {}), 255, 12)).toBeLessThan(3);
   });
 });
 

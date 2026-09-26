@@ -345,9 +345,10 @@ export default function HomePage() {
               </h2>
               <p className="text-paper-dim text-lg leading-relaxed">
                 {ALGORITHMS.length} algorithms, from Floyd–Steinberg (1976) to
-                blue noise and halftone. Tune scale, contrast, saturation, noise
-                and blur, soften the error diffusion for cleaner areas, and map
-                your own colors to shadows, midtones and highlights.
+                blue noise and angled halftone screens of dots or lines. Tune
+                scale, contrast, saturation, noise and blur, soften the error
+                diffusion for cleaner areas, and map your own colors to shadows,
+                midtones and highlights.
               </p>
             </div>
             <ul className="grid gap-5 md:grid-cols-2">

@@ -11,11 +11,15 @@ import {
 import {
   DEFAULT_SETTINGS,
   MIN_SCALE,
+  SCREEN_LIMITS,
   type DitherChoice,
+  type ScreenSettings,
+  type ScreenShape,
 } from "@/lib/editor/settings";
 import { usePixelArtPreset } from "@/hooks/use-pixel-art-preset";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Segmented } from "@/components/ui/segmented";
 import {
   Select,
   SelectContent,
@@ -28,6 +32,11 @@ import {
 import { SliderField } from "./slider-field";
 
 const CATEGORIES = algorithmsByCategory();
+const SHAPES: { value: ScreenShape; label: string }[] = [
+  { value: "round", label: "Round" },
+  { value: "square", label: "Square" },
+  { value: "diamond", label: "Diamond" },
+];
 const isDitherChoice = (value: string): value is DitherChoice =>
   value === "none" || isAlgorithmId(value);
 
@@ -38,9 +47,13 @@ export function DitherControls() {
   const disabled = status === "empty";
   // Algorithm and scale only affect the output once dithering is applied.
   const apply = status === "dithered" ? commit : update;
-  const errorDiffusion =
-    settings.algorithm !== "none" &&
-    getAlgorithm(settings.algorithm)?.category === "error-diffusion";
+  const category =
+    settings.algorithm !== "none"
+      ? getAlgorithm(settings.algorithm)?.category
+      : undefined;
+  const errorDiffusion = category === "error-diffusion";
+  const setScreen = (set: typeof update, patch: Partial<ScreenSettings>) =>
+    set(({ screen }) => ({ screen: { ...screen, ...patch } }));
   // Error diffusion reacts to every pixel, so small changes between frames
   // ripple across the whole pattern.
   const shimmers = !!source?.animation && errorDiffusion;
@@ -121,6 +134,50 @@ export function DitherControls() {
           onChange={(diffusion) => update({ diffusion })}
           onCommit={(diffusion) => apply({ diffusion })}
         />
+      )}
+
+      {category === "screen" && (
+        <>
+          <SliderField
+            id="dither-screen-size"
+            label="Screen size"
+            value={settings.screen.size}
+            defaultValue={DEFAULT_SETTINGS.screen.size}
+            min={SCREEN_LIMITS.size.min}
+            max={SCREEN_LIMITS.size.max}
+            step={1}
+            disabled={disabled}
+            format={(v) => `${v} px`}
+            onChange={(size) => setScreen(update, { size })}
+            onCommit={(size) => setScreen(apply, { size })}
+          />
+          <SliderField
+            id="dither-screen-angle"
+            label="Screen angle"
+            value={settings.screen.angle}
+            defaultValue={DEFAULT_SETTINGS.screen.angle}
+            min={SCREEN_LIMITS.angle.min}
+            max={SCREEN_LIMITS.angle.max}
+            // Steps of 7.5° reach the classic angles: 0, 15, 22.5, 45, 75.
+            step={7.5}
+            disabled={disabled}
+            format={(v) => `${v}°`}
+            onChange={(angle) => setScreen(update, { angle })}
+            onCommit={(angle) => setScreen(apply, { angle })}
+          />
+          {settings.algorithm === "halftone" && (
+            <div className="flex flex-col gap-2">
+              <span className="text-label text-paper-dim">Dot shape</span>
+              <Segmented
+                label="Dot shape"
+                options={SHAPES}
+                value={settings.screen.shape}
+                onChange={(shape) => setScreen(apply, { shape })}
+                disabled={disabled}
+              />
+            </div>
+          )}
+        </>
       )}
 
       <SliderField

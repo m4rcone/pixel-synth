@@ -9,7 +9,7 @@ export default function OpengraphImage() {
   return renderOgImage({
     eyebrow: "Catalog",
     title: "Dithering algorithms",
-    subtitle: `${ALGORITHMS.length} techniques — error diffusion, ordered and noise-based — shown on the same sphere.`,
+    subtitle: `${ALGORITHMS.length} techniques — error diffusion, ordered, noise-based and halftone screens — shown on the same sphere.`,
     image: "/250/pixel-synth-9.png",
   });
 }

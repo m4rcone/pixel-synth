@@ -4,7 +4,7 @@ import { applyFilters } from "./filters";
 import { ditherToPalette, extractPalette } from "./palette-dither";
 import { clonePixels, createPixels, luminance, type Pixels } from "./pixels";
 import { resizeArea } from "./resize";
-import { hasActiveFilters, type EditorSettings } from "./settings";
+import { dotsAreInk, hasActiveFilters, type EditorSettings } from "./settings";
 import { toneMap } from "./tone-mapping";
 
 export type RenderResult = {
@@ -53,6 +53,7 @@ export function renderPixels(
         palette,
         settings.color.match,
         settings.diffusion,
+        settings.screen,
       ),
       palette,
     };
@@ -65,6 +66,8 @@ export function renderPixels(
     pixels.height,
     settings.algorithm,
     settings.diffusion,
+    // Screen dots take the shape of whatever the tone map draws as dots.
+    { ...settings.screen, light: !dotsAreInk(settings) },
   );
   const out = createPixels(pixels.width, pixels.height);
   toneMap(bits, gray, pixels.data, out.data, pixels.width, settings);

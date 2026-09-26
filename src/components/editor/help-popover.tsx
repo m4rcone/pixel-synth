@@ -19,6 +19,10 @@ const TIPS = [
     body: "For error diffusion algorithms: how much of each pixel’s rounding error spreads to its neighbors. Lower values give flatter, cleaner areas with fewer stray dots.",
   },
   {
+    title: "Halftone screens",
+    body: "Halftone and Line Screen draw a grid of dots or lines that grow with the tone. Screen size is the distance between dots, in processed pixels; angle turns the grid (45° is the classic for one ink). Big screens read best at full processing scale.",
+  },
+  {
     title: "Palette",
     body: "Dithers straight to a set of colors. “Match by color” suits many-hued palettes; “Match by brightness” suits single-hue ones like Game Boy or sepia.",
   },

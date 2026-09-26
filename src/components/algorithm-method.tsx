@@ -1,6 +1,8 @@
 import type { AlgorithmId } from "@/lib/algorithms";
 import { getMethod } from "@/lib/editor/dither";
 import type { ErrorKernel, ThresholdMatrix } from "@/lib/editor/matrices";
+import { screenThreshold } from "@/lib/editor/screen";
+import { DEFAULT_SETTINGS, SCREEN_LIMITS } from "@/lib/editor/settings";
 
 /** Largest matrix shown in full; bigger ones show their top-left corner. */
 const MAX_MATRIX = 8;
@@ -16,6 +18,9 @@ export function AlgorithmMethod({ algorithm }: { algorithm: AlgorithmId }) {
   }
   if (method.kind === "ordered") {
     return <MatrixDiagram matrix={method.matrix()} />;
+  }
+  if (method.kind === "screen") {
+    return <ScreenDiagram lines={method.lines} />;
   }
   return (
     <p className="text-paper-dim max-w-prose leading-relaxed">
@@ -120,36 +125,15 @@ function MatrixDiagram({ matrix }: { matrix: ThresholdMatrix }) {
 
   return (
     <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-8">
-      <table className="border-line shrink-0 border-collapse border">
-        <caption className="sr-only">
-          Threshold ranks
-          {shown < matrix.size
+      <MatrixTable
+        matrix={matrix}
+        shown={shown}
+        caption={`Threshold ranks${
+          shown < matrix.size
             ? `, top-left ${shown}×${shown} of ${matrix.size}×${matrix.size}`
-            : ""}
-        </caption>
-        <tbody>
-          {Array.from({ length: shown }, (_, y) => (
-            <tr key={y}>
-              {Array.from({ length: shown }, (_, x) => {
-                const rank = matrix.ranks[y * matrix.size + x];
-                const t = (rank + 0.5) / levels;
-                return (
-                  <td
-                    key={x}
-                    className="text-readout size-10 text-center"
-                    // Heat stays in the dark range so paper text keeps ≥ 5:1.
-                    style={{
-                      background: `rgb(236 228 214 / ${(0.04 + t * 0.32).toFixed(3)})`,
-                    }}
-                  >
-                    {rank}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            : ""
+        }`}
+      />
       <ul className="text-paper-dim flex max-w-prose list-disc flex-col gap-2 pl-5 leading-relaxed">
         <li>
           A {matrix.size}×{matrix.size} matrix of {levels} ranks is tiled across
@@ -168,5 +152,102 @@ function MatrixDiagram({ matrix }: { matrix: ThresholdMatrix }) {
         )}
       </ul>
     </div>
+  );
+}
+
+/** One cell of the default screen at 0°, ranked by the engine itself. */
+function ScreenDiagram({ lines }: { lines: boolean }) {
+  const { size, shape } = DEFAULT_SETTINGS.screen;
+  const threshold = screenThreshold(
+    { size, angle: 0 },
+    lines ? "line" : shape,
+    false,
+  );
+  const values = Array.from({ length: size * size }, (_, p) =>
+    threshold(p % size, Math.floor(p / size)),
+  );
+  // Rank = pixels that turn white before this one; ties share a rank.
+  const ranks = Uint16Array.from(values, (v) =>
+    values.reduce((count, other) => count + (other < v ? 1 : 0), 0),
+  );
+
+  return (
+    <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-8">
+      <MatrixTable
+        matrix={{ size, ranks }}
+        shown={size}
+        caption={`Threshold ranks of one ${size}×${size} ${
+          lines ? "line" : "dot"
+        } cell at 0°`}
+      />
+      <ul className="text-paper-dim flex max-w-prose list-disc flex-col gap-2 pl-5 leading-relaxed">
+        {lines ? (
+          <li>
+            The image is crossed by parallel lines {size} pixels apart; each
+            line thickens from its middle as the image gets darker, one row of
+            pixels at a time.
+          </li>
+        ) : (
+          <li>
+            The image is covered by a grid of {size}×{size} pixel cells, each
+            holding one dot that grows from its center as the image gets darker.
+            The round dot becomes a checkerboard at 50% gray, then round holes.
+          </li>
+        )}
+        <li>
+          A pixel turns white when its brightness exceeds the threshold at its
+          position; the thresholds rank pixels by their distance to the{" "}
+          {lines ? "line" : "dot"} center. Ranking pixels as they actually fall
+          on the grid keeps every gray level exact.
+        </li>
+        <li>
+          In the editor, set the {lines ? "line spacing" : "screen size"} (
+          {SCREEN_LIMITS.size.min}–{SCREEN_LIMITS.size.max} px) and the angle
+          {lines ? "" : ", and pick round, square or diamond dots"}. With dots
+          lighter than the background, the {lines ? "lines" : "dots"} mark the
+          light areas instead.
+        </li>
+      </ul>
+    </div>
+  );
+}
+
+function MatrixTable({
+  matrix,
+  shown,
+  caption,
+}: {
+  matrix: ThresholdMatrix;
+  shown: number;
+  caption: string;
+}) {
+  const levels = matrix.size * matrix.size;
+
+  return (
+    <table className="border-line shrink-0 border-collapse border">
+      <caption className="sr-only">{caption}</caption>
+      <tbody>
+        {Array.from({ length: shown }, (_, y) => (
+          <tr key={y}>
+            {Array.from({ length: shown }, (_, x) => {
+              const rank = matrix.ranks[y * matrix.size + x];
+              const t = (rank + 0.5) / levels;
+              return (
+                <td
+                  key={x}
+                  className="text-readout size-10 text-center"
+                  // Heat stays in the dark range so paper text keeps ≥ 5:1.
+                  style={{
+                    background: `rgb(236 228 214 / ${(0.04 + t * 0.32).toFixed(3)})`,
+                  }}
+                >
+                  {rank}
+                </td>
+              );
+            })}
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
