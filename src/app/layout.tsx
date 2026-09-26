@@ -10,16 +10,19 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
+// Only small readouts (years, frame numbers) use it: not worth a preload.
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  preload: false,
 });
 
 // Display serif; the optical-size axis keeps large headlines crisp.
+// Upright only: the site never sets italic (it would cost another ~140 KB).
 const newsreader = Newsreader({
   variable: "--font-newsreader",
   subsets: ["latin"],
-  style: ["normal", "italic"],
+  style: ["normal"],
   axes: ["opsz"],
 });
 
