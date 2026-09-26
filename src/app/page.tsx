@@ -78,7 +78,7 @@ const USE_CASES: {
     ],
   },
   {
-    title: "Laser engraving & plotters",
+    title: "Laser engraving",
     text: "Engravers burn dots, not grays. Floyd–Steinberg, Atkinson or Jarvis give pure black-and-white PNGs.",
     image: {
       src: getAlgorithm("atkinson")?.preview ?? "",
@@ -95,7 +95,7 @@ const USE_CASES: {
   },
   {
     title: "Posters, covers & social",
-    text: "A printed, retro texture for album art, posters and posts, sized for sharing.",
+    text: "A printed, retro texture for album art, posters and posts. Save it up to ×8 with every pixel crisp, or on a transparent background to lay over your own artwork.",
     image: paletteThumbnail("zx-spectrum"),
     links: [{ label: "Try it with a sample", href: SAMPLE_LINK }],
   },
