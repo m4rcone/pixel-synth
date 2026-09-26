@@ -1,6 +1,7 @@
 "use client";
 
 import { Pipette, Plus, SwatchBook, X } from "lucide-react";
+import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { useEditorActions, useEditorState } from "@/contexts/editor-context";
 import type { ColorSettings } from "@/lib/editor/settings";
@@ -27,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PaletteImport } from "./palette-import";
 import { SliderField } from "./slider-field";
 import { ToneControls } from "./tone-controls";
 
@@ -102,6 +104,8 @@ function PaletteControls({
   const { status, settings, resultPalette } = useEditorState();
   const { update, commit } = useEditorActions();
   const { color } = settings;
+  // Announces the last import; cleared once the colors are edited.
+  const [imported, setImported] = useState("");
 
   // Colors to show: the preset, the custom list, or what the last render
   // extracted from the image.
@@ -122,6 +126,7 @@ function PaletteControls({
           value={color.palette}
           onValueChange={(id) => {
             if (!isPaletteId(id)) return;
+            setImported("");
             setColor({ palette: id, match: defaultMatch(id) });
           }}
           disabled={disabled}
@@ -183,10 +188,14 @@ function PaletteControls({
         <CustomPaletteEditor
           colors={color.custom}
           disabled={disabled}
-          onChange={(custom) =>
-            update(({ color }) => ({ color: { ...color, custom } }))
-          }
-          onCommit={(custom) => setColor({ custom })}
+          onChange={(custom) => {
+            setImported("");
+            update(({ color }) => ({ color: { ...color, custom } }));
+          }}
+          onCommit={(custom) => {
+            setImported("");
+            setColor({ custom });
+          }}
           render={status === "dithered" ? () => commit() : undefined}
         />
       )}
@@ -205,34 +214,59 @@ function PaletteControls({
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {color.palette !== "extracted" && (
-          <Button
-            variant="outline"
-            size="sm"
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-wrap gap-2">
+          {color.palette !== "extracted" && (
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={disabled}
+              onClick={() => {
+                setImported("");
+                setColor({ palette: "extracted", match: "color" });
+              }}
+            >
+              <Pipette aria-hidden="true" />
+              Extract from image
+            </Button>
+          )}
+          {color.palette !== "custom" && (
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={disabled || shown.length < MIN_PALETTE_COLORS}
+              onClick={() =>
+                setColor({
+                  palette: "custom",
+                  custom: shown.slice(0, MAX_PALETTE_COLORS),
+                })
+              }
+            >
+              <SwatchBook aria-hidden="true" />
+              Edit colors
+            </Button>
+          )}
+          <PaletteImport
             disabled={disabled}
-            onClick={() => setColor({ palette: "extracted", match: "color" })}
-          >
-            <Pipette aria-hidden="true" />
-            Extract from image
-          </Button>
-        )}
-        {color.palette !== "custom" && (
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={disabled || shown.length < MIN_PALETTE_COLORS}
-            onClick={() =>
+            onImport={({ colors, name, found }) => {
               setColor({
                 palette: "custom",
-                custom: shown.slice(0, MAX_PALETTE_COLORS),
-              })
-            }
-          >
-            <SwatchBook aria-hidden="true" />
-            Edit colors
-          </Button>
-        )}
+                custom: colors,
+                match: defaultMatch("custom"),
+              });
+              setImported(
+                `Imported ${colors.length} colors${name ? ` from ${name}` : ""}.` +
+                  (found > colors.length
+                    ? ` Kept the first ${colors.length} of ${found}.`
+                    : ""),
+              );
+            }}
+          />
+        </div>
+        {/* Always rendered, so screen readers track it before a message. */}
+        <p role="status" className="text-paper-dim text-xs">
+          {imported}
+        </p>
       </div>
     </div>
   );
