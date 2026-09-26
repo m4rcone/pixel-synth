@@ -200,15 +200,6 @@ export default function HomePage() {
             <Link href="/editor" className={navLink}>
               Editor
             </Link>
-            <a
-              href={siteConfig.links.repository}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${navLink} hidden sm:inline-block`}
-            >
-              GitHub
-              <span className="sr-only"> (opens in a new tab)</span>
-            </a>
           </nav>
         </header>
 
