@@ -7,7 +7,10 @@ if (process.env.VERCEL_PREVIEW_COMMENTS_ENABLED === "1") {
 }
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    // 95 keeps smooth gradients (the source sphere) free of WebP blocking.
+    qualities: [75, 95],
+  },
 };
 
 export default nextConfig;

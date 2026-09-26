@@ -275,7 +275,9 @@ export default function HomePage() {
                     href={`/palettes#palette-${id}`}
                     className="group focus-visible:ring-safelight focus-visible:ring-offset-ink flex flex-col gap-2 rounded-sm focus-visible:ring-2 focus-visible:ring-offset-4 focus-visible:outline-none"
                   >
-                    {/* Downscaled below 480 px wide: smooth, not pixelated. */}
+                    {/* Downscaled below 480 px wide: smooth, not pixelated.
+                        Stays PNG: dithered noise compresses better lossless
+                        than as a lossy WebP. */}
                     <Image
                       src={palettePreview(id)}
                       alt=""

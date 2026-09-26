@@ -128,7 +128,7 @@ export function DitherSpecimen() {
                 src={s.preview}
                 alt=""
                 fill
-                unoptimized
+                sizes="48px"
                 className="object-cover"
               />
             </button>

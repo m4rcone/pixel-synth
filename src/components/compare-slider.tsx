@@ -68,7 +68,9 @@ export function CompareSlider({
         alt={before.alt}
         width={250}
         height={250}
-        unoptimized
+        // Continuous-tone PNG: served as WebP (≈ 3 KB instead of 112 KB).
+        sizes="(max-width: 480px) 100vw, 424px"
+        quality={95}
         priority
         draggable={false}
         className="absolute inset-0 size-full object-cover"
