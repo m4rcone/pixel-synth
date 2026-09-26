@@ -1,6 +1,7 @@
 import { isAlgorithmId } from "@/lib/algorithms";
 import {
   isPaletteId,
+  resolvePaletteId,
   MAX_PALETTE_COLORS,
   MIN_PALETTE_COLORS,
 } from "@/lib/palettes";
@@ -204,9 +205,9 @@ export function decodeSettings(code: string): SharedSettings | null {
   if (isObject(data.color)) {
     const { color } = data;
     settings.color.mode = oneOf(color.mode, COLOR_MODES) ?? base.color.mode;
-    if (typeof color.palette === "string" && isPaletteId(color.palette)) {
-      settings.color.palette = color.palette;
-    }
+    const palette =
+      typeof color.palette === "string" && resolvePaletteId(color.palette);
+    if (palette && isPaletteId(palette)) settings.color.palette = palette;
     settings.color.match =
       oneOf(color.match, ["color", "brightness"] as const) ?? base.color.match;
     const extractCount = number(

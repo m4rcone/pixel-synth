@@ -319,13 +319,13 @@ export const PALETTE_PRESETS = [
     colors: ["#f2ede4", "#ff48b0", "#0078bf", "#000000"],
   },
   {
-    id: "darkroom",
-    name: "Darkroom",
+    id: "enhance",
+    name: "Enhance",
     description:
-      "PixelSynth’s own colors: darkroom black, safelight red and paper.",
+      "PixelSynth’s own colors: screen black, two scan blues and the reticle yellow, which only lands on warm tones.",
     group: "PixelSynth",
-    match: "brightness",
-    colors: ["#120d0c", "#ee5140", "#ece4d6"],
+    match: "color",
+    colors: ["#05080d", "#7b9cbc", "#cfe6ff", "#ffd23f"],
   },
 ] as const satisfies readonly PalettePreset[];
 
@@ -363,6 +363,17 @@ const presets = new Map<string, PalettePreset>(
 
 export function getPalettePreset(id: string): PalettePreset | undefined {
   return presets.get(id);
+}
+
+/** Retired palette ids and their replacements, so old links keep working. */
+const PALETTE_ALIASES: Record<string, PaletteId> = {
+  // The old identity's palette, replaced with the new one's.
+  darkroom: "enhance",
+};
+
+/** The current id for `id`: itself, or what replaced a retired one. */
+export function resolvePaletteId(id: string): string {
+  return PALETTE_ALIASES[id] ?? id;
 }
 
 export function isPaletteId(id: string): id is PaletteId {

@@ -337,6 +337,16 @@ test("?palette= switches to palette mode with that palette", async ({
   );
 });
 
+test("?palette=darkroom opens its replacement, Enhance", async ({ page }) => {
+  await page.goto("/editor?palette=darkroom&sample=1");
+  await expect(page.getByRole("combobox", { name: "Palette" })).toContainText(
+    "Enhance",
+  );
+  await expect(
+    page.getByRole("button", { name: "Color", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+});
+
 test("palette cards open the editor with that palette", async ({ page }) => {
   await page.goto("/palettes");
   await page.waitForLoadState("networkidle");

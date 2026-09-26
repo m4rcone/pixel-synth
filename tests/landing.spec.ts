@@ -12,7 +12,7 @@ test("every internal landing link resolves", async ({ page, request }) => {
     expect.arrayContaining([
       "/editor?sample=1&algorithm=floyd-steinberg",
       "/algorithms/void-and-cluster",
-      "/palettes#palette-darkroom",
+      "/palettes#palette-enhance",
       "/palettes#palette-pico8",
       "/algorithms/clustered-dot-halftone-ordered",
       "/algorithms/blue-noise",
