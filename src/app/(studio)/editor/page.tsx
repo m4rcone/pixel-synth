@@ -5,7 +5,7 @@ import { GlobalHeader } from "@/components/global-header";
 import { Canvas } from "@/components/editor/canvas";
 import { CanvasToolbar } from "@/components/editor/canvas-toolbar";
 import { ControlPanel } from "@/components/editor/control-panel";
-import { AlgorithmFromUrl } from "@/components/editor/algorithm-from-url";
+import { SettingsFromUrl } from "@/components/editor/settings-from-url";
 import { ImageDropzone } from "@/components/editor/image-dropzone";
 import { ImageLoadError, loadImageFile } from "@/lib/editor/load-image";
 import { useEditorActions, useEditorState } from "@/contexts/editor-context";
@@ -50,7 +50,7 @@ export default function EditorPage() {
   return (
     <>
       <Suspense fallback={null}>
-        <AlgorithmFromUrl />
+        <SettingsFromUrl />
       </Suspense>
       <GlobalHeader page="Editor" />
       <h1 tabIndex={-1} className="sr-only">

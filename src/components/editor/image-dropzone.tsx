@@ -1,7 +1,7 @@
 "use client";
 
 import { type ChangeEvent, type DragEvent, useRef, useState } from "react";
-import { ImageUp } from "lucide-react";
+import { ImageUp, LoaderCircle, Sunset } from "lucide-react";
 import { useEditorActions } from "@/contexts/editor-context";
 import {
   ImageLoadError,
@@ -9,12 +9,15 @@ import {
   SUPPORTED_FORMATS_LABEL,
   SUPPORTED_IMAGE_TYPES,
 } from "@/lib/editor/load-image";
+import { SAMPLE_IMAGE } from "@/lib/samples";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export function ImageDropzone() {
   const { load, setError } = useEditorActions();
   const dragDepth = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [loadingSample, setLoadingSample] = useState(false);
 
   async function openFile(file: File) {
     try {
@@ -25,6 +28,25 @@ export function ImageDropzone() {
           ? error.message
           : "Could not open that image.",
       );
+    }
+  }
+
+  /** Loads the bundled sample through the same path as an upload. */
+  async function openSample() {
+    setLoadingSample(true);
+    try {
+      const response = await fetch(SAMPLE_IMAGE.src);
+      if (!response.ok) throw new Error(String(response.status));
+      const blob = await response.blob();
+      await openFile(
+        new File([blob], SAMPLE_IMAGE.name, { type: blob.type || "image/png" }),
+      );
+    } catch {
+      setError(
+        "Couldn’t load the sample image. Check your connection and try again.",
+      );
+    } finally {
+      setLoadingSample(false);
     }
   }
 
@@ -55,7 +77,7 @@ export function ImageDropzone() {
   }
 
   return (
-    <div className="relative flex h-[300px] items-center justify-center px-6 py-4 md:h-[500px] lg:h-full">
+    <div className="relative flex min-h-[420px] items-center justify-center px-6 py-8 md:min-h-[500px] lg:h-full">
       <div className="relative w-full max-w-md">
         {/* The label wraps the visually hidden input, so it is the click target. */}
         <label
@@ -107,6 +129,22 @@ export function ImageDropzone() {
         >
           {SUPPORTED_FORMATS_LABEL} · Processed locally
         </p>
+
+        <div className="mt-6 flex flex-col items-center gap-3">
+          <span className="text-paper-dim text-sm">or</span>
+          <Button
+            variant="outline"
+            onClick={openSample}
+            disabled={loadingSample}
+          >
+            {loadingSample ? (
+              <LoaderCircle className="animate-spin" aria-hidden="true" />
+            ) : (
+              <Sunset aria-hidden="true" />
+            )}
+            {loadingSample ? "Loading sample…" : "Try a sample image"}
+          </Button>
+        </div>
       </div>
     </div>
   );
