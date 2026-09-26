@@ -170,6 +170,21 @@ test.describe("accessibility", () => {
     await expectNoAccessibilityViolations(page);
   });
 
+  test("the palette import popover has no axe violations", async ({ page }) => {
+    await page.goto("/editor");
+    await uploadTinyImage(page);
+    await page.getByRole("button", { name: "Palette", exact: true }).click();
+    await page.getByRole("button", { name: "Import", exact: true }).click();
+    const dialog = page.getByRole("dialog", { name: "Import a palette" });
+    await expect(dialog.getByLabel("Colors")).toBeFocused();
+    // An error state too: the alert and the invalid field.
+    await dialog.getByLabel("Colors").fill("no colors");
+    await dialog.getByRole("button", { name: "Import colors" }).click();
+    await expect(dialog.getByRole("alert")).toBeVisible();
+    await page.waitForTimeout(400);
+    await expectNoAccessibilityViolations(page);
+  });
+
   test("slider values can be reset from the keyboard", async ({ page }) => {
     await page.goto("/editor");
     await uploadTinyImage(page);

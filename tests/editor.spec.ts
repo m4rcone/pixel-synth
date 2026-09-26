@@ -245,6 +245,44 @@ test("custom palette colors can be added and removed", async ({ page }) => {
   await expect(page.getByLabel(/^Color \d+$/)).toHaveCount(16);
 });
 
+test("a palette can be imported from pasted text or a file", async ({
+  page,
+}) => {
+  await page.goto("/editor");
+  await upload(page);
+  await page.getByRole("button", { name: "Palette", exact: true }).click();
+
+  await page.getByRole("button", { name: "Import", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Import a palette" });
+  await dialog.getByLabel("Colors").fill("nothing here");
+  await dialog.getByRole("button", { name: "Import colors" }).click();
+  await expect(dialog.getByRole("alert")).toContainText("No colors found");
+
+  await dialog.getByLabel("Colors").fill("#1a1c2c, #5d275d, #b13e53");
+  await dialog.getByRole("button", { name: "Import colors" }).click();
+  await expect(dialog).toBeHidden();
+  await expect(page.getByRole("combobox", { name: "Palette" })).toContainText(
+    "Custom",
+  );
+  await expect(page.getByLabel(/^Color \d+$/)).toHaveCount(3);
+  await expect(page.getByLabel("Color 2", { exact: true })).toHaveValue(
+    "#5d275d",
+  );
+  await expect(page.getByText("Imported 3 colors.")).toBeVisible();
+
+  await page.getByRole("button", { name: "Import", exact: true }).click();
+  await dialog.locator('input[type="file"]').setInputFiles({
+    name: "sweetie.gpl",
+    mimeType: "text/plain",
+    buffer: Buffer.from(
+      "GIMP Palette\nName: Sweetie\n#\n26 28 44\n93 39 93\n177 62 83\n239 125 87\n",
+    ),
+  });
+  await expect(dialog).toBeHidden();
+  await expect(page.getByLabel(/^Color \d+$/)).toHaveCount(4);
+  await expect(page.getByText("Imported 4 colors from Sweetie.")).toBeVisible();
+});
+
 test("'None' is offered as a no-dithering choice", async ({ page }) => {
   await page.goto("/editor");
   await upload(page);
