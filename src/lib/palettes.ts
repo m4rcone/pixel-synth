@@ -322,10 +322,12 @@ export const PALETTE_PRESETS = [
     id: "enhance",
     name: "Enhance",
     description:
-      "PixelSynth’s own colors: screen black, two scan blues and the reticle yellow, which only lands on warm tones.",
+      "PixelSynth’s own colors: screen black, three scan blues and the reticle yellow, which only lands on warm tones.",
     group: "PixelSynth",
     match: "color",
-    colors: ["#05080d", "#7b9cbc", "#cfe6ff", "#ffd23f"],
+    // The deep blue fills the gap between black (L* 2) and the dim blue
+    // (L* 63), so shadows and midtones don't dither from black alone.
+    colors: ["#05080d", "#2a4260", "#7b9cbc", "#cfe6ff", "#ffd23f"],
   },
 ] as const satisfies readonly PalettePreset[];
 
