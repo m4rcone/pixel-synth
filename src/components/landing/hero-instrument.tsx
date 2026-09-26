@@ -8,7 +8,10 @@ import { CompareSlider } from "@/components/compare-slider";
 /** Real pixels between two ruler ticks. */
 const TICK = 20;
 
-export type HeroAlgorithmInfo = { id: string; name: string };
+type Size = { width: number; height: number };
+
+/** An algorithm in the stepper, with the processing size of its images. */
+export type HeroAlgorithmInfo = { id: string; name: string; size: Size };
 
 /** Display facts about a hero palette; `param` is null for 1-bit. */
 export type HeroPaletteInfo = {
@@ -17,8 +20,6 @@ export type HeroPaletteInfo = {
   colors: number;
   param: string | null;
 };
-
-type Size = { width: number; height: number };
 
 const pad = (value: number, length = 3) => String(value).padStart(length, "0");
 
@@ -37,7 +38,6 @@ export function HeroInstrument({
   algorithms,
   palettes,
   variantPattern,
-  size,
   original,
 }: {
   // Everything comes in as data so the client bundle doesn't carry the
@@ -46,7 +46,6 @@ export function HeroInstrument({
   palettes: HeroPaletteInfo[];
   /** Image path with `{algorithm}` and `{palette}` placeholders. */
   variantPattern: string;
-  size: Size;
   original: { src: string };
 }) {
   const [algorithmIndex, setAlgorithmIndex] = useState(0);
@@ -55,6 +54,7 @@ export function HeroInstrument({
 
   const algorithm = algorithms[algorithmIndex];
   const palette = palettes[paletteIndex];
+  const { size } = algorithm;
   const variant = (a: number, p: number) =>
     variantPattern
       .replace("{algorithm}", algorithms[wrap(a, algorithms.length)].id)

@@ -68,6 +68,19 @@ export const HERO_PALETTES: readonly string[] = [
   ...PALETTE_PRESETS.map((palette) => palette.id),
 ];
 export const HERO_SIZE = { width: 240, height: 160 } as const;
+/**
+ * Halftone screens are measured in dots, not pixels: at 240 px no screen
+ * size forms round dots. Screen algorithms render at twice the size with
+ * the editor's default screen.
+ */
+export const HERO_SCREEN_SIZE = { width: 480, height: 320 } as const;
+
+/** Processing size of an algorithm's hero variants. */
+export function heroSize(algorithm: string) {
+  return ALGORITHMS.find((a) => a.slug === algorithm)?.category === "screen"
+    ? HERO_SCREEN_SIZE
+    : HERO_SIZE;
+}
 
 /** Image path pattern of a hero variant, for code that can't call `heroVariant`. */
 export const HERO_VARIANT_PATTERN = "/landing/sunset-{algorithm}-{palette}.png";

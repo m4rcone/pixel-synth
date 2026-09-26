@@ -38,8 +38,8 @@ import {
   HERO_ALGORITHMS,
   HERO_ORIGINAL,
   HERO_PALETTES,
-  HERO_SIZE,
   HERO_VARIANT_PATTERN,
+  heroSize,
   heroVariant,
   PALETTE_PREVIEW_SIZE,
   palettePreview,
@@ -67,6 +67,7 @@ const algorithmName = (slug: string) => getAlgorithm(slug)?.shortName ?? slug;
 const HERO_ALGORITHM_LIST: HeroAlgorithmInfo[] = HERO_ALGORITHMS.map((id) => ({
   id,
   name: algorithmName(id),
+  size: heroSize(id),
 }));
 
 const HERO_PALETTE_LIST = HERO_PALETTES.map((id): HeroPaletteInfo => {
@@ -348,7 +349,6 @@ export default function HomePage() {
               algorithms={HERO_ALGORITHM_LIST}
               palettes={HERO_PALETTE_LIST}
               variantPattern={HERO_VARIANT_PATTERN}
-              size={HERO_SIZE}
               original={HERO_ORIGINAL}
             />
           </section>
