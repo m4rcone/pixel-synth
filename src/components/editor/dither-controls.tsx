@@ -38,6 +38,12 @@ export function DitherControls() {
   const disabled = status === "empty";
   // Algorithm and scale only affect the output once dithering is applied.
   const apply = status === "dithered" ? commit : update;
+  const errorDiffusion =
+    settings.algorithm !== "none" &&
+    getAlgorithm(settings.algorithm)?.category === "error-diffusion";
+  // Error diffusion reacts to every pixel, so small changes between frames
+  // ripple across the whole pattern.
+  const shimmers = !!source?.animation && errorDiffusion;
   const sourceWidth = source?.pixels.width ?? 0;
   const sourceHeight = source?.pixels.height ?? 0;
 
@@ -66,7 +72,11 @@ export function DitherControls() {
           }}
           disabled={disabled}
         >
-          <SelectTrigger id="algorithm" className="w-full">
+          <SelectTrigger
+            id="algorithm"
+            aria-describedby={shimmers ? "algorithm-hint" : undefined}
+            className="w-full"
+          >
             <SelectValue placeholder="Select an algorithm" />
           </SelectTrigger>
           <SelectContent>
@@ -86,24 +96,32 @@ export function DitherControls() {
             </SelectGroup>
           </SelectContent>
         </Select>
+        {shimmers && (
+          <p
+            id="algorithm-hint"
+            className="text-paper-dim text-xs leading-relaxed"
+          >
+            Error diffusion can shimmer between frames; Bayer or Blue Noise stay
+            stable.
+          </p>
+        )}
       </div>
 
-      {settings.algorithm !== "none" &&
-        getAlgorithm(settings.algorithm)?.category === "error-diffusion" && (
-          <SliderField
-            id="dither-diffusion"
-            label="Error diffusion"
-            value={settings.diffusion}
-            defaultValue={DEFAULT_SETTINGS.diffusion}
-            min={0}
-            max={1}
-            step={0.01}
-            disabled={disabled}
-            format={(v) => `${Math.round(v * 100)}%`}
-            onChange={(diffusion) => update({ diffusion })}
-            onCommit={(diffusion) => apply({ diffusion })}
-          />
-        )}
+      {errorDiffusion && (
+        <SliderField
+          id="dither-diffusion"
+          label="Error diffusion"
+          value={settings.diffusion}
+          defaultValue={DEFAULT_SETTINGS.diffusion}
+          min={0}
+          max={1}
+          step={0.01}
+          disabled={disabled}
+          format={(v) => `${Math.round(v * 100)}%`}
+          onChange={(diffusion) => update({ diffusion })}
+          onCommit={(diffusion) => apply({ diffusion })}
+        />
+      )}
 
       <SliderField
         id="dither-scale"

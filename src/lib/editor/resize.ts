@@ -1,5 +1,8 @@
 import { createPixels, type Pixels } from "./pixels";
 
+/** Longest edge, in pixels, an uploaded image is scaled down to. */
+export const MAX_IMAGE_SIZE = 2000;
+
 /**
  * Downscale by area averaging (box filter): every output pixel is the
  * coverage-weighted mean of the source pixels it spans. Avoids the aliasing

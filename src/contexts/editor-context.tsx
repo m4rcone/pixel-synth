@@ -9,8 +9,10 @@ import {
   useRef,
   type ReactNode,
 } from "react";
-import type { SourceImage } from "@/lib/editor/load-image";
-import { RenderClient } from "@/lib/editor/render-client";
+import { useCanvasContext } from "@/contexts/canvas-context";
+import { loadImageFile, type SourceImage } from "@/lib/editor/load-image";
+import type { Pixels } from "@/lib/editor/pixels";
+import { RenderCancelledError, RenderClient } from "@/lib/editor/render-client";
 import { DEFAULT_SETTINGS, type EditorSettings } from "@/lib/editor/settings";
 
 /**
@@ -23,12 +25,24 @@ export type EditorStatus = "empty" | "loaded" | "dithered";
 type EditorState = {
   status: EditorStatus;
   source: SourceImage | null;
-  /** Rendered image at native resolution (smaller than the source when scaled). */
+  /**
+   * Rendered image at native resolution (smaller than the source when
+   * scaled). For an animation, the frame `resultIndex`.
+   */
   result: ImageBitmap | null;
+  /** Frame of an animation that `result` shows. */
+  resultIndex: number;
+  /**
+   * Every rendered frame of a dithered animation, filled in as the frames
+   * arrive (a frame keeps its previous render until then, or is null).
+   */
+  resultFrames: (ImageBitmap | null)[] | null;
   /** Colors the last palette render used (resolves "From image"). */
   resultPalette: string[] | null;
   settings: EditorSettings;
   isRendering: boolean;
+  /** Frames rendered so far while a whole animation renders. */
+  renderProgress: { done: number; total: number } | null;
   error: string | null;
   /** Incremented to ask the provider to render with the current settings. */
   renderRequest: number;
@@ -46,7 +60,20 @@ type Action =
   | { type: "render" }
   | { type: "applyDither" }
   | { type: "renderStart" }
-  | { type: "renderDone"; result: ImageBitmap; palette: string[] | null }
+  | {
+      type: "renderDone";
+      result: ImageBitmap;
+      index: number;
+      palette: string[] | null;
+    }
+  | {
+      type: "framesRendered";
+      frames: [index: number, bitmap: ImageBitmap][];
+      /** The frame shown when the render started; it becomes `result`. */
+      shown: number;
+      palette: string[] | null;
+      progress: { done: number; total: number } | null;
+    }
   | { type: "renderFailed"; error: string }
   | { type: "setError"; error: string | null };
 
@@ -54,9 +81,12 @@ const initialState: EditorState = {
   status: "empty",
   source: null,
   result: null,
+  resultIndex: 0,
+  resultFrames: null,
   resultPalette: null,
   settings: DEFAULT_SETTINGS,
   isRendering: false,
+  renderProgress: null,
   error: null,
   renderRequest: 0,
 };
@@ -92,9 +122,11 @@ function reducer(state: EditorState, action: Action): EditorState {
         ...state,
         status: state.source ? "loaded" : "empty",
         result: null,
+        resultFrames: null,
         resultPalette: null,
         settings: keepCustomPalette(DEFAULT_SETTINGS, state.settings),
         isRendering: false,
+        renderProgress: null,
         error: null,
       };
     case "update": {
@@ -125,16 +157,51 @@ function reducer(state: EditorState, action: Action): EditorState {
         ...state,
         isRendering: false,
         result: action.result,
+        resultIndex: action.index,
         resultPalette: action.palette,
       };
+    case "framesRendered": {
+      const frames =
+        state.resultFrames?.slice() ??
+        Array<ImageBitmap | null>(
+          state.source?.animation?.frames.length ?? 0,
+        ).fill(null);
+      let { result, resultIndex } = state;
+      for (const [index, bitmap] of action.frames) {
+        frames[index] = bitmap;
+        if (index === action.shown) {
+          result = bitmap;
+          resultIndex = index;
+        }
+      }
+      return {
+        ...state,
+        result,
+        resultIndex,
+        resultFrames: frames,
+        resultPalette: action.palette,
+        isRendering: action.progress !== null,
+        renderProgress: action.progress,
+      };
+    }
     case "renderFailed":
-      return { ...state, isRendering: false, error: action.error };
+      return {
+        ...state,
+        isRendering: false,
+        renderProgress: null,
+        error: action.error,
+      };
     case "setError":
       return { ...state, error: action.error };
   }
 }
 
 type EditorActions = {
+  /**
+   * Decodes an image file for {@link EditorActions.load} (animated GIFs in
+   * the render worker). Throws an ImageLoadError with a user-facing message.
+   */
+  readImage: (file: File) => Promise<SourceImage>;
   load: (source: SourceImage) => void;
   discard: () => void;
   reset: () => void;
@@ -144,7 +211,32 @@ type EditorActions = {
   commit: (update?: SettingsUpdate) => void;
   applyDither: () => void;
   setError: (error: string | null) => void;
+  /** Encodes rendered animation frames as a GIF in the render worker. */
+  encodeGif: (
+    frames: Pixels[],
+    factor: number,
+    onProgress?: (done: number, total: number) => void,
+  ) => Promise<Uint8Array<ArrayBuffer>>;
 };
+
+/**
+ * The processed image for a frame: the still result, a dithered animation's
+ * frame, or the filter preview when it was rendered for this frame. Null
+ * when that frame has no render (yet).
+ */
+export function frameResult(
+  { source, result, resultFrames, resultIndex }: EditorState,
+  frame: number,
+): ImageBitmap | null {
+  if (!source?.animation) return result;
+  if (resultFrames) return resultFrames[frame] ?? null;
+  return resultIndex === frame ? result : null;
+}
+
+/** Playback starts paused for people who prefer reduced motion. */
+function prefersReducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
 
 const EditorStateContext = createContext<EditorState | undefined>(undefined);
 const EditorActionsContext = createContext<EditorActions | undefined>(
@@ -155,6 +247,12 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const latestRender = useRef(0);
   const renderer = useRef<RenderClient | null>(null);
+  const { frame, setFrame, playing, setPlaying } = useCanvasContext();
+  // Read when a render starts, without re-running the render effect.
+  const shownFrame = useRef(frame);
+  useEffect(() => {
+    shownFrame.current = frame;
+  }, [frame]);
 
   useEffect(() => {
     renderer.current = new RenderClient();
@@ -168,12 +266,17 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     };
 
     return {
+      readImage: (file) => loadImageFile(file, renderer.current ?? undefined),
       load: (source) => {
         cancelRenders();
+        shownFrame.current = 0;
+        setFrame(0);
+        setPlaying(!!source.animation && !prefersReducedMotion());
         dispatch({ type: "load", source });
       },
       discard: () => {
         cancelRenders();
+        setPlaying(false);
         dispatch({ type: "discard" });
       },
       reset: () => {
@@ -187,10 +290,28 @@ export function EditorProvider({ children }: { children: ReactNode }) {
           : dispatch({ type: "render" }),
       applyDither: () => dispatch({ type: "applyDither" }),
       setError: (error) => dispatch({ type: "setError", error }),
+      encodeGif: (frames, factor, onProgress) => {
+        const animation = sourceRef.current?.animation;
+        if (!animation || !renderer.current) {
+          return Promise.reject(new Error("No animation"));
+        }
+        return renderer.current.encodeGif(
+          frames,
+          animation.delays,
+          animation.loop,
+          factor,
+          onProgress,
+        );
+      },
     };
-  }, []);
+  }, [setFrame, setPlaying]);
 
-  const { renderRequest, source, status, settings, result } = state;
+  const { renderRequest, source, status, settings, result, resultFrames } =
+    state;
+  const sourceRef = useRef(source);
+  useEffect(() => {
+    sourceRef.current = source;
+  }, [source]);
 
   // Restore and persist the custom palette (per browser, best effort).
   useEffect(() => {
@@ -222,14 +343,45 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     }
   }, [customPalette]);
 
-  // The worker keeps its own copy of the source pixels.
+  // The worker keeps its own copy of the source pixels (every frame).
   useEffect(() => {
-    if (source) renderer.current?.setSource(source.pixels);
-    return () => source?.bitmap.close();
+    if (!source) return;
+    renderer.current?.setSource(source.animation?.frames ?? [source.pixels]);
+    return () => {
+      source.bitmap.close();
+      source.animation?.bitmaps.forEach((bitmap) => bitmap.close());
+    };
   }, [source]);
 
-  // Free the previous result's GPU/bitmap memory once it's replaced.
-  useEffect(() => () => result?.close(), [result]);
+  // Free rendered bitmaps' GPU memory once no state refers to them (an
+  // animation's `result` is also one of its `resultFrames`).
+  const liveBitmaps = useRef(new Set<ImageBitmap>());
+  useEffect(() => {
+    const live = new Set<ImageBitmap>();
+    if (result) live.add(result);
+    resultFrames?.forEach((bitmap) => bitmap && live.add(bitmap));
+    liveBitmaps.current.forEach((bitmap) => {
+      if (!live.has(bitmap)) bitmap.close();
+    });
+    liveBitmaps.current = live;
+  }, [result, resultFrames]);
+
+  // Before dithering, an animation previews filters on the paused frame
+  // only: render the newly shown frame when it changes.
+  const { resultIndex } = state;
+  useEffect(() => {
+    if (
+      status === "loaded" &&
+      source?.animation &&
+      !playing &&
+      result &&
+      resultIndex !== frame
+    ) {
+      dispatch({ type: "render" });
+    }
+    // Only a frame change (or pausing) asks for a new preview.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [frame, playing]);
 
   // Renders run after the state update that requested them, so they always
   // see the latest settings. Only the most recent render may publish a result.
@@ -237,29 +389,92 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     if (renderRequest === 0 || !source || status === "empty") return;
 
     const id = ++latestRender.current;
+    const client = renderer.current!;
+    const animation = source.animation;
+    const shown = animation ? shownFrame.current : 0;
+    const isLatest = () => id === latestRender.current;
+    const failed = (error: unknown) => {
+      if (error instanceof RenderCancelledError) return;
+      console.error(error);
+      if (isLatest()) {
+        dispatch({
+          type: "renderFailed",
+          error: "Rendering failed. Try a smaller image or another setting.",
+        });
+      }
+    };
     dispatch({ type: "renderStart" });
 
-    renderer
-      .current!.render(settings, status === "dithered")
-      .then(async ({ pixels: { data, width, height }, palette }) => ({
-        bitmap: await createImageBitmap(new ImageData(data, width, height)),
+    // A still image, or one frame of an animation before dithering.
+    if (!animation || status !== "dithered") {
+      client
+        .render(settings, status === "dithered", shown)
+        .then(async ({ pixels, palette }) => ({
+          bitmap: await toBitmap(pixels),
+          palette,
+        }))
+        .then(({ bitmap, palette }) => {
+          if (isLatest()) {
+            dispatch({
+              type: "renderDone",
+              result: bitmap,
+              index: shown,
+              palette,
+            });
+          } else {
+            bitmap.close();
+          }
+        })
+        .catch(failed);
+      return;
+    }
+
+    // The whole animation, shown frame first so it updates at once. Frames
+    // are published in batches to keep React renders few.
+    const order = [shown];
+    for (let i = 0; i < animation.frames.length; i++) {
+      if (i !== shown) order.push(i);
+    }
+    let batch: [number, ImageBitmap][] = [];
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let palette: string[] | null = null;
+    let progress = { done: 0, total: order.length };
+    let conversions = Promise.resolve();
+    const publish = (complete: boolean) => {
+      clearTimeout(timer);
+      timer = undefined;
+      const frames = batch;
+      batch = [];
+      if (!isLatest()) return frames.forEach(([, bitmap]) => bitmap.close());
+      dispatch({
+        type: "framesRendered",
+        frames,
+        shown,
         palette,
-      }))
-      .then(({ bitmap, palette }) => {
-        if (id === latestRender.current) {
-          dispatch({ type: "renderDone", result: bitmap, palette });
-        } else {
-          bitmap.close();
-        }
+        progress: complete ? null : progress,
+      });
+    };
+
+    client
+      .renderFrames(settings, true, order, (index, result, done, total) => {
+        palette = result.palette;
+        // Chained so frames publish in the order they were rendered.
+        conversions = conversions.then(async () => {
+          batch.push([index, await toBitmap(result.pixels)]);
+          progress = { done, total };
+          if (done === 1) publish(false);
+          else timer ??= setTimeout(() => publish(false), FRAME_BATCH_MS);
+        });
       })
+      .then(() => conversions)
+      .then(() => publish(true))
       .catch((error: unknown) => {
-        console.error(error);
-        if (id === latestRender.current) {
-          dispatch({
-            type: "renderFailed",
-            error: "Rendering failed. Try a smaller image or another setting.",
-          });
-        }
+        void conversions.then(() => {
+          clearTimeout(timer);
+          batch.forEach(([, bitmap]) => bitmap.close());
+          batch = [];
+        });
+        failed(error);
       });
     // Only an explicit render request triggers a render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -272,6 +487,13 @@ export function EditorProvider({ children }: { children: ReactNode }) {
       </EditorStateContext.Provider>
     </EditorActionsContext.Provider>
   );
+}
+
+/** How often frames of an animation render are published, in ms. */
+const FRAME_BATCH_MS = 150;
+
+function toBitmap({ data, width, height }: Pixels) {
+  return createImageBitmap(new ImageData(data, width, height));
 }
 
 export function useEditorState() {

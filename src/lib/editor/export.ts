@@ -31,3 +31,38 @@ export function defaultExportFactor(
       .find((k) => longest * k <= 1000 && exportFits(width, height, k)) ?? 1
   );
 }
+
+/**
+ * Most output pixels (frames × width × height once enlarged) an animated
+ * GIF export may have. Dithered frames compress poorly, so this is also
+ * roughly the largest file, in bytes.
+ */
+export const MAX_GIF_EXPORT_PIXELS = 100_000_000;
+
+export function gifExportFits(
+  width: number,
+  height: number,
+  frames: number,
+  factor: number,
+) {
+  return frames * width * height * factor * factor <= MAX_GIF_EXPORT_PIXELS;
+}
+
+/**
+ * Suggested GIF size: the largest factor that keeps the longest side
+ * ≤ ~800 px (a GIF grows with area × frames).
+ */
+export function defaultGifFactor(
+  width: number,
+  height: number,
+  frames: number,
+): ExportFactor {
+  const longest = Math.max(width, height);
+  return (
+    [...EXPORT_FACTORS]
+      .reverse()
+      .find(
+        (k) => longest * k <= 800 && gifExportFits(width, height, frames, k),
+      ) ?? 1
+  );
+}

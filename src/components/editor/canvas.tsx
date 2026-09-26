@@ -13,7 +13,12 @@ import {
   ZOOM_STEP,
   type Point,
 } from "@/contexts/canvas-context";
-import { useEditorState } from "@/contexts/editor-context";
+import { frameResult, useEditorState } from "@/contexts/editor-context";
+import {
+  frameLabel,
+  useAnimationControls,
+  useAnimationPlayback,
+} from "@/hooks/use-animation-playback";
 
 type CanvasProps = {
   onStatusChange?: (message: string) => void;
@@ -53,11 +58,28 @@ export function Canvas({ onStatusChange }: CanvasProps) {
     split,
     setSplit,
   } = useCanvasContext();
-  const { source, result } = useEditorState();
+  const state = useEditorState();
+  const { source, result, status } = state;
+  useAnimationPlayback();
+  const {
+    animation,
+    count,
+    frame: frameIndex,
+    playing,
+    togglePlaying,
+    step: stepFrame,
+  } = useAnimationControls();
+  // The shown frame, before and after. An animation previews filters on
+  // the paused frame only, so it plays unfiltered before dithering.
+  const original = animation ? animation.bitmaps[frameIndex] : source?.bitmap;
+  const processed =
+    animation && status !== "dithered" && playing
+      ? null
+      : frameResult(state, frameIndex);
   const splitting = split !== null && !!result && !!source;
   const image = splitting
-    ? result
-    : (showProcessed && result) || source?.bitmap || null;
+    ? (processed ?? original)
+    : (showProcessed && processed) || original || null;
 
   // Layout always uses the source's size: a result rendered at a lower
   // processing scale is stretched over the same rectangle, so toggling and
@@ -114,7 +136,7 @@ export function Canvas({ onStatusChange }: CanvasProps) {
       ctx.rect(0, 0, dividerX, view.height);
       ctx.clip();
       ctx.clearRect(0, 0, dividerX, view.height);
-      draw(source.bitmap);
+      draw(original!);
       ctx.restore();
       ctx.fillStyle = "rgb(236 228 214 / 0.9)";
       ctx.fillRect(dividerX - 0.5, 0, 1, view.height);
@@ -124,7 +146,7 @@ export function Canvas({ onStatusChange }: CanvasProps) {
     }
     // frame is derived from source.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [image, view, scale, position, splitting, split, source]);
+  }, [image, view, scale, position, splitting, split, source, original]);
 
   /** Zoom by `factor`, keeping the point under (x, y) fixed on screen. */
   function zoomAround(factor: number, x: number, y: number) {
@@ -251,6 +273,19 @@ export function Canvas({ onStatusChange }: CanvasProps) {
         resetView();
         onStatusChange?.("Canvas view reset.");
         break;
+      case ",":
+      case ".": {
+        if (!animation) return;
+        const next = stepFrame(event.key === "." ? 1 : -1);
+        onStatusChange?.(`${frameLabel(next, count)}.`);
+        break;
+      }
+      case "k":
+      case "K":
+        if (!animation) return;
+        togglePlaying();
+        onStatusChange?.(playing ? "Animation paused." : "Animation playing.");
+        break;
       case "[":
       case "]": {
         if (!splitting) return;
@@ -297,6 +332,8 @@ export function Canvas({ onStatusChange }: CanvasProps) {
         to pan farther, plus or equals to zoom in, minus to zoom out, and 0 to
         reset the view. In split view, the left and right square brackets move
         the divider.
+        {animation &&
+          " In an animation, comma and period step one frame back or forward, and K plays or pauses."}
       </p>
       <canvas
         ref={canvasRef}

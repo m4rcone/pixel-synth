@@ -110,7 +110,10 @@ const STEPS = [
     title: "Choose the look",
     text: "An algorithm, 1-bit or a palette, filters and size.",
   },
-  { title: "Export", text: "Crisp PNG at ×1 to ×8, no watermark." },
+  {
+    title: "Export",
+    text: "Crisp PNG or animated GIF at ×1 to ×8, no watermark.",
+  },
 ];
 
 const homeStructuredData = [
@@ -144,7 +147,7 @@ const homeStructuredData = [
       `${PALETTE_PRESETS.length} color palettes`,
       "Pixel art preset",
       "Local processing, no uploads",
-      "PNG export at ×1 to ×8",
+      "PNG and animated GIF export at ×1 to ×8",
     ],
     creator: {
       "@type": "Person",

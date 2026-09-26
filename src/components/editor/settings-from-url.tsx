@@ -17,7 +17,8 @@ import { usePixelArtPreset } from "@/hooks/use-pixel-art-preset";
  * `/editor?preset=pixel-art` needs the image's size, so it waits for the
  * next image (upload, paste or sample) and then applies the whole preset.
  * `/editor?sample=1` loads the sample image once when the editor is empty,
- * so `?sample=1&preset=pixel-art` opens straight on the pixelated sample.
+ * so `?sample=1&preset=pixel-art` opens straight on the pixelated sample;
+ * `?sample=animated` loads the animated sample instead.
  * `/editor?s=<code>` (from "Share settings") applies every shared setting;
  * when the link was made after dithering, the next image is dithered too.
  */
@@ -26,7 +27,13 @@ export function SettingsFromUrl() {
   const algorithm = params.get("algorithm");
   const palette = params.get("palette");
   const preset = params.get("preset");
-  const sample = params.get("sample") === "1";
+  const sampleParam = params.get("sample");
+  const sample =
+    sampleParam === "1"
+      ? "still"
+      : sampleParam === "animated"
+        ? sampleParam
+        : null;
   const shared = params.get(SHARE_PARAM);
   const { status, source } = useEditorState();
   const { update, commit, applyDither, setError } = useEditorActions();
@@ -43,7 +50,7 @@ export function SettingsFromUrl() {
   useEffect(() => {
     if (!sample || sampleRequested.current || status !== "empty") return;
     sampleRequested.current = true;
-    void loadSample();
+    void loadSample(sample);
     // Only on arrival: a later "close image" must not reload the sample.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sample]);

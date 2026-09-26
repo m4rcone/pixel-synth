@@ -7,12 +7,13 @@ import { CanvasToolbar } from "@/components/editor/canvas-toolbar";
 import { ControlPanel } from "@/components/editor/control-panel";
 import { SettingsFromUrl } from "@/components/editor/settings-from-url";
 import { ImageDropzone } from "@/components/editor/image-dropzone";
-import { ImageLoadError, loadImageFile } from "@/lib/editor/load-image";
+import { ImageLoadError } from "@/lib/editor/load-image";
 import { useEditorActions, useEditorState } from "@/contexts/editor-context";
 
 export default function EditorPage() {
-  const { status, source, result, isRendering, error } = useEditorState();
-  const { setError, load } = useEditorActions();
+  const { status, source, result, isRendering, renderProgress, error } =
+    useEditorState();
+  const { setError, load, readImage } = useEditorActions();
   const [manualAnnouncement, setManualAnnouncement] = useState("");
 
   // Paste an image from the clipboard to start (never replaces work in progress).
@@ -25,7 +26,7 @@ export default function EditorPage() {
       if (!file) return;
       event.preventDefault();
       try {
-        load(await loadImageFile(file));
+        load(await readImage(file));
       } catch (error) {
         setError(
           error instanceof ImageLoadError
@@ -36,15 +37,21 @@ export default function EditorPage() {
     };
     window.addEventListener("paste", onPaste);
     return () => window.removeEventListener("paste", onPaste);
-  }, [status, load, setError]);
+  }, [status, load, readImage, setError]);
 
+  // Animations announce the start and end of a render, never each frame.
+  const frames = source?.animation?.frames.length;
   const announcement = isRendering
-    ? "Rendering image."
+    ? frames && status === "dithered"
+      ? "Rendering animation."
+      : "Rendering image."
     : manualAnnouncement ||
       (status === "dithered" && result
-        ? "Rendered image is ready."
+        ? frames
+          ? "Animation ready."
+          : "Rendered image is ready."
         : source
-          ? "Image uploaded. Editor controls are now available."
+          ? `${frames ? `Animated GIF loaded: ${frames} frames.` : "Image uploaded."} Editor controls are now available.`
           : "");
 
   return (
@@ -86,6 +93,7 @@ export default function EditorPage() {
             ) : (
               <Canvas onStatusChange={setManualAnnouncement} />
             )}
+            {renderProgress && <RenderProgress {...renderProgress} />}
           </div>
           <CanvasToolbar onStatusChange={setManualAnnouncement} />
         </section>
@@ -93,5 +101,29 @@ export default function EditorPage() {
         <ControlPanel className="border-line lg:w-80 lg:shrink-0 lg:border-l" />
       </div>
     </>
+  );
+}
+
+/** Slim bar over the canvas while every frame of an animation renders. */
+function RenderProgress({ done, total }: { done: number; total: number }) {
+  const label = `Rendering frame ${Math.min(total, done + 1)} of ${total}`;
+  return (
+    <div className="bg-ink/85 pointer-events-none absolute inset-x-0 top-0 flex flex-col gap-1.5 px-4 pt-2 pb-2.5">
+      <span className="text-label text-paper-dim">{label}</span>
+      <div
+        role="progressbar"
+        aria-label="Rendering animation"
+        aria-valuemin={0}
+        aria-valuemax={total}
+        aria-valuenow={done}
+        aria-valuetext={label}
+        className="bg-paper/15 h-0.5 overflow-hidden rounded-full"
+      >
+        <div
+          className="bg-safelight h-full origin-left"
+          style={{ transform: `scaleX(${done / total})` }}
+        />
+      </div>
+    </div>
   );
 }

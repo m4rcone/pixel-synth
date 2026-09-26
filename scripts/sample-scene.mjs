@@ -32,10 +32,16 @@ const SUN = { u: 0.68, v: 0.5, r: 0.075 };
 /**
  * @param {number} width
  * @param {number} height
- * @param {{ strip?: boolean }} [options] add the calibration strip (10% of the height)
+ * @param {{ strip?: boolean, sun?: number }} [options] `strip` adds the
+ *   calibration strip (10% of the height); `sun` is the sun's height (0 = top
+ *   of the scene, the horizon is at 0.66), for animating it.
  * @returns {{ data: Uint8ClampedArray, width: number, height: number }} RGBA pixels
  */
-export function makeSampleScene(width, height, { strip = true } = {}) {
+export function makeSampleScene(
+  width,
+  height,
+  { strip = true, sun = SUN.v } = {},
+) {
   const stripHeight = strip ? Math.round(height * 0.1) : 0;
   const sceneHeight = height - stripHeight;
   const aspect = width / sceneHeight;
@@ -52,7 +58,7 @@ export function makeSampleScene(width, height, { strip = true } = {}) {
     let c = mix([18, 24, 72], [60, 70, 150], v / 0.3);
     c = mix(c, [235, 120, 110], smoothstep(0.25, 0.55, v));
     c = mix(c, [255, 190, 110], smoothstep(0.5, HORIZON, v));
-    const d = Math.hypot((u - SUN.u) * aspect, v - SUN.v);
+    const d = Math.hypot((u - SUN.u) * aspect, v - sun);
     c = mix(c, [255, 215, 150], Math.exp(-((d / 0.22) ** 2)) * 0.7);
     if (d < SUN.r) c = mix([255, 250, 215], [255, 200, 90], d / SUN.r);
     return c;

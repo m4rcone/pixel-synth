@@ -3,6 +3,7 @@
 //   public/250/            algorithm previews (sphere)
 //   public/textures/       dithered headline texture
 //   public/samples/        sample image (procedural sunset + calibration strip)
+//                          and its animated version (GIF)
 //   public/palettes/       palette previews of the sample, pixel art preset
 //   src/data/sample-extracted-palette.json  colors of the "From image" preview
 //
@@ -189,6 +190,48 @@ try {
     console.log(`→ ${path}`);
   };
   write(SAMPLE_IMAGE.src, sample);
+
+  // Animated sample: the sun rises and sets once per loop. One 256-color
+  // palette for every frame, nearest color only (dithering is the
+  // editor's job).
+  const { ANIMATED_SAMPLE } = await server.ssrLoadModule("/src/lib/samples.ts");
+  const { renderAnimation } = await server.ssrLoadModule(
+    "/src/lib/editor/pipeline.ts",
+  );
+  const { encodeAnimation } = await server.ssrLoadModule(
+    "/src/lib/editor/animation.ts",
+  );
+  const sunFrames = Array.from({ length: ANIMATED_SAMPLE.frames }, (_, f) =>
+    makeSampleScene(ANIMATED_SAMPLE.width, ANIMATED_SAMPLE.height, {
+      strip: false,
+      sun: 0.52 + 0.1 * Math.cos((2 * Math.PI * f) / ANIMATED_SAMPLE.frames),
+    }),
+  );
+  const quantized = renderAnimation(
+    sunFrames,
+    {
+      ...DEFAULT_SETTINGS,
+      algorithm: "none",
+      color: {
+        ...DEFAULT_SETTINGS.color,
+        mode: "palette",
+        palette: "extracted",
+        match: "color",
+        extractCount: 256,
+      },
+    },
+    { dither: true },
+  );
+  const animatedFile = join(root, "public", ANIMATED_SAMPLE.src.slice(1));
+  writeFileSync(
+    animatedFile,
+    encodeAnimation(
+      quantized.frames,
+      sunFrames.map(() => ANIMATED_SAMPLE.delay),
+      0,
+    ),
+  );
+  console.log(`→ ${ANIMATED_SAMPLE.src}`);
 
   const previewScale = PALETTE_PREVIEW_SIZE.width / SAMPLE_IMAGE.width;
   const renderPalette = (

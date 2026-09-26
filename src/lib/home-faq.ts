@@ -1,4 +1,5 @@
-import { SUPPORTED_FORMATS_LABEL } from "@/lib/editor/load-image";
+import { EXPORT_FACTORS } from "@/lib/editor/export";
+import { SUPPORTED_FORMATS_DETAIL } from "@/lib/editor/load-image";
 
 /** Answer text, with optional internal links inside it. */
 export type FaqPart = string | { text: string; href: string };
@@ -58,7 +59,7 @@ export const HOME_FAQ: FaqEntry[] = [
   {
     question: "Which formats are supported?",
     answer: [
-      `${SUPPORTED_FORMATS_LABEL.replace(" or ", " and ")} in; PNG out, enlarged ×1 to ×8.`,
+      `${SUPPORTED_FORMATS_DETAIL.replace(" or ", " and ")} in; PNG or animated GIF out, enlarged ×1 to ×${EXPORT_FACTORS.at(-1)}.`,
     ],
   },
 ];

@@ -1,6 +1,6 @@
 # PixelSynth
 
-A free online dithering and pixel art tool. Turn any photo into dithered, 1-bit or pixel art images right in your browser: pick one of 15 dithering algorithms, dither to a classic palette like Game Boy, NES or PICO-8, tune the look, share it as a link and export a crisp PNG. No uploads, no accounts, no watermark.
+A free online dithering and pixel art tool. Turn any photo into dithered, 1-bit or pixel art images right in your browser: pick one of 15 dithering algorithms, dither to a classic palette like Game Boy, NES or PICO-8, tune the look, share it as a link and export a crisp PNG or animated GIF. No uploads, no accounts, no watermark.
 
 **Live:** https://pixelsynth.art
 
@@ -13,8 +13,9 @@ A free online dithering and pixel art tool. Turn any photo into dithered, 1-bit 
 - **1-bit dot colors**: tint the dots of a classic 1-bit dither by brightness band (shadows, midtones, highlights), optionally shaded by the original brightness.
 - **Filters**: processing scale, brightness, contrast, saturation, noise and blur; the image re-renders as soon as you release a control.
 - **Error diffusion strength**: pass on less of each pixel's rounding error for flatter, cleaner areas with fewer stray dots (error diffusion algorithms).
-- **Easy input**: drop, paste or pick a PNG, JPEG, WebP, GIF, AVIF or BMP file, or try the built-in sample image (a sunset scene with a calibration strip).
-- **Crisp export**: save a PNG at ×1, ×2, ×4 or ×8, enlarged nearest-neighbor so every pixel stays a sharp block. Dithered images are saved as indexed PNGs (1 to 8 bits per pixel, transparency kept), several times smaller than a browser's RGBA PNG with identical pixels.
+- **Easy input**: drop, paste or pick a PNG, JPEG, WebP, GIF (animated too), AVIF or BMP file, or try the built-in samples (a sunset scene with a calibration strip, and an animated sunrise).
+- **Animated GIF**: load an animated GIF (up to 300 frames), play it or step through it frame by frame, dither every frame with one shared palette and save it as an animated GIF with the original timing. Large GIFs are scaled down to fit the memory budget.
+- **Crisp export**: save a PNG (or an animated GIF) at ×1, ×2, ×4 or ×8, enlarged nearest-neighbor so every pixel stays a sharp block. Dithered images are saved as indexed PNGs (1 to 8 bits per pixel, transparency kept), several times smaller than a browser's RGBA PNG with identical pixels.
 - **Share settings**: copy a link that reopens the editor with the same look, for any image. It carries the settings only, never your image.
 - **Live before/after**: pan, zoom, pinch and compare the original with the result, with a split view or a toggle.
 - **Fast**: the pipeline runs in a Web Worker; a 4-megapixel image dithers in roughly 0.1–0.35 s on a recent laptop.
@@ -36,7 +37,7 @@ The editor accepts deep links, which can be combined:
 - `/editor?algorithm=<slug>` preselects an algorithm (e.g. `?algorithm=atkinson`)
 - `/editor?palette=<id>` switches to palette mode with that palette (e.g. `?palette=gameboy`)
 - `/editor?preset=pixel-art` applies the pixel art preset to the next image you load
-- `/editor?sample=1` opens the editor on the sample image
+- `/editor?sample=1` opens the editor on the sample image; `?sample=animated` on the animated sample
 - `/editor?s=<code>` reopens the editor with shared settings: the link icon in the control panel copies one for the current look (settings only, never the image)
 
 Every page has its own metadata, Open Graph image and structured data; `/sitemap.xml` lists all of them.

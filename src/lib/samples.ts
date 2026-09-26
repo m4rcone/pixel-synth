@@ -13,6 +13,20 @@ export const SAMPLE_IMAGE = {
   height: 1200,
 } as const;
 
+/**
+ * Animated sample: the same scene without the strip, the sun rising and
+ * setting over one seamless loop. 256 colors, not dithered.
+ */
+export const ANIMATED_SAMPLE = {
+  src: "/samples/sunset.gif",
+  name: "sunset.gif",
+  width: 360,
+  height: 240,
+  frames: 24,
+  /** Milliseconds per frame. */
+  delay: 80,
+} as const;
+
 /** Palette previews: the sample rendered at 480×320. */
 export const PALETTE_PREVIEW_SIZE = { width: 480, height: 320 } as const;
 

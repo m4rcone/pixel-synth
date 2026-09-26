@@ -5,8 +5,7 @@ import { ImageUp, LoaderCircle, Sunset } from "lucide-react";
 import { useEditorActions } from "@/contexts/editor-context";
 import {
   ImageLoadError,
-  loadImageFile,
-  SUPPORTED_FORMATS_LABEL,
+  SUPPORTED_FORMATS_DETAIL,
   SUPPORTED_IMAGE_TYPES,
 } from "@/lib/editor/load-image";
 import { cn } from "@/lib/utils";
@@ -14,14 +13,14 @@ import { useLoadSample } from "@/hooks/use-load-sample";
 import { Button } from "@/components/ui/button";
 
 export function ImageDropzone() {
-  const { load, setError } = useEditorActions();
+  const { load, readImage, setError } = useEditorActions();
   const dragDepth = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
   const { loadSample, loading: loadingSample } = useLoadSample();
 
   async function openFile(file: File) {
     try {
-      load(await loadImageFile(file));
+      load(await readImage(file));
     } catch (error) {
       setError(
         error instanceof ImageLoadError
@@ -108,22 +107,38 @@ export function ImageDropzone() {
           id="image-upload-description"
           className="text-paper-dim mt-4 text-center text-sm"
         >
-          {SUPPORTED_FORMATS_LABEL} · Processed locally
+          {SUPPORTED_FORMATS_DETAIL} · Processed locally
         </p>
 
         <div className="mt-6 flex flex-col items-center gap-3">
           <span className="text-paper-dim text-sm">or</span>
           <Button
             variant="outline"
-            onClick={loadSample}
-            disabled={loadingSample}
+            onClick={() => loadSample("still")}
+            disabled={loadingSample !== null}
           >
-            {loadingSample ? (
+            {loadingSample === "still" ? (
               <LoaderCircle className="animate-spin" aria-hidden="true" />
             ) : (
               <Sunset aria-hidden="true" />
             )}
-            {loadingSample ? "Loading sample…" : "Try a sample image"}
+            {loadingSample === "still"
+              ? "Loading sample…"
+              : "Try a sample image"}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => loadSample("animated")}
+            disabled={loadingSample !== null}
+            className="text-paper-dim hover:text-paper"
+          >
+            {loadingSample === "animated" && (
+              <LoaderCircle className="animate-spin" aria-hidden="true" />
+            )}
+            {loadingSample === "animated"
+              ? "Loading animated sample…"
+              : "Try an animated sample"}
           </Button>
         </div>
       </div>

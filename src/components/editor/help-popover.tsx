@@ -31,12 +31,16 @@ const TIPS = [
     body: "In 1-bit mode, lit dots take the color of their brightness band (highlights, midtones, shadows) on a black background. “Shade by brightness” darkens each color with the original pixel’s brightness.",
   },
   {
+    title: "Animated GIF",
+    body: "Plays in the canvas. Once dithered, every frame shares one palette; save it as an animated GIF, or the shown frame as a PNG. Bayer and Blue Noise stay steady from frame to frame.",
+  },
+  {
     title: "Restore defaults",
     body: "Double-click a slider, or use the reset button next to its value.",
   },
   {
     title: "Canvas",
-    body: "Drag to pan, scroll or pinch to zoom. With the canvas focused: arrow keys pan, + and − zoom, 0 resets the view.",
+    body: "Drag to pan, scroll or pinch to zoom. With the canvas focused: arrow keys pan, + and − zoom, 0 resets the view. In an animation, comma and period step a frame, K plays or pauses.",
   },
 ];
 

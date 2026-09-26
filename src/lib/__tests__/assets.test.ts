@@ -3,8 +3,10 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import extractedColors from "@/data/sample-extracted-palette.json";
 import { ALGORITHMS } from "@/lib/algorithms";
+import { readGifInfo } from "@/lib/editor/gif/decode";
 import { PALETTE_PRESETS } from "@/lib/palettes";
 import {
+  ANIMATED_SAMPLE,
   EXTRACTED_PREVIEW_COLORS,
   PALETTE_PREVIEW_SIZE,
   palettePreview,
@@ -27,6 +29,15 @@ describe("generated assets", () => {
     expect(pngSize(SAMPLE_IMAGE.src)).toEqual({
       width: SAMPLE_IMAGE.width,
       height: SAMPLE_IMAGE.height,
+    });
+  });
+
+  it("has the animated sample at its declared size and length", () => {
+    const file = readFileSync(publicFile(ANIMATED_SAMPLE.src));
+    expect(readGifInfo(new Uint8Array(file))).toEqual({
+      width: ANIMATED_SAMPLE.width,
+      height: ANIMATED_SAMPLE.height,
+      frames: ANIMATED_SAMPLE.frames,
     });
   });
 

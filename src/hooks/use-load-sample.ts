@@ -2,40 +2,50 @@
 
 import { useCallback, useState } from "react";
 import { useEditorActions } from "@/contexts/editor-context";
-import { ImageLoadError, loadImageFile } from "@/lib/editor/load-image";
-import { SAMPLE_IMAGE } from "@/lib/samples";
+import { ImageLoadError } from "@/lib/editor/load-image";
+import { ANIMATED_SAMPLE, SAMPLE_IMAGE } from "@/lib/samples";
+
+export type SampleKind = "still" | "animated";
+
+const SAMPLES = { still: SAMPLE_IMAGE, animated: ANIMATED_SAMPLE };
 
 /**
- * Loads the bundled sample through the same path as an upload. Shared by the
- * dropzone's "Try a sample image" button and the `?sample=1` link.
+ * Loads a bundled sample through the same path as an upload. Shared by the
+ * dropzone's "Try a sample image" and "Try an animated sample" buttons and
+ * the `?sample=1` and `?sample=animated` links.
  */
 export function useLoadSample() {
-  const { load, setError } = useEditorActions();
-  const [loading, setLoading] = useState(false);
+  const { load, readImage, setError } = useEditorActions();
+  const [loading, setLoading] = useState<SampleKind | null>(null);
 
-  const loadSample = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(SAMPLE_IMAGE.src);
-      if (!response.ok) throw new Error(String(response.status));
-      const blob = await response.blob();
-      load(
-        await loadImageFile(
-          new File([blob], SAMPLE_IMAGE.name, {
-            type: blob.type || "image/png",
-          }),
-        ),
-      );
-    } catch (error) {
-      setError(
-        error instanceof ImageLoadError
-          ? error.message
-          : "Couldn’t load the sample image. Check your connection and try again.",
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [load, setError]);
+  const loadSample = useCallback(
+    async (kind: SampleKind = "still") => {
+      const sample = SAMPLES[kind];
+      setLoading(kind);
+      try {
+        const response = await fetch(sample.src);
+        if (!response.ok) throw new Error(String(response.status));
+        const blob = await response.blob();
+        load(
+          await readImage(
+            new File([blob], sample.name, {
+              type:
+                blob.type || (kind === "animated" ? "image/gif" : "image/png"),
+            }),
+          ),
+        );
+      } catch (error) {
+        setError(
+          error instanceof ImageLoadError
+            ? error.message
+            : "Couldn’t load the sample image. Check your connection and try again.",
+        );
+      } finally {
+        setLoading(null);
+      }
+    },
+    [load, readImage, setError],
+  );
 
   return { loadSample, loading };
 }

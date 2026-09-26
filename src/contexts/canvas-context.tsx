@@ -20,6 +20,12 @@ type CanvasContextValue = {
   split: number | null;
   setSplit: Dispatch<SetStateAction<number | null>>;
   resetView: () => void;
+  /** Shown frame of an animation (0 for a still image). */
+  frame: number;
+  setFrame: Dispatch<SetStateAction<number>>;
+  /** Whether an animation is playing. */
+  playing: boolean;
+  setPlaying: Dispatch<SetStateAction<boolean>>;
 };
 
 const CanvasContext = createContext<CanvasContextValue | undefined>(undefined);
@@ -33,6 +39,8 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
   const [zoom, setZoom] = useState(1);
   const [showProcessed, setShowProcessed] = useState(true);
   const [split, setSplit] = useState<number | null>(null);
+  const [frame, setFrame] = useState(0);
+  const [playing, setPlaying] = useState(false);
 
   const value = useMemo(
     () => ({
@@ -48,8 +56,12 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
         setZoom(1);
         setPosition({ x: 0, y: 0 });
       },
+      frame,
+      setFrame,
+      playing,
+      setPlaying,
     }),
-    [position, zoom, showProcessed, split],
+    [position, zoom, showProcessed, split, frame, playing],
   );
 
   return (
