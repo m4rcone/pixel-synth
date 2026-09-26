@@ -25,6 +25,12 @@ export const ALGORITHM_CATEGORIES = [
     description:
       "Thresholds come from noise instead of a fixed pattern, trading structure for grain.",
   },
+  {
+    id: "screen",
+    name: "Halftone screen",
+    description:
+      "A grid of dots or lines, turned to an angle like a print screen, grows with the tone. Screen size, angle and dot shape are adjustable.",
+  },
 ] as const;
 
 export type AlgorithmCategory = (typeof ALGORITHM_CATEGORIES)[number]["id"];
@@ -257,6 +263,34 @@ export const ALGORITHMS = [
     author: "Robert Ulichney",
     cost: 4,
     preview: "/250/pixel-synth-14.png",
+  },
+  {
+    slug: "halftone",
+    name: "Halftone",
+    shortName: "Halftone",
+    category: "screen",
+    era: "classic",
+    description:
+      "Round, square or diamond dots on an angled grid, growing with the shadows like newspaper and offset print. Set the screen size and angle.",
+    complexity: "medium",
+    year: "1880s",
+    author: "Frederic Ives",
+    cost: 2,
+    preview: "/250/pixel-synth-15.png",
+  },
+  {
+    slug: "line-screen",
+    name: "Line Screen",
+    shortName: "Line Screen",
+    category: "screen",
+    era: "classic",
+    description:
+      "Parallel lines whose thickness follows the tone, like an engraving or a banknote. Set the line spacing and angle.",
+    complexity: "low",
+    year: null,
+    author: null,
+    cost: 2,
+    preview: "/250/pixel-synth-16.png",
   },
 ] as const satisfies readonly AlgorithmInfo[];
 

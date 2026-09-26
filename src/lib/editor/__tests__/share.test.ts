@@ -19,6 +19,7 @@ const changed: EditorSettings = {
   algorithm: "atkinson",
   scale: 0.35,
   diffusion: 0.75,
+  screen: { size: 14, angle: 22.5, shape: "diamond" },
   filters: {
     blackPoint: 12,
     whitePoint: 240,
@@ -112,6 +113,21 @@ describe("settings links", () => {
     expect(settings.color.extractCount).toBe(MAX_PALETTE_COLORS);
     expect(shared.custom).toBeNull();
     expect(shared.dithered).toBe(false);
+  });
+
+  it("clamps the screen and keeps its cell size whole", () => {
+    const { screen } = decodeSettings(
+      encode({ v: 1, screen: { size: 900.4, angle: -30, shape: "star" } }),
+    )!.settings;
+    expect(screen).toEqual({
+      ...DEFAULT_SETTINGS.screen,
+      size: 64,
+      angle: 0,
+    });
+    expect(
+      decodeSettings(encode({ v: 1, screen: { size: 9.6 } }))!.settings.screen
+        .size,
+    ).toBe(10);
   });
 
   it("carries a transparent background", () => {

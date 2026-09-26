@@ -8,6 +8,8 @@ import {
   DEFAULT_SETTINGS,
   FILTER_LIMITS,
   MIN_SCALE,
+  SCREEN_LIMITS,
+  SCREEN_SHAPES,
   type EditorSettings,
   type Filters,
   type ToneSlot,
@@ -69,6 +71,9 @@ export function encodeSettings(
     ...(settings.scale !== base.scale ? { scale: settings.scale } : {}),
     ...(settings.diffusion !== base.diffusion
       ? { diffusion: settings.diffusion }
+      : {}),
+    ...(diffObject(settings.screen, base.screen)
+      ? { screen: diffObject(settings.screen, base.screen) }
       : {}),
     ...(diffObject(settings.filters, base.filters)
       ? { filters: diffObject(settings.filters, base.filters) }
@@ -142,6 +147,17 @@ export function decodeSettings(code: string): SharedSettings | null {
   }
   settings.scale = number(data.scale, MIN_SCALE, 1) ?? base.scale;
   settings.diffusion = number(data.diffusion, 0, 1) ?? base.diffusion;
+
+  if (isObject(data.screen)) {
+    const { screen } = data;
+    const { size, angle } = SCREEN_LIMITS;
+    const cell = number(screen.size, size.min, size.max);
+    if (cell !== undefined) settings.screen.size = Math.round(cell);
+    settings.screen.angle =
+      number(screen.angle, angle.min, angle.max) ?? base.screen.angle;
+    settings.screen.shape =
+      oneOf(screen.shape, SCREEN_SHAPES) ?? base.screen.shape;
+  }
 
   if (isObject(data.filters)) {
     for (const key of Object.keys(FILTER_LIMITS) as (keyof Filters)[]) {

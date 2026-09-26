@@ -451,6 +451,47 @@ test("error diffusion strength shows only for diffusion algorithms", async ({
   await expect(saturation).toHaveAttribute("aria-valuetext", "-1.00");
 });
 
+test("halftone screens show their size, angle and shape", async ({ page }) => {
+  await page.goto("/editor?sample=1&algorithm=halftone");
+  await page.getByRole("button", { name: "Apply dither" }).click();
+  await expect(page.locator('[aria-live="polite"]')).toContainText(
+    "Rendered image is ready",
+  );
+  await expect(
+    page.getByRole("slider", { name: "Error diffusion" }),
+  ).toHaveCount(0);
+
+  const size = page.getByRole("slider", { name: "Screen size" });
+  const angle = page.getByRole("slider", { name: "Screen angle" });
+  await expect(size).toHaveAttribute("aria-valuetext", "8 px");
+  await expect(angle).toHaveAttribute("aria-valuetext", "45°");
+
+  const before = await canvasPrint(page);
+  await angle.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(angle).toHaveAttribute("aria-valuetext", "52.5°");
+  await expect
+    .poll(() => canvasPrint(page), { message: "angle changes the image" })
+    .not.toBe(before);
+
+  const shape = page.getByRole("group", { name: "Dot shape" });
+  await shape.getByRole("button", { name: "Diamond" }).click();
+  await expect(shape.getByRole("button", { name: "Diamond" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+
+  // Line Screen shares size and angle, but has no dot shape.
+  await page.getByRole("combobox", { name: "Algorithm" }).click();
+  await page.getByRole("option", { name: "Line Screen" }).click();
+  await expect(angle).toHaveAttribute("aria-valuetext", "52.5°");
+  await expect(shape).toHaveCount(0);
+
+  await page.getByRole("combobox", { name: "Algorithm" }).click();
+  await page.getByRole("option", { name: "Bayer 4×4" }).click();
+  await expect(size).toHaveCount(0);
+});
+
 test("editing the NES palette keeps all 54 colors", async ({ page }) => {
   await page.goto("/editor?sample=1&palette=nes");
   await page.getByRole("button", { name: "Edit colors" }).click();

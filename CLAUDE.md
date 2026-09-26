@@ -4,7 +4,7 @@ Guidance for Claude Code when working in this repository.
 
 ## What this is
 
-**PixelSynth** (https://pixelsynth.art) — a browser-only image dithering editor. Users upload an image, pick one of 15 dithering algorithms, tune filters and tone mapping, and export a PNG. Every pixel is processed on the client; nothing is uploaded.
+**PixelSynth** (https://pixelsynth.art) — a browser-only image dithering editor. Users upload an image, pick one of 17 dithering algorithms, tune filters and tone mapping, and export a PNG. Every pixel is processed on the client; nothing is uploaded.
 
 ## Stack
 

@@ -75,8 +75,8 @@ export default function AlgorithmsPage() {
           </div>
           <p className="text-paper-dim max-w-2xl text-lg leading-relaxed">
             {ALGORITHMS.length} techniques, each shown on the same sphere.
-            Compare error diffusion, ordered dithering, blue-noise and
-            noise-based techniques before applying them in the editor.
+            Compare error diffusion, ordered dithering, blue-noise, noise-based
+            techniques and halftone screens before applying them in the editor.
           </p>
           <nav aria-label="Algorithm families">
             <ul className="flex flex-wrap gap-2">

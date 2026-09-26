@@ -7,7 +7,12 @@ import {
   luminance,
   type Pixels,
 } from "./pixels";
-import type { DitherChoice } from "./settings";
+import { screenThreshold } from "./screen";
+import {
+  DEFAULT_SETTINGS,
+  type DitherChoice,
+  type ScreenSettings,
+} from "./settings";
 
 type Rgb = [number, number, number];
 
@@ -21,6 +26,7 @@ const luma = ([r, g, b]: Rgb) => 0.299 * r + 0.587 * g + 0.114 * b;
  * - `match: "brightness"` sorts the palette dark → light, spreads it evenly
  *   over 0–255 and dithers the luminance along that ramp.
  *
+ * Halftone screens draw darker dots between each pair of neighboring colors.
  * Alpha is copied from the source.
  */
 export function ditherToPalette(
@@ -29,13 +35,14 @@ export function ditherToPalette(
   colors: readonly string[],
   match: PaletteMatch,
   diffusion = 1,
+  screen: ScreenSettings = DEFAULT_SETTINGS.screen,
 ): Pixels {
   const palette = colors.map(hexToRgb);
   const out = createPixels(src.width, src.height);
   const indices =
     match === "brightness"
-      ? ditherRamp(src, algorithm, palette, diffusion)
-      : ditherColor(src, algorithm, palette, diffusion);
+      ? ditherRamp(src, algorithm, palette, diffusion, screen)
+      : ditherColor(src, algorithm, palette, diffusion, screen);
   const ramp =
     match === "brightness"
       ? [...palette].sort((a, b) => luma(a) - luma(b))
@@ -57,6 +64,7 @@ function ditherRamp(
   algorithm: DitherChoice,
   palette: Rgb[],
   diffusion: number,
+  screen: ScreenSettings,
 ): Uint8Array {
   const { width, height } = src;
   const levels = palette.length;
@@ -90,7 +98,7 @@ function ditherRamp(
     return out;
   }
 
-  const offset = thresholdOffsets(method, width);
+  const offset = thresholdOffsets(method, width, screen);
   for (let p = 0; p < out.length; p++) {
     out[p] = quantize(gray[p] + offset(p) * step);
   }
@@ -103,6 +111,7 @@ function ditherColor(
   algorithm: DitherChoice,
   palette: Rgb[],
   diffusion: number,
+  screen: ScreenSettings,
 ): Uint8Array {
   const { width, height, data } = src;
   const size = width * height;
@@ -155,7 +164,7 @@ function ditherColor(
   // Threshold methods nudge every channel by the same amount; the spread
   // shrinks as the palette gets denser.
   const spread = 255 / Math.sqrt(palette.length);
-  const offset = thresholdOffsets(method, width);
+  const offset = thresholdOffsets(method, width, screen);
   for (let p = 0; p < size; p++) {
     const t = offset(p) * spread;
     out[p] = nearest(data[p * 4] + t, data[p * 4 + 1] + t, data[p * 4 + 2] + t);
@@ -163,10 +172,14 @@ function ditherColor(
   return out;
 }
 
-/** Per-pixel threshold offset in [-0.5, 0.5) for ordered, random and none. */
+/**
+ * Per-pixel threshold offset in [-0.5, 0.5) for ordered, screen, random and
+ * none.
+ */
 function thresholdOffsets(
   method: ReturnType<typeof getMethod>,
   width: number,
+  screen: ScreenSettings,
 ): (p: number) => number {
   if (method.kind === "ordered") {
     const { size, ranks } = method.matrix();
@@ -176,6 +189,15 @@ function thresholdOffsets(
       const y = (p / width) | 0;
       return (ranks[(y % size) * size + (x % size)] + 0.5) / levels - 0.5;
     };
+  }
+  if (method.kind === "screen") {
+    // Ink dots: the cell center rounds to the darker color first.
+    const threshold = screenThreshold(
+      screen,
+      method.lines ? "line" : screen.shape,
+      false,
+    );
+    return (p) => 0.5 - threshold(p % width, (p / width) | 0);
   }
   if (method.kind === "random") {
     const random = createRandom(RANDOM_SEED);

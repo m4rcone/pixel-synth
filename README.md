@@ -1,12 +1,12 @@
 # PixelSynth
 
-A free online dithering and pixel art tool. Turn any photo into dithered, 1-bit or pixel art images right in your browser: pick one of 15 dithering algorithms, dither to a classic palette like Game Boy, NES or PICO-8, tune the look, share it as a link and export a crisp PNG or animated GIF. No uploads, no accounts, no watermark.
+A free online dithering and pixel art tool. Turn any photo into dithered, 1-bit or pixel art images right in your browser: pick one of 17 dithering algorithms, dither to a classic palette like Game Boy, NES or PICO-8, tune the look, share it as a link and export a crisp PNG or animated GIF. No uploads, no accounts, no watermark.
 
 **Live:** https://pixelsynth.art
 
 ## Features
 
-- **15 dithering algorithms**: error diffusion (Floyd–Steinberg, Stucki, Atkinson…), ordered (Bayer, clustered dot, void-and-cluster, blue noise) and noise-based. Each has its own page showing its kernel or threshold matrix, with a before/after comparison.
+- **17 dithering algorithms**: error diffusion (Floyd–Steinberg, Stucki, Atkinson…), ordered (Bayer, clustered dot, void-and-cluster, blue noise), noise-based and halftone screens (round, square or diamond dots, or lines, at any size and angle). Each has its own page showing its kernel or threshold matrix, with a before/after comparison.
 - **Color palettes**: dither straight to 17 classic palettes (Game Boy, Game Boy Pocket, PICO-8, NES, CGA, EGA, ZX Spectrum, C64, MSX, Apple II, sepia, cyanotype, riso…), a palette extracted from your image (2 to 64 colors) or your own custom colors. Match by color or by brightness.
 - **Palette gallery**: every palette previewed on the same sample image at `/palettes`, one click from the editor.
 - **Pixel art preset**: one click shrinks any image to about 128 × 96 pixels' worth of detail, whatever its shape, and applies PICO-8 with a 2×2 Bayer pattern. Set the output width in pixels, or pick the nearest-color "None" option to skip dithering.

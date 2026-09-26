@@ -1,6 +1,11 @@
 import type { AlgorithmId } from "@/lib/algorithms";
 import { createRandom } from "./pixels";
-import type { DitherChoice } from "./settings";
+import { screenThreshold } from "./screen";
+import {
+  DEFAULT_SETTINGS,
+  type DitherChoice,
+  type ScreenSettings,
+} from "./settings";
 import {
   bayerMatrix,
   CLUSTERED_DOT_4,
@@ -14,6 +19,8 @@ type Method =
   | { kind: "diffusion"; kernel: ErrorKernel; serpentine: boolean }
   | { kind: "ordered"; matrix: () => ThresholdMatrix }
   | { kind: "random" }
+  /** Halftone screen: dots (of the chosen shape) or lines. */
+  | { kind: "screen"; lines: boolean }
   | { kind: "none" };
 
 const lazy = <T>(make: () => T) => {
@@ -74,6 +81,8 @@ const METHODS: Record<AlgorithmId, Method> = {
     kind: "ordered",
     matrix: lazy(() => voidAndCluster(16, 1.5, 7)),
   },
+  halftone: { kind: "screen", lines: false },
+  "line-screen": { kind: "screen", lines: true },
 };
 
 export type AlgorithmMethod = Method;
@@ -86,11 +95,21 @@ export function getMethod(algorithm: DitherChoice): Method {
 /** Seed shared by every random dither so grain is stable across renders. */
 export const RANDOM_SEED = 0x5eed;
 
+/** A screen's parameters and which way its dots point. */
+export type ScreenOptions = ScreenSettings & {
+  /**
+   * Lit pixels form the dots (light dots on a dark background) instead of
+   * unlit ones (ink on paper).
+   */
+  light: boolean;
+};
+
 /**
  * Converts a luminance buffer (0–255) into a 1-bit image (0 or 255 per pixel).
  * Error diffusion works on a float copy, so accumulated error is never
  * clipped — the classic bug when diffusing into 8-bit storage. `diffusion`
- * scales the error passed on (1 = the classic algorithm).
+ * scales the error passed on (1 = the classic algorithm); `screen` shapes
+ * the halftone screens.
  */
 export function dither(
   gray: Float32Array,
@@ -98,9 +117,25 @@ export function dither(
   height: number,
   algorithm: DitherChoice,
   diffusion = 1,
+  screen: ScreenOptions = { ...DEFAULT_SETTINGS.screen, light: false },
 ): Uint8Array {
   const method = getMethod(algorithm);
   const out = new Uint8Array(width * height);
+
+  if (method.kind === "screen") {
+    const threshold = screenThreshold(
+      screen,
+      method.lines ? "line" : screen.shape,
+      screen.light,
+    );
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const p = y * width + x;
+        out[p] = gray[p] < threshold(x, y) * 255 ? 0 : 255;
+      }
+    }
+    return out;
+  }
 
   if (method.kind === "none") {
     for (let p = 0; p < out.length; p++) out[p] = gray[p] < 128 ? 0 : 255;

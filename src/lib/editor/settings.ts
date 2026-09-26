@@ -32,6 +32,26 @@ export type Tone = {
   range: number;
 };
 
+export const SCREEN_SHAPES = ["round", "square", "diamond"] as const;
+
+export type ScreenShape = (typeof SCREEN_SHAPES)[number];
+
+/** Halftone screen parameters, for the Halftone screen algorithms only. */
+export type ScreenSettings = {
+  /** Distance between dot (or line) centers, in processed pixels. */
+  size: number;
+  /** Screen angle in degrees, counterclockwise from horizontal (0–180). */
+  angle: number;
+  /** Dot shape (Halftone); Line Screen always draws lines. */
+  shape: ScreenShape;
+};
+
+/** Range of the screen parameters, shared by the sliders and shared links. */
+export const SCREEN_LIMITS = {
+  size: { min: 4, max: 64 },
+  angle: { min: 0, max: 180 },
+} as const;
+
 /** Smallest processing scale the editor allows. */
 export const MIN_SCALE = 0.05;
 
@@ -62,6 +82,7 @@ export type EditorSettings = {
    * (0–1), for error diffusion algorithms only. 1 is the classic algorithm.
    */
   diffusion: number;
+  screen: ScreenSettings;
   filters: Filters;
   colorCount: 1 | 2 | 3;
   /**
@@ -105,6 +126,7 @@ export const DEFAULT_SETTINGS: EditorSettings = {
   algorithm: DEFAULT_ALGORITHM,
   scale: 1,
   diffusion: 1,
+  screen: { size: 8, angle: 45, shape: "round" },
   filters: DEFAULT_FILTERS,
   colorCount: 1,
   background: "#000000",
