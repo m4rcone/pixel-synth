@@ -8,7 +8,7 @@ export const siteConfig = {
   url: "https://pixelsynth.art",
   description: `Turn photos and animated GIFs into dithered, 1-bit or pixel art in your browser. ${ALGORITHMS.length} algorithms, Game Boy, NES, PICO-8 and CGA palettes. Free, no uploads.`,
   creator: "m4rcone",
-  previewImage: "/250/pixel-synth.png",
+  previewImage: "/specimens/floyd-steinberg.png",
   /** Last meaningful content update, used by the sitemap. */
   updated: "2026-09-26",
   links: {

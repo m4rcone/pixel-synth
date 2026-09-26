@@ -1,7 +1,9 @@
 // Regenerates every derived image with the real pipeline, so the site always
 // shows what the editor produces:
-//   public/250/            algorithm previews (sphere)
-//   public/samples/        sample image (procedural sunset + calibration strip)
+//   public/specimens/      the algorithm specimen (a CRT terminal on a table,
+//                          scripts/specimen-scene.mjs) and every algorithm's
+//                          preview of it
+//   public/samples/        sample image (a ringed planet, scripts/sample-scene.mjs)
 //                          and its animated version (GIF)
 //   public/palettes/       palette previews of the sample, pixel art preset
 //   public/landing/        hero variants (algorithm × palette), the dithered
@@ -9,62 +11,16 @@
 //   src/data/sample-extracted-palette.json  colors of the "From image" preview
 //
 //   node scripts/generate-previews.mjs
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { deflateSync, inflateSync, crc32 } from "node:zlib";
+import { deflateSync, crc32 } from "node:zlib";
 import { createServer } from "vite";
-import { makeSampleScene } from "./sample-scene.mjs";
+import { makeSampleAnimation, makeSampleScene } from "./sample-scene.mjs";
+import { makeSpecimen } from "./specimen-scene.mjs";
 
 const root = process.cwd();
 
 // --- Minimal PNG codec (8-bit RGBA, non-interlaced) -------------------------
-
-function decodePng(buffer) {
-  let offset = 8;
-  let width = 0;
-  let height = 0;
-  const idat = [];
-  while (offset < buffer.length) {
-    const length = buffer.readUInt32BE(offset);
-    const type = buffer.toString("ascii", offset + 4, offset + 8);
-    const data = buffer.subarray(offset + 8, offset + 8 + length);
-    if (type === "IHDR") {
-      width = data.readUInt32BE(0);
-      height = data.readUInt32BE(4);
-      if (data[8] !== 8 || data[9] !== 6 || data[12] !== 0) {
-        throw new Error("Only 8-bit RGBA non-interlaced PNGs are supported");
-      }
-    }
-    if (type === "IDAT") idat.push(data);
-    offset += 12 + length;
-  }
-
-  const raw = inflateSync(Buffer.concat(idat));
-  const stride = width * 4;
-  const out = new Uint8ClampedArray(width * height * 4);
-  for (let y = 0; y < height; y++) {
-    const filter = raw[y * (stride + 1)];
-    const line = raw.subarray(y * (stride + 1) + 1, (y + 1) * (stride + 1));
-    for (let x = 0; x < stride; x++) {
-      const a = x >= 4 ? out[y * stride + x - 4] : 0;
-      const b = y > 0 ? out[(y - 1) * stride + x] : 0;
-      const c = x >= 4 && y > 0 ? out[(y - 1) * stride + x - 4] : 0;
-      const p = a + b - c;
-      const pa = Math.abs(p - a);
-      const pb = Math.abs(p - b);
-      const pc = Math.abs(p - c);
-      const predictor = [
-        0,
-        a,
-        b,
-        (a + b) >> 1,
-        pa <= pb && pa <= pc ? a : pb <= pc ? b : c,
-      ][filter];
-      out[y * stride + x] = (line[x] + predictor) & 255;
-    }
-  }
-  return { data: out, width, height };
-}
 
 function chunk(type, data) {
   const length = Buffer.alloc(4);
@@ -107,9 +63,8 @@ const server = await createServer({
 });
 
 try {
-  const { ALGORITHMS, PREVIEW_SOURCE } = await server.ssrLoadModule(
-    "/src/lib/algorithms.ts",
-  );
+  const { ALGORITHMS, PREVIEW_SOURCE, PREVIEW_SIZE } =
+    await server.ssrLoadModule("/src/lib/algorithms.ts");
   const { renderPixels } = await server.ssrLoadModule(
     "/src/lib/editor/pipeline.ts",
   );
@@ -117,9 +72,15 @@ try {
     "/src/lib/editor/settings.ts",
   );
 
-  const source = decodePng(
-    readFileSync(join(root, "public", PREVIEW_SOURCE.slice(1))),
+  // The specimen and every algorithm's 1-bit preview of it.
+  rmSync(join(root, "public", "specimens"), { recursive: true, force: true });
+  mkdirSync(join(root, "public", "specimens"), { recursive: true });
+  const source = makeSpecimen(PREVIEW_SIZE);
+  writeFileSync(
+    join(root, "public", PREVIEW_SOURCE.slice(1)),
+    encodePng(source),
   );
+  console.log(`specimen → ${PREVIEW_SOURCE}`);
 
   for (const algorithm of ALGORITHMS) {
     const { pixels: result } = renderPixels(
@@ -154,7 +115,7 @@ try {
   };
   write(SAMPLE_IMAGE.src, sample);
 
-  // Animated sample: the sun rises and sets once per loop. One 256-color
+  // Animated sample: the rings turn and the moon orbits once per loop. One 256-color
   // palette for every frame, nearest color only (dithering is the
   // editor's job).
   const { ANIMATED_SAMPLE } = await server.ssrLoadModule("/src/lib/samples.ts");
@@ -164,14 +125,13 @@ try {
   const { encodeAnimation } = await server.ssrLoadModule(
     "/src/lib/editor/animation.ts",
   );
-  const sunFrames = Array.from({ length: ANIMATED_SAMPLE.frames }, (_, f) =>
-    makeSampleScene(ANIMATED_SAMPLE.width, ANIMATED_SAMPLE.height, {
-      strip: false,
-      sun: 0.52 + 0.1 * Math.cos((2 * Math.PI * f) / ANIMATED_SAMPLE.frames),
-    }),
+  const animationFrames = makeSampleAnimation(
+    ANIMATED_SAMPLE.width,
+    ANIMATED_SAMPLE.height,
+    ANIMATED_SAMPLE.frames,
   );
   const quantized = renderAnimation(
-    sunFrames,
+    animationFrames,
     {
       ...DEFAULT_SETTINGS,
       algorithm: "none",
@@ -190,7 +150,7 @@ try {
     animatedFile,
     encodeAnimation(
       quantized.frames,
-      sunFrames.map(() => ANIMATED_SAMPLE.delay),
+      animationFrames.map(() => ANIMATED_SAMPLE.delay),
       0,
     ),
   );
@@ -255,7 +215,7 @@ try {
   rmSync(join(root, "public", "landing"), { recursive: true, force: true });
   write(
     HERO_ORIGINAL.src,
-    makeSampleScene(HERO_ORIGINAL.width, HERO_ORIGINAL.height),
+    makeSampleScene(HERO_ORIGINAL.width, HERO_ORIGINAL.height, { samples: 3 }),
   );
   for (const algorithm of HERO_ALGORITHMS) {
     for (const palette of HERO_PALETTES) {
@@ -286,7 +246,7 @@ try {
     (p) => p.id === ANIMATED_DITHER.palette,
   );
   const dithered = renderAnimation(
-    sunFrames,
+    animationFrames,
     {
       ...DEFAULT_SETTINGS,
       algorithm: ANIMATED_DITHER.algorithm,

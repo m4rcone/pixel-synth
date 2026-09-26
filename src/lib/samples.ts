@@ -1,7 +1,8 @@
 /**
  * Generated sample assets (see scripts/generate-previews.mjs). The sample is
- * a procedural sunset scene with a calibration strip (grayscale ramp + hue
- * spectrum), used by the editor's "Try a sample image" and the palette pages.
+ * a procedural ringed planet with a small moon, stars and a nebula
+ * (scripts/sample-scene.mjs), used by the editor's "Try a sample image", the
+ * landing and the palette pages.
  */
 
 import { ALGORITHMS, type AlgorithmId } from "@/lib/algorithms";
@@ -9,22 +10,23 @@ import { pixelArtScale } from "@/lib/editor/pixel-art";
 import { PALETTE_PRESETS } from "@/lib/palettes";
 
 export const SAMPLE_IMAGE = {
-  src: "/samples/sunset.png",
-  name: "sunset.png",
+  src: "/samples/orbit.png",
+  name: "orbit.png",
   width: 1800,
   height: 1200,
 } as const;
 
 /**
- * Animated sample: the same scene without the strip, the sun rising and
- * setting over one seamless loop. 256 colors, not dithered.
+ * Animated sample: the same scene with the rings turning (inner ringlets
+ * faster than outer ones), a shepherd moon in the Encke gap and the moon
+ * completing its orbit, over one seamless loop. 256 colors, not dithered.
  */
 export const ANIMATED_SAMPLE = {
-  src: "/samples/sunset.gif",
-  name: "sunset.gif",
+  src: "/samples/orbit.gif",
+  name: "orbit.gif",
   width: 360,
   height: 240,
-  frames: 24,
+  frames: 36,
   /** Milliseconds per frame. */
   delay: 80,
 } as const;
@@ -83,7 +85,7 @@ export function heroSize(algorithm: string) {
 }
 
 /** Image path pattern of a hero variant, for code that can't call `heroVariant`. */
-export const HERO_VARIANT_PATTERN = "/landing/sunset-{algorithm}-{palette}.png";
+export const HERO_VARIANT_PATTERN = "/landing/orbit-{algorithm}-{palette}.png";
 
 export function heroVariant(algorithm: string, palette: string) {
   return HERO_VARIANT_PATTERN.replace("{algorithm}", algorithm).replace(
@@ -93,15 +95,15 @@ export function heroVariant(algorithm: string, palette: string) {
 }
 
 export const HERO_ORIGINAL = {
-  src: "/landing/sunset-original.png",
+  src: "/landing/orbit-original.png",
   width: 480,
   height: 320,
 } as const;
 
 /** The animated sample dithered, and its first frame for when it's paused. */
 export const ANIMATED_DITHER = {
-  src: "/landing/sunset-animated-bayer-4-4-pico8.gif",
-  still: "/landing/sunset-animated-bayer-4-4-pico8.png",
+  src: "/landing/orbit-animated-bayer-4-4-pico8.gif",
+  still: "/landing/orbit-animated-bayer-4-4-pico8.png",
   algorithm: "bayer-4-4",
   palette: "pico8",
   width: ANIMATED_SAMPLE.width / 2,

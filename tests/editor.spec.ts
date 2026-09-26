@@ -144,7 +144,7 @@ test("catalog cards open the algorithm page from anywhere on the card", async ({
   await expect(page).toHaveURL(/\/algorithms\/stucki$/);
 });
 
-const SPHERE = "public/250/sphere-250.png";
+const SPHERE = "tests/fixtures/sphere-250.png";
 
 test("palette mode dithers to a preset and names the export", async ({
   page,
@@ -470,7 +470,7 @@ test("a settings link reopens the editor with the same look", async ({
   await page.getByRole("button", { name: "Share settings" }).click();
   const link = await page.getByLabel("Settings link").inputValue();
   expect(new URL(link).pathname).toBe("/editor");
-  expect(link).not.toContain("sunset");
+  expect(link).not.toContain("orbit");
   await page.getByRole("button", { name: "Copy link" }).click();
   await expect(page.getByText("Link copied to the clipboard.")).toBeVisible();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(link);

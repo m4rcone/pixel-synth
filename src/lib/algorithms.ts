@@ -49,7 +49,7 @@ export type AlgorithmInfo = {
   author: string | null;
   /** Relative processing cost, 1 (cheap) to 5 (expensive). */
   cost: 1 | 2 | 3 | 4 | 5;
-  /** 250×250 sphere rendered with this algorithm. */
+  /** The specimen (PREVIEW_SOURCE) rendered with this algorithm in 1-bit. */
   preview: string;
 };
 
@@ -66,7 +66,7 @@ export const ALGORITHMS = [
     year: "1976",
     author: "Robert W. Floyd & Louis Steinberg",
     cost: 3,
-    preview: "/250/pixel-synth.png",
+    preview: "/specimens/floyd-steinberg.png",
   },
   {
     slug: "jarvis-judice-and-ninke-jjn",
@@ -80,7 +80,7 @@ export const ALGORITHMS = [
     year: "1976",
     author: "J.F. Jarvis, C.N. Judice & W.H. Ninke",
     cost: 4,
-    preview: "/250/pixel-synth-1.png",
+    preview: "/specimens/jarvis-judice-and-ninke-jjn.png",
   },
   {
     slug: "stucki",
@@ -94,7 +94,7 @@ export const ALGORITHMS = [
     year: "1981",
     author: "Peter Stucki",
     cost: 4,
-    preview: "/250/pixel-synth-2.png",
+    preview: "/specimens/stucki.png",
   },
   {
     slug: "burkes",
@@ -108,7 +108,7 @@ export const ALGORITHMS = [
     year: "1988",
     author: "Daniel Burkes",
     cost: 2,
-    preview: "/250/pixel-synth-3.png",
+    preview: "/specimens/burkes.png",
   },
   {
     slug: "sierra",
@@ -122,7 +122,7 @@ export const ALGORITHMS = [
     year: "1986",
     author: "Frank Sierra",
     cost: 3,
-    preview: "/250/pixel-synth-4.png",
+    preview: "/specimens/sierra.png",
   },
   {
     slug: "two-row-sierra",
@@ -136,7 +136,7 @@ export const ALGORITHMS = [
     year: "1986",
     author: "Frank Sierra",
     cost: 2,
-    preview: "/250/pixel-synth-5.png",
+    preview: "/specimens/two-row-sierra.png",
   },
   {
     slug: "sierra-lite",
@@ -150,7 +150,7 @@ export const ALGORITHMS = [
     year: "1986",
     author: "Frank Sierra",
     cost: 1,
-    preview: "/250/pixel-synth-6.png",
+    preview: "/specimens/sierra-lite.png",
   },
   {
     slug: "atkinson",
@@ -164,7 +164,7 @@ export const ALGORITHMS = [
     year: "1984",
     author: "Bill Atkinson (Apple)",
     cost: 2,
-    preview: "/250/pixel-synth-7.png",
+    preview: "/specimens/atkinson.png",
   },
   {
     slug: "bayer-2-2",
@@ -178,7 +178,7 @@ export const ALGORITHMS = [
     year: "1973",
     author: "Bryce Bayer",
     cost: 1,
-    preview: "/250/pixel-synth-8.png",
+    preview: "/specimens/bayer-2-2.png",
   },
   {
     slug: "bayer-4-4",
@@ -192,7 +192,7 @@ export const ALGORITHMS = [
     year: "1973",
     author: "Bryce Bayer",
     cost: 1,
-    preview: "/250/pixel-synth-9.png",
+    preview: "/specimens/bayer-4-4.png",
   },
   {
     slug: "bayer-8-8",
@@ -206,7 +206,7 @@ export const ALGORITHMS = [
     year: "1973",
     author: "Bryce Bayer",
     cost: 2,
-    preview: "/250/pixel-synth-10.png",
+    preview: "/specimens/bayer-8-8.png",
   },
   {
     slug: "clustered-dot-halftone-ordered",
@@ -220,7 +220,7 @@ export const ALGORITHMS = [
     year: "1980s",
     author: "Various researchers",
     cost: 2,
-    preview: "/250/pixel-synth-11.png",
+    preview: "/specimens/clustered-dot-halftone-ordered.png",
   },
   {
     slug: "blue-noise",
@@ -234,7 +234,7 @@ export const ALGORITHMS = [
     year: "1993",
     author: "Robert Ulichney",
     cost: 4,
-    preview: "/250/pixel-synth-12.png",
+    preview: "/specimens/blue-noise.png",
   },
   {
     slug: "random-dither",
@@ -248,7 +248,7 @@ export const ALGORITHMS = [
     year: null,
     author: null,
     cost: 1,
-    preview: "/250/pixel-synth-13.png",
+    preview: "/specimens/random-dither.png",
   },
   {
     slug: "void-and-cluster",
@@ -262,7 +262,7 @@ export const ALGORITHMS = [
     year: "1993",
     author: "Robert Ulichney",
     cost: 4,
-    preview: "/250/pixel-synth-14.png",
+    preview: "/specimens/void-and-cluster.png",
   },
   {
     slug: "halftone",
@@ -276,7 +276,7 @@ export const ALGORITHMS = [
     year: "1880s",
     author: "Frederic Ives",
     cost: 2,
-    preview: "/250/pixel-synth-15.png",
+    preview: "/specimens/halftone.png",
   },
   {
     slug: "line-screen",
@@ -290,7 +290,7 @@ export const ALGORITHMS = [
     year: null,
     author: null,
     cost: 2,
-    preview: "/250/pixel-synth-16.png",
+    preview: "/specimens/line-screen.png",
   },
 ] as const satisfies readonly AlgorithmInfo[];
 
@@ -298,8 +298,13 @@ export type AlgorithmId = (typeof ALGORITHMS)[number]["slug"];
 
 export const DEFAULT_ALGORITHM: AlgorithmId = "floyd-steinberg";
 
-/** Sphere render used as the "before" image for every preview. */
-export const PREVIEW_SOURCE = "/250/sphere-250.png";
+/**
+ * The specimen every preview is rendered from, and their "before" image: a
+ * CRT terminal on a checkered table (scripts/specimen-scene.mjs). 400 px is
+ * the smallest size where the halftone screens still read.
+ */
+export const PREVIEW_SOURCE = "/specimens/terminal.png";
+export const PREVIEW_SIZE = 400;
 
 export type Algorithm = (typeof ALGORITHMS)[number];
 

@@ -11,6 +11,7 @@ import {
   ALGORITHMS,
   getAlgorithm,
   getCategory,
+  PREVIEW_SIZE,
   PREVIEW_SOURCE,
 } from "@/lib/algorithms";
 import {
@@ -100,17 +101,21 @@ export default async function AlgorithmPage({
       />
 
       <article className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 py-10 sm:px-8">
-        <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,26rem)_1fr] lg:gap-14">
+        {/* 400 px specimen + 12 px padding + 1 px border on each side: shown 1:1. */}
+        <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,26.625rem)_1fr] lg:gap-14">
           <div className="border-line-strong bg-ink-raised rounded-md border p-3">
             <CompareSlider
               after={{
                 src: algorithm.preview,
-                alt: `Sphere dithered with ${algorithm.name}`,
+                alt: `A CRT terminal on a checkered table, dithered with ${algorithm.name} in 1-bit`,
               }}
               before={{
                 src: PREVIEW_SOURCE,
-                alt: "The same sphere before dithering",
+                alt: "The same terminal before dithering",
               }}
+              width={PREVIEW_SIZE}
+              height={PREVIEW_SIZE}
+              beforeSizes={`(max-width: 480px) 100vw, ${PREVIEW_SIZE}px`}
             />
           </div>
 

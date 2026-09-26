@@ -15,6 +15,7 @@ import {
   ALGORITHMS,
   getAlgorithm,
   getCategory,
+  PREVIEW_SIZE,
   type AlgorithmCategory,
   type AlgorithmId,
 } from "@/lib/algorithms";
@@ -155,8 +156,8 @@ const MODES: {
     text: "Engravers burn dots, not grays: error diffusion gives pure black-and-white PNGs.",
     image: {
       src: getAlgorithm("atkinson")?.preview ?? "",
-      width: 250,
-      height: 250,
+      width: PREVIEW_SIZE,
+      height: PREVIEW_SIZE,
     },
     params: [
       ["Color", "1-bit"],
@@ -386,7 +387,7 @@ export default function HomePage() {
                 href: "/algorithms",
               }}
             >
-              The same sphere through one algorithm from each family. Every
+              The same terminal through one algorithm from each family. Every
               algorithm has its own page with a before and after.
             </SectionHead>
             <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -498,7 +499,7 @@ export default function HomePage() {
               still={ANIMATED_DITHER.still}
               width={ANIMATED_DITHER.width}
               height={ANIMATED_DITHER.height}
-              alt={`The animated sample, a sun rising and setting, dithered with ${algorithmName(ANIMATED_DITHER.algorithm)} and the ${paletteName(ANIMATED_DITHER.palette)} palette`}
+              alt={`The animated sample, rings turning around a gas giant, dithered with ${algorithmName(ANIMATED_DITHER.algorithm)} and the ${paletteName(ANIMATED_DITHER.palette)} palette`}
               caption={`${ANIMATED_SAMPLE.frames} frames · ${ANIMATED_SAMPLE.delay} ms · ${algorithmName(ANIMATED_DITHER.algorithm)} · ${paletteName(ANIMATED_DITHER.palette)}`}
             />
           </section>
@@ -667,16 +668,16 @@ function FamilyCard({ category }: { category: AlgorithmCategory }) {
       <h3 className="text-caps text-paper border-line truncate border-b px-4 py-3">
         {family.name}
       </h3>
-      {/* Neutral well; the preview never scales past its 250 px, so it stays
-          pixel-exact. */}
-      <div className="bg-ink-sunken border-line flex justify-center border-b">
+      {/* Neutral well. The card is narrower than the 400 px preview, so it is
+          scaled down smoothly (nearest-neighbor would add moiré). */}
+      <div className="bg-ink-sunken border-line border-b">
         <Image
           src={lead.preview}
-          alt={`Sphere dithered with ${lead.name}`}
-          width={250}
-          height={250}
+          alt={`A CRT terminal on a checkered table, dithered with ${lead.name}`}
+          width={PREVIEW_SIZE}
+          height={PREVIEW_SIZE}
           unoptimized
-          className="w-full max-w-62.5 [image-rendering:pixelated]"
+          className="w-full"
         />
       </div>
       <div className="flex flex-1 flex-col gap-3 p-4">

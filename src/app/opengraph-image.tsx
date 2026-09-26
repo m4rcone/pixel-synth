@@ -3,7 +3,7 @@ import { PALETTE_PRESETS } from "@/lib/palettes";
 import { palettePreview, PALETTE_PREVIEW_SIZE } from "@/lib/samples";
 
 export const alt =
-  "PixelSynth — a sunset scene dithered with the Game Boy palette";
+  "PixelSynth — a ringed planet dithered with the Game Boy palette";
 export const size = OG_SIZE;
 export const contentType = "image/png";
 

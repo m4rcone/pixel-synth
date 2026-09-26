@@ -103,8 +103,8 @@ export default function PalettesPage() {
           <p className="text-paper-dim max-w-2xl text-lg leading-relaxed">
             Dither straight to a fixed set of colors. Every preview below is the
             same sample image, rendered by the editor’s own engine with
-            Floyd–Steinberg. The strip at the bottom shows how each palette
-            covers a gray ramp and the full spectrum.
+            Floyd–Steinberg: a ringed planet with warm bands, a cool atmosphere
+            and a deep black sky.
           </p>
           <nav aria-label="Palette groups">
             <ul className="flex flex-wrap gap-2">

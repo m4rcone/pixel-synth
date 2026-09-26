@@ -10,6 +10,6 @@ export default function OpengraphImage() {
     eyebrow: "Editor",
     title: "Develop any image",
     subtitle: `Upload a photo, pick one of ${ALGORITHMS.length} dithering algorithms, tune it and export a PNG. Nothing leaves your device.`,
-    image: "/250/pixel-synth-12.png",
+    image: "/specimens/blue-noise.png",
   });
 }

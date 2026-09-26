@@ -27,13 +27,15 @@ export function AlgorithmCard({
       <div className="border-line bg-ink-sunken relative aspect-square w-full overflow-hidden border-b">
         <Image
           src={algorithm.preview}
-          alt={`Sphere dithered with ${algorithm.name}`}
+          alt={`A CRT terminal on a checkered table, dithered with ${algorithm.name}`}
           fill
           sizes="(max-width: 640px) 100vw, 320px"
           // Served as-is: re-encoding would smear the 1-bit dither pattern.
+          // Cards are narrower than the 400 px preview, so the browser scales
+          // it down smoothly; nearest-neighbor would add moiré.
           unoptimized
           preload={preloadPreview}
-          className="object-cover [image-rendering:pixelated]"
+          className="object-cover"
         />
       </div>
 
