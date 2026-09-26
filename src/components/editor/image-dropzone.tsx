@@ -97,7 +97,7 @@ export function ImageDropzone() {
           <span
             aria-hidden="true"
             className={cn(
-              "darkroom-dots border-line-strong group-hover:text-safelight grid size-14 place-items-center rounded-xl border transition-colors",
+              "border-line-strong group-hover:text-safelight grid size-14 place-items-center rounded-xl border transition-colors",
               isDragging ? "text-safelight" : "text-paper/50",
             )}
           >
