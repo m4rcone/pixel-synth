@@ -1,0 +1,41 @@
+name: Bug report
+description: Something in PixelSynth doesn't work as expected.
+title: "Bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. Please don't attach images you don't want to be public: issues are visible to everyone.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you see? Error messages help a lot.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the editor
+        2. Load an image
+        3. …
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+  - type: textarea
+    id: context
+    attributes:
+      label: Editor settings and browser
+      description: Filled in automatically when you use "Report a bug" in the editor. It never includes your image or its name.
+      render: text
+  - type: input
+    id: device
+    attributes:
+      label: Device
+      placeholder: e.g. MacBook Air, iPhone 15, Pixel 8

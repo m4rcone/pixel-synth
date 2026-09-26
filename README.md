@@ -38,6 +38,11 @@ The editor accepts deep links, which can be combined:
 
 Every page has its own metadata, Open Graph image and structured data; `/sitemap.xml` lists all of them.
 
+## Feedback
+
+- **Found a bug?** [Open a bug report](https://github.com/m4rcone/pixel-synth/issues/new?template=bug.yml). From the editor, "Report a bug" in the help menu fills in your settings and browser for you (never your image).
+- **Have an idea?** [Suggest a feature](https://github.com/m4rcone/pixel-synth/discussions/new?category=ideas) in Discussions, or vote for an existing one.
+
 ## Tech stack
 
 - **Next.js** (App Router, all routes statically prerendered) · **React** · **TypeScript**

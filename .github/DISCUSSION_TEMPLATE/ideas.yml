@@ -1,0 +1,22 @@
+title: "Idea: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before posting, check whether someone already suggested it and give it a vote (👍) instead.
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like PixelSynth to do?
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: What would you use it for?
+      description: A print, a game, a poster… Knowing the goal helps find the best way to build it.
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples or references
+      description: Links to images, tools or articles showing the effect (optional).

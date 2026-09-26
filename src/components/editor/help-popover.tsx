@@ -1,6 +1,8 @@
 "use client";
 
 import { CircleHelp } from "lucide-react";
+import { useEditorState } from "@/contexts/editor-context";
+import { bugReportUrl, FEATURE_IDEA_URL } from "@/lib/feedback";
 import {
   Popover,
   PopoverContent,
@@ -34,6 +36,9 @@ const TIPS = [
   },
 ];
 
+const linkClass =
+  "text-paper hover:text-safelight focus-visible:ring-safelight decoration-line-strong rounded-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none";
+
 export function HelpPopover() {
   return (
     <Popover>
@@ -49,7 +54,7 @@ export function HelpPopover() {
       <PopoverContent
         align="end"
         aria-label="Editor help"
-        className="w-80 text-sm"
+        className="max-h-(--radix-popover-content-available-height) w-80 overflow-y-auto text-sm"
       >
         <dl className="flex flex-col gap-3">
           {TIPS.map((tip) => (
@@ -61,7 +66,52 @@ export function HelpPopover() {
             </div>
           ))}
         </dl>
+        <FeedbackLinks />
       </PopoverContent>
     </Popover>
+  );
+}
+
+/** Rendered only while the popover is open, so the report reflects that moment. */
+function FeedbackLinks() {
+  const { settings, status, source, result } = useEditorState();
+  const reportUrl = bugReportUrl({
+    settings,
+    status,
+    source: source && {
+      width: source.pixels.width,
+      height: source.pixels.height,
+    },
+    result: result && { width: result.width, height: result.height },
+    userAgent: typeof navigator === "undefined" ? "" : navigator.userAgent,
+  });
+
+  return (
+    <div className="border-line mt-4 flex flex-col gap-2 border-t pt-3">
+      <p className="text-paper-dim leading-relaxed">
+        Found a bug or have an idea? Tell us on GitHub. Bug reports include your
+        settings and browser, never your image.
+      </p>
+      <div className="flex flex-wrap gap-x-4 gap-y-1">
+        <a
+          href={reportUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={linkClass}
+        >
+          Report a bug
+          <span className="sr-only"> (opens in a new tab)</span>
+        </a>
+        <a
+          href={FEATURE_IDEA_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={linkClass}
+        >
+          Suggest a feature
+          <span className="sr-only"> (opens in a new tab)</span>
+        </a>
+      </div>
+    </div>
   );
 }

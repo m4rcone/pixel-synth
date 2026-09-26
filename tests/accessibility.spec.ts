@@ -61,6 +61,9 @@ test.describe("accessibility", () => {
     await expect(
       page.getByRole("dialog", { name: "Editor help" }),
     ).toContainText("Processing scale");
+    // Let the open animation finish so contrast is measured at rest.
+    await page.waitForTimeout(400);
+    await expectNoAccessibilityViolations(page);
   });
 
   test("upload exposes the canvas and live status", async ({ page }) => {

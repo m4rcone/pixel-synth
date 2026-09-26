@@ -327,3 +327,27 @@ test("?sample=1&preset=pixel-art opens on the pixelated sample", async ({
     "PICO-8",
   );
 });
+
+test("'Report a bug' carries the settings, never the image", async ({
+  page,
+}) => {
+  await page.goto("/editor?algorithm=atkinson");
+  await page.waitForLoadState("networkidle");
+  await page.getByLabel(/drop an image/i).setInputFiles(SPHERE);
+  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Editor help" }).click();
+
+  const href = await page
+    .getByRole("link", { name: /Report a bug/ })
+    .getAttribute("href");
+  const url = new URL(href!);
+  expect(url.pathname).toBe("/m4rcone/pixel-synth/issues/new");
+  expect(url.searchParams.get("template")).toBe("bug.yml");
+  const context = url.searchParams.get("context")!;
+  expect(context).toContain("Algorithm: atkinson");
+  expect(context).toContain("Image: 250 × 250 px");
+  expect(href).not.toContain("sphere");
+  await expect(
+    page.getByRole("link", { name: /Suggest a feature/ }),
+  ).toHaveAttribute("href", /\/discussions\/new\?category=ideas$/);
+});

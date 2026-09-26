@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ALGORITHMS, getAlgorithm } from "@/lib/algorithms";
 import { getPalettePreset, PALETTE_PRESETS } from "@/lib/palettes";
+import { BUG_REPORT_URL, FEATURE_IDEA_URL } from "@/lib/feedback";
 import { siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
@@ -47,6 +48,8 @@ const COLUMNS: {
   {
     title: "About",
     links: [
+      { label: "Suggest a feature", href: FEATURE_IDEA_URL, external: true },
+      { label: "Report a bug", href: BUG_REPORT_URL, external: true },
       {
         label: "Source on GitHub",
         href: siteConfig.links.repository,

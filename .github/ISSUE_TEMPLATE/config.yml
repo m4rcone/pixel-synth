@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Suggest a feature
+    url: https://github.com/m4rcone/pixel-synth/discussions/new?category=ideas
+    about: Share an idea or vote for the ones already there.
+  - name: Ask a question
+    url: https://github.com/m4rcone/pixel-synth/discussions/new?category=q-a
+    about: How do I…? Questions about using PixelSynth.
