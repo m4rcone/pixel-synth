@@ -28,7 +28,7 @@ const TIPS = [
   },
   {
     title: "1-bit dot colors",
-    body: "In 1-bit mode, lit dots take the color of their brightness band (highlights, midtones, shadows). “Shade by brightness” darkens each color with the original pixel’s brightness.",
+    body: "In 1-bit mode, lit dots take the color of their brightness band (highlights, midtones, shadows).",
   },
   {
     title: "Background",

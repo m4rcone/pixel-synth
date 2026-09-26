@@ -37,7 +37,7 @@ export function bugReportContext({
   const colorLine =
     color.mode === "palette"
       ? `palette ${color.palette} (match by ${color.match})`
-      : `1-bit, ${settings.colorCount} dot color${settings.colorCount > 1 ? "s" : ""}${settings.preserveLuminance ? ", shaded by brightness" : ""}, background ${settings.background ?? "transparent"}`;
+      : `1-bit, ${settings.colorCount} dot color${settings.colorCount > 1 ? "s" : ""}, background ${settings.background ?? "transparent"}`;
 
   return [
     `Status: ${status}`,

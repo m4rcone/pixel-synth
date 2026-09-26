@@ -112,18 +112,6 @@ export function ToneControls() {
         onBackground={(background) => commit({ background })}
       />
 
-      <div className="flex items-center gap-2">
-        <Checkbox
-          id="tone-luminance"
-          checked={settings.preserveLuminance}
-          onCheckedChange={(checked) =>
-            commit({ preserveLuminance: checked === true })
-          }
-          disabled={disabled}
-        />
-        <Label htmlFor="tone-luminance">Shade by brightness</Label>
-      </div>
-
       {TONE_SLOTS.map(({ slot, label, minColors }) => {
         const tone = settings.tones[slot];
         const slotDisabled = disabled || settings.colorCount < minColors;

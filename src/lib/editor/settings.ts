@@ -63,7 +63,6 @@ export type EditorSettings = {
   diffusion: number;
   filters: Filters;
   colorCount: 1 | 2 | 3;
-  preserveLuminance: boolean;
   /**
    * Color of the "off" pixels in 1-bit mode, or null to leave them
    * transparent (a dither to lay over other artwork).
@@ -107,7 +106,6 @@ export const DEFAULT_SETTINGS: EditorSettings = {
   diffusion: 1,
   filters: DEFAULT_FILTERS,
   colorCount: 1,
-  preserveLuminance: false,
   background: "#000000",
   tones: {
     highlights: { color: "#FFFFFF", range: 255 },

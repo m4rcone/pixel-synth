@@ -5,15 +5,14 @@ import type { EditorSettings } from "./settings";
  * Writes the 1-bit dither output into RGBA, coloring the "on" pixels by the
  * source luminance band they came from (highlights / midtones / shadows).
  * "Off" pixels take the background color, or turn transparent without one.
- * With `preserveLuminance`, each color is scaled by the pixel's original
- * brightness. Alpha is copied from `source`.
+ * Alpha is copied from `source`.
  */
 export function toneMap(
   bits: Uint8Array,
   gray: Float32Array,
   source: Uint8ClampedArray,
   out: Uint8ClampedArray,
-  { tones, colorCount, preserveLuminance, background }: EditorSettings,
+  { tones, colorCount, background }: EditorSettings,
 ) {
   const [backR, backG, backB] = background ? hexToRgb(background) : [0, 0, 0];
   const highlights = hexToRgb(tones.highlights.color);
@@ -41,10 +40,8 @@ export function toneMap(
         : colorCount >= 2 && lum <= midtoneMax
           ? midtones
           : highlights;
-    const k = preserveLuminance ? Math.min(255, Math.max(0, lum)) / 255 : 1;
-
-    out[i] = color[0] * k;
-    out[i + 1] = color[1] * k;
-    out[i + 2] = color[2] * k;
+    out[i] = color[0];
+    out[i + 1] = color[1];
+    out[i + 2] = color[2];
   }
 }

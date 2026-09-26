@@ -76,9 +76,6 @@ export function encodeSettings(
     ...(settings.colorCount !== base.colorCount
       ? { colorCount: settings.colorCount }
       : {}),
-    ...(settings.preserveLuminance !== base.preserveLuminance
-      ? { preserveLuminance: settings.preserveLuminance }
-      : {}),
     // null (transparent) survives JSON as null.
     ...(settings.background !== base.background
       ? { background: settings.background }
@@ -157,9 +154,6 @@ export function decodeSettings(code: string): SharedSettings | null {
   const colorCount = data.colorCount;
   if (colorCount === 1 || colorCount === 2 || colorCount === 3) {
     settings.colorCount = colorCount;
-  }
-  if (typeof data.preserveLuminance === "boolean") {
-    settings.preserveLuminance = data.preserveLuminance;
   }
   if (data.background === null) {
     settings.background = null;

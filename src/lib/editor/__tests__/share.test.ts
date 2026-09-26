@@ -31,7 +31,6 @@ const changed: EditorSettings = {
     noise: 0.1,
   },
   colorCount: 3,
-  preserveLuminance: true,
   background: "#f4efe6",
   tones: {
     highlights: { color: "#ffeecc", range: 255 },

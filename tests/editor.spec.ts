@@ -287,7 +287,7 @@ test("the palettes page link applies the full pixel art preset", async ({
   );
 });
 
-test("1-bit mode names its dot colors and shading", async ({ page }) => {
+test("1-bit mode names its dot colors", async ({ page }) => {
   await page.goto("/editor");
   await upload(page);
   await page.getByRole("button", { name: "Apply dither" }).click();
@@ -300,10 +300,9 @@ test("1-bit mode names its dot colors and shading", async ({ page }) => {
   await dotColors.click();
   await page.getByRole("option", { name: "3 colors" }).click();
   await expect(dotColors).toHaveText("3 colors");
-  await page.getByRole("checkbox", { name: "Shade by brightness" }).check();
   await expect(
     page.getByRole("checkbox", { name: "Shade by brightness" }),
-  ).toBeChecked();
+  ).toHaveCount(0);
 });
 
 test("?sample=1 opens the editor on the sample image", async ({ page }) => {
@@ -719,10 +718,6 @@ test("every dot color control changes the image, and bands can't cross", async (
   }, "Shadows range");
   await changes(() => pickColor("Midtones color", "#43a047"), "Midtones color");
   await changes(() => pickColor("Shadows color", "#8e24aa"), "Shadows color");
-  await changes(
-    () => page.getByRole("checkbox", { name: "Shade by brightness" }).click(),
-    "Shade by brightness",
-  );
   await changes(() => pickColor("Background", "#263238"), "Background");
 
   // Shadows stop one step below midtones, and the other way around.

@@ -119,7 +119,7 @@ export function SaveButton() {
     } catch (error) {
       if (error instanceof TooManyColorsError) {
         setError(
-          "These frames use more than 256 colors, the most a GIF holds. Turn off “Shade by brightness” to save a GIF.",
+          "These frames use more than 256 colors, the most a GIF holds.",
         );
       } else {
         fail();
