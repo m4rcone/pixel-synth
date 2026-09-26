@@ -11,6 +11,7 @@ import { resizeArea, resizeNearest } from "../resize";
 import {
   DEFAULT_FILTERS,
   DEFAULT_SETTINGS,
+  dotsAreInk,
   orderedTones,
   type EditorSettings,
 } from "../settings";
@@ -254,6 +255,65 @@ describe("sharpen", () => {
     expect(edge.data[3 * 4]).toBeLessThan(60);
     expect(edge.data[4 * 4]).toBeGreaterThan(180);
     expect(edge.data[4 * 4 + 3]).toBe(255);
+  });
+});
+
+describe("dots as ink", () => {
+  // Left third dark, middle gray, right third light.
+  const thirds = () => {
+    const px = createPixels(90, 30);
+    for (let y = 0; y < 30; y++) {
+      for (let x = 0; x < 90; x++) {
+        const v = x < 30 ? 30 : x < 60 ? 128 : 225;
+        px.data.set([v, v, v, 255], (y * 90 + x) * 4);
+      }
+    }
+    return px;
+  };
+  const withDots = (color: string, background: string | null) => ({
+    ...DEFAULT_SETTINGS,
+    algorithm: "bayer-4-4" as const,
+    background,
+    tones: {
+      ...DEFAULT_SETTINGS.tones,
+      highlights: { color, range: 255 },
+    },
+  });
+  // Share of each third that reads as dark (red channel below 128).
+  const darkness = (settings: EditorSettings) => {
+    const { pixels } = renderPixels(thirds(), settings, { dither: true });
+    return [0, 30, 60].map((x0) => {
+      let dark = 0;
+      for (let y = 0; y < 30; y++) {
+        for (let x = x0; x < x0 + 30; x++) {
+          if (pixels.data[(y * 90 + x) * 4] < 128) dark++;
+        }
+      }
+      return dark / 900;
+    });
+  };
+
+  it("keeps a dark image dark on a light background", () => {
+    const [dark, gray, light] = darkness(withDots("#000000", "#ffffff"));
+    expect(dark).toBeGreaterThan(0.8);
+    expect(gray).toBeCloseTo(0.5, 1);
+    expect(light).toBeLessThan(0.2);
+    // Same reading as light dots on black.
+    expect(darkness(withDots("#ffffff", "#000000"))).toEqual(
+      darkness(withDots("#000000", "#ffffff")),
+    );
+  });
+
+  it("follows the dots against the background, or alone when transparent", () => {
+    const at = (color: string, background: string | null) =>
+      dotsAreInk(withDots(color, background));
+    expect(at("#ffffff", "#000000")).toBe(false);
+    expect(at("#000000", "#ffffff")).toBe(true);
+    expect(at("#1e88e5", "#f4efe6")).toBe(true);
+    expect(at("#ffd54f", "#263238")).toBe(false);
+    expect(at("#000000", null)).toBe(true);
+    expect(at("#ffffff", null)).toBe(false);
+    expect(dotsAreInk(DEFAULT_SETTINGS)).toBe(false);
   });
 });
 

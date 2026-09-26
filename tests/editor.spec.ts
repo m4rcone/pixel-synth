@@ -720,6 +720,12 @@ test("every dot color control changes the image, and bands can't cross", async (
   await changes(() => pickColor("Shadows color", "#8e24aa"), "Shadows color");
   await changes(() => pickColor("Background", "#263238"), "Background");
 
+  // A background lighter than the dots turns them into ink.
+  const background = page.getByLabel("Background", { exact: true });
+  await expect(background).toHaveAccessibleDescription(/mark the light areas/);
+  await changes(() => pickColor("Background", "#f4efe6"), "Light background");
+  await expect(background).toHaveAccessibleDescription(/like ink/);
+
   // Shadows stop one step below midtones, and the other way around.
   await shadows.focus();
   await page.keyboard.press("End");

@@ -28,11 +28,11 @@ const TIPS = [
   },
   {
     title: "1-bit dot colors",
-    body: "In 1-bit mode, lit dots take the color of their brightness band (highlights, midtones, shadows).",
+    body: "In 1-bit mode, each dot takes the color of its brightness band (highlights, midtones, shadows).",
   },
   {
     title: "Background",
-    body: "The color of the unlit dots in 1-bit mode. Make it transparent to save a dither you can lay over other artwork; the canvas shows a checkerboard behind it.",
+    body: "The color behind the dots in 1-bit mode. Dots lighter than the background mark the light areas; darker dots mark the shadows, like ink on paper. Make it transparent to save a dither you can lay over other artwork; the canvas shows a checkerboard behind it.",
   },
   {
     title: "Levels",

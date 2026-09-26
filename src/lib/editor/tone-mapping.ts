@@ -1,20 +1,24 @@
 import { hexToRgb } from "./pixels";
-import type { EditorSettings } from "./settings";
+import { dotsAreInk, type EditorSettings } from "./settings";
 
 /**
- * Writes the 1-bit dither output into RGBA, coloring the "on" pixels by the
- * source luminance band they came from (highlights / midtones / shadows).
- * "Off" pixels take the background color, or turn transparent without one.
- * Alpha is copied from `source`.
+ * Writes the 1-bit dither output into RGBA. Dots mark the light areas (lit
+ * pixels), or the dark ones when they are ink (see {@link dotsAreInk}); the
+ * rest takes the background color, or turns transparent without one. Each
+ * dot is colored by the source luminance band it came from (highlights /
+ * midtones / shadows). Alpha is copied from `source`.
  */
 export function toneMap(
   bits: Uint8Array,
   gray: Float32Array,
   source: Uint8ClampedArray,
   out: Uint8ClampedArray,
-  { tones, colorCount, background }: EditorSettings,
+  settings: EditorSettings,
 ) {
+  const { tones, colorCount, background } = settings;
   const [backR, backG, backB] = background ? hexToRgb(background) : [0, 0, 0];
+  const ink = dotsAreInk(settings);
+  const dot = ink ? 0 : 255;
   const highlights = hexToRgb(tones.highlights.color);
   const midtones = hexToRgb(tones.midtones.color);
   const shadows = hexToRgb(tones.shadows.color);
@@ -25,7 +29,7 @@ export function toneMap(
 
   for (let p = 0, i = 0; p < bits.length; p++, i += 4) {
     out[i + 3] = source[i + 3];
-    if (bits[p] === 0) {
+    if (bits[p] !== dot) {
       out[i] = backR;
       out[i + 1] = backG;
       out[i + 2] = backB;

@@ -5,6 +5,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { useEditorActions, useEditorState } from "@/contexts/editor-context";
 import {
   DEFAULT_SETTINGS,
+  dotsAreInk,
   orderedTones,
   type EditorSettings,
   type ToneSlot,
@@ -98,7 +99,7 @@ export function ToneControls() {
           id="tone-color-count-hint"
           className="text-paper-dim text-xs leading-relaxed"
         >
-          Lit dots take the color of their brightness band.
+          Each dot takes the color of its brightness band.
         </p>
       </div>
 
@@ -110,6 +111,7 @@ export function ToneControls() {
           commitColor();
         }}
         onBackground={(background) => commit({ background })}
+        ink={dotsAreInk(settings)}
       />
 
       {TONE_SLOTS.map(({ slot, label, minColors }) => {
@@ -163,9 +165,12 @@ function BackgroundField({
   disabled,
   onPick,
   onBackground,
+  ink,
 }: {
   background: string | null;
   disabled: boolean;
+  /** Whether the dots currently mark the dark areas (see dotsAreInk). */
+  ink: boolean;
   /** While a color is being picked (renders once it settles). */
   onPick: (color: string) => void;
   onBackground: (background: string | null) => void;
@@ -177,30 +182,41 @@ function BackgroundField({
   );
   const transparent = background === null;
   return (
-    <div className="flex items-center gap-3">
-      <Label htmlFor="tone-background" className="text-label text-paper-dim">
-        Background
-      </Label>
-      <input
-        id="tone-background"
-        type="color"
-        value={(background ?? lastColor).toLowerCase()}
-        disabled={disabled || transparent}
-        onChange={(event) => onPick(event.target.value)}
-        className="border-line-strong h-6 w-10 shrink-0 cursor-pointer rounded-sm border bg-transparent p-0.5 disabled:cursor-not-allowed disabled:opacity-50"
-      />
-      <div className="ml-auto flex items-center gap-2">
-        <Checkbox
-          id="tone-transparent"
-          checked={transparent}
-          onCheckedChange={(checked) => {
-            if (checked === true && background) setLastColor(background);
-            onBackground(checked === true ? null : lastColor);
-          }}
-          disabled={disabled}
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-3">
+        <Label htmlFor="tone-background" className="text-label text-paper-dim">
+          Background
+        </Label>
+        <input
+          id="tone-background"
+          aria-describedby="tone-background-hint"
+          type="color"
+          value={(background ?? lastColor).toLowerCase()}
+          disabled={disabled || transparent}
+          onChange={(event) => onPick(event.target.value)}
+          className="border-line-strong h-6 w-10 shrink-0 cursor-pointer rounded-sm border bg-transparent p-0.5 disabled:cursor-not-allowed disabled:opacity-50"
         />
-        <Label htmlFor="tone-transparent">Transparent</Label>
+        <div className="ml-auto flex items-center gap-2">
+          <Checkbox
+            id="tone-transparent"
+            checked={transparent}
+            onCheckedChange={(checked) => {
+              if (checked === true && background) setLastColor(background);
+              onBackground(checked === true ? null : lastColor);
+            }}
+            disabled={disabled}
+          />
+          <Label htmlFor="tone-transparent">Transparent</Label>
+        </div>
       </div>
+      <p
+        id="tone-background-hint"
+        className="text-paper-dim text-xs leading-relaxed"
+      >
+        {ink
+          ? "Dots darker than the background mark the shadows, like ink."
+          : "Dots lighter than the background mark the light areas."}
+      </p>
     </div>
   );
 }
