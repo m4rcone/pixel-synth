@@ -348,9 +348,8 @@ export default function HomePage() {
               </h2>
               <p className="text-paper-dim text-lg leading-relaxed">
                 {ALGORITHMS.length} algorithms, from Floyd–Steinberg (1976) to
-                blue noise and halftone. Tune scale, contrast, noise and blur in
-                real time, and map your own colors to shadows, midtones and
-                highlights.
+                blue noise and halftone. Tune scale, contrast, noise and blur,
+                and map your own colors to shadows, midtones and highlights.
               </p>
             </div>
             <ul className="grid gap-5 md:grid-cols-2">
