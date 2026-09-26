@@ -59,9 +59,13 @@ export function AnimatedGifDemo({
       </div>
       <figcaption className="flex flex-wrap items-center justify-between gap-3">
         <span className="text-readout text-paper-dim">{caption}</span>
-        <Button variant="outline" size="sm" onClick={() => setChoice(!playing)}>
+        <Button
+          variant="outline"
+          size="icon-sm"
+          aria-label={playing ? "Pause GIF" : "Play GIF"}
+          onClick={() => setChoice(!playing)}
+        >
           {playing ? <Pause aria-hidden="true" /> : <Play aria-hidden="true" />}
-          {playing ? "Pause GIF" : "Play GIF"}
         </Button>
       </figcaption>
     </figure>
