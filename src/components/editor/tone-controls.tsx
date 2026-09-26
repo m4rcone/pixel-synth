@@ -149,7 +149,7 @@ export function ToneControls() {
                     update(setTone(slot, { color: event.target.value }));
                     commitColor();
                   }}
-                  className="border-line-strong h-6 w-10 shrink-0 cursor-pointer rounded-sm border bg-transparent p-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="border-line-strong h-6 w-10 shrink-0 cursor-pointer border bg-transparent p-0.5 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </>
             }
@@ -195,7 +195,7 @@ function BackgroundField({
           value={(background ?? lastColor).toLowerCase()}
           disabled={disabled || transparent}
           onChange={(event) => onPick(event.target.value)}
-          className="border-line-strong h-6 w-10 shrink-0 cursor-pointer rounded-sm border bg-transparent p-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+          className="border-line-strong h-6 w-10 shrink-0 cursor-pointer border bg-transparent p-0.5 disabled:cursor-not-allowed disabled:opacity-50"
         />
         <div className="ml-auto flex items-center gap-2">
           <Checkbox

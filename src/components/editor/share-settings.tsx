@@ -22,7 +22,7 @@ export function ShareSettings() {
           type="button"
           aria-label="Share settings"
           disabled={status === "empty"}
-          className="text-paper-dim hover:text-paper hover:bg-accent focus-visible:ring-safelight grid size-9 place-items-center rounded-md transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-45"
+          className="text-paper-dim hover:text-paper hover:bg-accent focus-visible:ring-safelight grid size-9 place-items-center transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-45"
         >
           <Link2 className="size-4.5" aria-hidden="true" />
         </button>
@@ -80,7 +80,7 @@ function ShareLink() {
         readOnly
         value={url}
         onFocus={(event) => event.currentTarget.select()}
-        className="border-input bg-ink-sunken text-readout text-paper focus-visible:ring-safelight h-9 w-full rounded-md border px-2 focus-visible:ring-2 focus-visible:outline-none"
+        className="border-input bg-ink-sunken text-readout text-paper focus-visible:ring-safelight h-9 w-full border px-2 focus-visible:ring-2 focus-visible:outline-none"
       />
       <Button id="share-settings-copy" onClick={copy} className="w-full">
         {copied === "yes" ? (

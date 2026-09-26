@@ -224,7 +224,7 @@ export function SaveButton() {
               }}
               className={cn(
                 "disabled:cursor-not-allowed disabled:opacity-45",
-                "focus-visible:ring-safelight flex items-baseline justify-between gap-2 rounded-md border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none",
+                "focus-visible:ring-safelight flex items-baseline justify-between gap-2 border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none",
                 k === factor
                   ? "border-paper bg-paper text-ink"
                   : "border-input text-paper-dim hover:text-paper",

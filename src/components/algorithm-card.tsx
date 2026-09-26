@@ -8,7 +8,7 @@ export function AlgorithmCard({
   preloadPreview = false,
 }: {
   algorithm: AlgorithmInfo;
-  /** Position on the contact sheet, printed like a film frame number. */
+  /** Position in the catalog, printed as a two-digit index. */
   frame: number;
   preloadPreview?: boolean;
 }) {
@@ -66,7 +66,7 @@ export function AlgorithmCard({
         <div className="border-line mt-auto border-t pt-3">
           <Link
             href={`/editor?algorithm=${algorithm.slug}`}
-            className="text-paper hover:text-paper-hot hover:decoration-paper-hot focus-visible:ring-safelight decoration-line-strong relative z-10 rounded-sm text-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
+            className="text-paper hover:text-paper-hot hover:decoration-paper-hot focus-visible:ring-safelight decoration-line-strong relative z-10 text-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
           >
             Use in the editor
             <span className="sr-only">: {algorithm.name}</span>

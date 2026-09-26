@@ -81,7 +81,7 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <a
           href="#main-content"
-          className="bg-ink-raised text-paper ring-safelight fixed top-3 left-3 z-50 -translate-y-20 rounded-md border px-4 py-2 text-sm font-medium transition-transform focus:translate-y-0 focus:ring-2 focus:outline-hidden"
+          className="bg-ink-raised text-paper ring-safelight fixed top-3 left-3 z-50 -translate-y-20 border px-4 py-2 text-sm font-medium transition-transform focus:translate-y-0 focus:ring-2 focus:outline-hidden"
         >
           Skip to content
         </a>
