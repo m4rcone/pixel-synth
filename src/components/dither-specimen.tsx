@@ -118,7 +118,9 @@ export function DitherSpecimen() {
               aria-label={s.shortName}
               aria-pressed={i === index}
               className={cn(
-                "focus-visible:ring-safelight relative aspect-square overflow-hidden rounded-xs border transition-colors focus-visible:ring-2 focus-visible:outline-none",
+                // Only opacity animates (on the compositor); the border switches
+                // instantly as the slideshow advances.
+                "focus-visible:ring-safelight relative aspect-square overflow-hidden rounded-xs border transition-opacity focus-visible:ring-2 focus-visible:outline-none",
                 i === index
                   ? "border-safelight"
                   : "border-line opacity-60 hover:opacity-100",
