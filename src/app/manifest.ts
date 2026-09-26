@@ -3,7 +3,7 @@ import { siteConfig } from "@/lib/site";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: siteConfig.title,
+    name: `${siteConfig.name} — dithering and pixel art`,
     short_name: siteConfig.name,
     description: siteConfig.description,
     start_url: "/editor",
