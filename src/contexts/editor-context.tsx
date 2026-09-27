@@ -11,7 +11,7 @@ import {
 } from "react";
 import { useCanvasContext } from "@/contexts/canvas-context";
 import { loadImageFile, type SourceImage } from "@/lib/editor/load-image";
-import type { Pixels } from "@/lib/editor/pixels";
+import { HEX_COLOR, type Pixels } from "@/lib/editor/pixels";
 import { RenderCancelledError, RenderClient } from "@/lib/editor/render-client";
 import { DEFAULT_SETTINGS, type EditorSettings } from "@/lib/editor/settings";
 
@@ -322,7 +322,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
       if (
         Array.isArray(saved) &&
         saved.length >= 2 &&
-        saved.every((c) => typeof c === "string" && /^#[0-9a-f]{6}$/i.test(c))
+        saved.every((c) => typeof c === "string" && HEX_COLOR.test(c))
       ) {
         dispatch({
           type: "update",

@@ -51,8 +51,9 @@ export class ByteWriter {
     for (let i = 0; i < text.length; i++) this.byte(text.charCodeAt(i));
   }
 
+  /** The bytes written, as a view (no copy: a GIF can near 100 MB). */
   result(): Uint8Array<ArrayBuffer> {
-    return this.buffer.slice(0, this.length);
+    return this.buffer.subarray(0, this.length);
   }
 
   private grow(extra: number) {

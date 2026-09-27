@@ -118,7 +118,8 @@ export type ScreenOptions = ScreenSettings & {
  * scales the error passed on (1 = the classic algorithm); `screen` shapes
  * the halftone screens. `phase` shifts the threshold mask and reseeds random
  * dither, so layers dithered with the same algorithm (CMYK inks) don't all
- * put their dots on the same pixels.
+ * put their dots on the same pixels. Error diffusion skips the pixels marked
+ * in `transparent` (see `transparentMask`).
  */
 export function dither(
   gray: Float32Array,
@@ -128,6 +129,7 @@ export function dither(
   diffusion = 1,
   screen: ScreenOptions = { ...DEFAULT_SETTINGS.screen, light: false },
   phase = 0,
+  transparent: Uint8Array | null = null,
 ): Uint8Array {
   const method = getMethod(algorithm);
   const out = new Uint8Array(width * height);
@@ -187,6 +189,7 @@ export function dither(
     for (let step = 0; step < width; step++) {
       const x = reverse ? width - 1 - step : step;
       const p = y * width + x;
+      if (transparent?.[p]) continue;
       const value = buffer[p] < 128 ? 0 : 255;
       const unit = ((buffer[p] - value) / kernel.divisor) * diffusion;
       out[p] = value;

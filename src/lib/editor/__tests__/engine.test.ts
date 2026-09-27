@@ -7,7 +7,7 @@ import { bayerMatrix, ERROR_KERNELS, voidAndCluster } from "../matrices";
 import { ditherToPalette, extractPalette } from "../palette-dither";
 import { renderPixels } from "../pipeline";
 import { createPixels, type Pixels } from "../pixels";
-import { resizeArea, resizeNearest } from "../resize";
+import { resizeArea } from "../resize";
 import { BAND_BLEND } from "../tone-mapping";
 import {
   DEFAULT_FILTERS,
@@ -128,13 +128,17 @@ describe("resize", () => {
     expect(out.data[0]).toBe(128);
   });
 
-  it("nearest upscale keeps hard edges", () => {
+  it("area downscale ignores the color of transparent pixels", () => {
     const src = createPixels(2, 1);
-    src.data.set([0, 0, 0, 255, 255, 255, 255, 255]);
-    const out = resizeNearest(src, 4, 1);
-    expect([...out.data].filter((_, i) => i % 4 === 0)).toEqual([
-      0, 0, 255, 255,
-    ]);
+    src.data.set([255, 255, 255, 255, 0, 0, 0, 0]);
+    const out = resizeArea(src, 1, 1);
+    expect([...out.data]).toEqual([255, 255, 255, 128]);
+  });
+
+  it("area downscale of fully transparent pixels stays transparent", () => {
+    const src = createPixels(2, 1);
+    const out = resizeArea(src, 1, 1);
+    expect([...out.data]).toEqual([0, 0, 0, 0]);
   });
 });
 
@@ -818,6 +822,56 @@ describe("palette dithering", () => {
     for (const color of usedColors(out)) {
       expect(preset.colors).toContain(color);
     }
+  });
+
+  it.each(["brightness", "color"] as const)(
+    "a one-color palette fills the image with it (%s)",
+    (match) => {
+      const out = ditherToPalette(
+        gradient(8, 4),
+        "floyd-steinberg",
+        ["#336699"],
+        match,
+      );
+      expect([...usedColors(out)]).toEqual(["#336699"]);
+    },
+  );
+
+  it("error diffusion ignores what transparent pixels store", () => {
+    // Left half transparent, right half a gray ramp. What the transparent
+    // pixels hold must not change a single visible pixel.
+    const cutout = (hidden: number[]) => {
+      const px = createPixels(16, 16);
+      for (let p = 0; p < 256; p++) {
+        const v = (p % 16) * 16;
+        px.data.set(p % 16 >= 8 ? [v, v, v, 255] : hidden, p * 4);
+      }
+      return px;
+    };
+    const visible = ({ data }: Pixels) =>
+      [...data].filter((_, i) => (i >> 2) % 16 >= 8);
+    const colors = ["#000000", "#555555", "#aaaaaa", "#ffffff"];
+    for (const match of ["color", "brightness"] as const) {
+      const [a, b] = [
+        [0, 0, 0, 0],
+        [200, 60, 90, 0],
+      ].map((hidden) =>
+        ditherToPalette(cutout(hidden), "floyd-steinberg", colors, match),
+      );
+      expect(visible(a)).toEqual(visible(b));
+    }
+    const [a, b] = [
+      [0, 0, 0, 0],
+      [200, 60, 90, 0],
+    ].map(
+      (hidden) =>
+        renderPixels(
+          cutout(hidden),
+          { ...DEFAULT_SETTINGS, algorithm: "floyd-steinberg" },
+          { dither: true },
+        ).pixels,
+    );
+    expect(visible(a)).toEqual(visible(b));
   });
 
   it("brightness matching spans the whole ramp, even for one-hue palettes", () => {

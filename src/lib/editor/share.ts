@@ -16,6 +16,7 @@ import {
   type Filters,
   type ToneSlot,
 } from "./settings";
+import { HEX_COLOR } from "./pixels";
 
 /**
  * Settings links: `/editor?s=<code>`. The code is base64url JSON holding only
@@ -39,7 +40,6 @@ export type SharedSettings = {
 type Diff = Record<string, unknown>;
 
 const TONE_SLOTS: ToneSlot[] = ["highlights", "midtones", "shadows"];
-const HEX = /^#[0-9a-f]{6}$/i;
 
 function diffObject<T extends object>(value: T, base: T): Diff | undefined {
   const diff: Diff = {};
@@ -121,7 +121,7 @@ function colors(value: unknown) {
   return Array.isArray(value) &&
     value.length >= MIN_PALETTE_COLORS &&
     value.length <= MAX_PALETTE_COLORS &&
-    value.every((c) => typeof c === "string" && HEX.test(c))
+    value.every((c) => typeof c === "string" && HEX_COLOR.test(c))
     ? (value as string[])
     : undefined;
 }
@@ -183,7 +183,10 @@ export function decodeSettings(code: string): SharedSettings | null {
   }
   if (data.background === null) {
     settings.background = null;
-  } else if (typeof data.background === "string" && HEX.test(data.background)) {
+  } else if (
+    typeof data.background === "string" &&
+    HEX_COLOR.test(data.background)
+  ) {
     settings.background = data.background;
   }
 
@@ -191,7 +194,7 @@ export function decodeSettings(code: string): SharedSettings | null {
     for (const slot of TONE_SLOTS) {
       const tone = data.tones[slot];
       if (!isObject(tone)) continue;
-      if (typeof tone.color === "string" && HEX.test(tone.color)) {
+      if (typeof tone.color === "string" && HEX_COLOR.test(tone.color)) {
         settings.tones[slot].color = tone.color;
       }
       // Highlights always end at 255.

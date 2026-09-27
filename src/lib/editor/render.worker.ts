@@ -102,10 +102,10 @@ async function render({
     animated && dither ? resolveAnimationPalette(source, settings) : undefined;
 
   for (let n = 0; n < order.length; n++) {
-    if (n > 0) {
-      await tick();
-      if (latestRender !== id) return post({ type: "cancelled", id });
-    }
+    // Yield before every frame, the first too: a newer request already in the
+    // queue cancels this one before it renders anything.
+    await tick();
+    if (latestRender !== id) return post({ type: "cancelled", id });
     const index = order[n];
     const result = renderPixels(source[index], settings, { dither, palette });
     post(
