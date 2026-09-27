@@ -9,7 +9,7 @@ Guidance for Claude Code when working in this repository.
 ## Commands
 
 ```bash
-npm run test:e2e       # all playwright tests: editor flows + axe (starts a dev server; PORT=xxxx reuses a running one)
+npm run test:e2e       # all playwright tests: editor flows + axe (starts a dev server on PORT, 3000 by default; BASE_URL=http://localhost:3000 reuses a running one)
 npm run perf:bundles   # per-route JS size table, run after `npm run build`
 node scripts/generate-previews.mjs  # regenerate every derived image after engine or palette changes
 ```
