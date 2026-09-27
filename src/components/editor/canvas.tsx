@@ -34,7 +34,8 @@ const DIVIDER_GRAB = 16;
 const SPLIT_STEP = 0.05;
 /** Checkerboard behind transparent pixels: cell size (CSS px) and shades. */
 const CHECKER_CELL = 8;
-const CHECKER_SHADES = ["rgb(52 48 45)", "rgb(28 26 24)"];
+// Neutral grays, like the image well: no tint over the user's colors.
+const CHECKER_SHADES = ["#303030", "#1a1a1a"];
 
 let checkerTile: HTMLCanvasElement | null = null;
 function checkerPattern(ctx: CanvasRenderingContext2D) {
