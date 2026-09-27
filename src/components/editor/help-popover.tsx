@@ -56,7 +56,7 @@ const TIPS = [
   },
   {
     title: "Canvas",
-    body: "Drag to pan, scroll or pinch to zoom. With the canvas focused: arrow keys pan, + and − zoom, 0 resets the view. In an animation, comma and period step a frame, K plays or pauses.",
+    body: "Drag to pan, scroll or pinch to zoom. With the canvas focused: arrow keys pan, + and − zoom, 0 resets the view. In split view, [ and ] move the divider. In an animation, comma and period step a frame, K plays or pauses.",
   },
 ];
 

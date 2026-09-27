@@ -38,9 +38,11 @@ const data = {
 export function SidebarLeft({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
+  // The landmark sits inside the sidebar, so it moves into the sheet on
+  // smaller screens instead of staying behind, empty.
   return (
-    <nav aria-label="Studio">
-      <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon" {...props}>
+      <nav aria-label="Studio" className="flex min-h-0 flex-1 flex-col">
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
@@ -59,7 +61,7 @@ export function SidebarLeft({
         <SidebarContent>
           <NavMain items={data.navMain} />
         </SidebarContent>
-      </Sidebar>
-    </nav>
+      </nav>
+    </Sidebar>
   );
 }

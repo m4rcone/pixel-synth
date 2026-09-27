@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { useCanvasContext } from "@/contexts/canvas-context";
+import { prefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 import { loadImageFile, type SourceImage } from "@/lib/editor/load-image";
 import { HEX_COLOR, type Pixels } from "@/lib/editor/pixels";
 import { RenderCancelledError, RenderClient } from "@/lib/editor/render-client";
@@ -233,11 +234,6 @@ export function frameResult(
   return resultIndex === frame ? result : null;
 }
 
-/** Playback starts paused for people who prefer reduced motion. */
-function prefersReducedMotion() {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-
 const EditorStateContext = createContext<EditorState | undefined>(undefined);
 const EditorActionsContext = createContext<EditorActions | undefined>(
   undefined,
@@ -271,6 +267,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
         cancelRenders();
         shownFrame.current = 0;
         setFrame(0);
+        // Playback starts paused for people who prefer reduced motion.
         setPlaying(!!source.animation && !prefersReducedMotion());
         dispatch({ type: "load", source });
       },
