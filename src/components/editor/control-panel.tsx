@@ -47,7 +47,7 @@ export function ControlPanel({ className }: { className?: string }) {
       <div
         // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
         tabIndex={0}
-        className="focus-visible:ring-ring flex flex-1 flex-col focus-visible:ring-2 focus-visible:outline-hidden focus-visible:ring-inset lg:overflow-y-auto"
+        className="focus-visible:ring-ring relative flex flex-1 flex-col focus-visible:ring-2 focus-visible:outline-hidden focus-visible:ring-inset lg:overflow-y-auto"
       >
         {SECTIONS.map(({ id, title, Controls }) => (
           <section
