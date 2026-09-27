@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import { Azeret_Mono, Sixtyfour } from "next/font/google";
 import { RouteFocusManager } from "@/components/route-focus-manager";
+import { BRAND_COLORS } from "@/lib/brand";
 import { siteConfig } from "@/lib/site";
 import { Analytics } from "@vercel/analytics/next";
 
@@ -64,7 +65,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   // Dark-only UI: the browser chrome matches the screen-black page.
-  themeColor: "#05080d",
+  themeColor: BRAND_COLORS.ink,
   colorScheme: "dark",
 };
 

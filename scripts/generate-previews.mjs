@@ -9,8 +9,11 @@
 //   public/landing/        hero variants (algorithm × palette), the dithered
 //                          animated sample
 //   src/data/sample-extracted-palette.json  colors of the "From image" preview
+//   src/app/icon.svg, favicon.ico, apple-icon.png and public/icons/
+//                          the app icons, from the mark in src/lib/brand.ts
 //
-//   node scripts/generate-previews.mjs
+//   node scripts/generate-previews.mjs           everything
+//   node scripts/generate-previews.mjs --icons   the app icons only
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { deflateSync, crc32 } from "node:zlib";
@@ -52,6 +55,54 @@ function encodePng({ data, width, height }) {
   ]);
 }
 
+/** An .ico holding PNG images (supported everywhere since Windows Vista). */
+function encodeIco(pngs) {
+  const header = Buffer.alloc(6);
+  header.writeUInt16LE(1, 2);
+  header.writeUInt16LE(pngs.length, 4);
+  let offset = 6 + 16 * pngs.length;
+  const entries = pngs.map(({ size, png }) => {
+    const entry = Buffer.alloc(16);
+    entry.writeUInt8(size % 256, 0);
+    entry.writeUInt8(size % 256, 1);
+    entry.writeUInt16LE(1, 4);
+    entry.writeUInt16LE(32, 6);
+    entry.writeUInt32LE(png.length, 8);
+    entry.writeUInt32LE(offset, 12);
+    offset += png.length;
+    return entry;
+  });
+  return Buffer.concat([header, ...entries, ...pngs.map(({ png }) => png)]);
+}
+
+const hexRgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+
+/**
+ * The mark on the screen color, square: `cell` px per Bayer cell, `margin`
+ * px around the 4×4 grid. Whole pixels at every size, so it stays crisp.
+ */
+function renderMark(cells, colors, cell, margin) {
+  const size = cell * 4 + margin * 2;
+  const data = new Uint8ClampedArray(size * size * 4);
+  const ink = hexRgb(colors.ink);
+  const paper = hexRgb(colors.paper);
+  const lit = new Set(cells.map(([x, y]) => `${x},${y}`));
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const gx = Math.floor((x - margin) / cell);
+      const gy = Math.floor((y - margin) / cell);
+      const on =
+        x >= margin &&
+        y >= margin &&
+        gx < 4 &&
+        gy < 4 &&
+        lit.has(`${gx},${gy}`);
+      data.set([...(on ? paper : ink), 255], (y * size + x) * 4);
+    }
+  }
+  return { data, width: size, height: size };
+}
+
 // --- Render -----------------------------------------------------------------
 
 const server = await createServer({
@@ -63,6 +114,33 @@ const server = await createServer({
 });
 
 try {
+  // App icons. Sizes keep the mark on whole pixels; the 512 px icon leaves
+  // the margin maskable icons need.
+  const { MARK_CELLS, BRAND_COLORS } =
+    await server.ssrLoadModule("/src/lib/brand.ts");
+  const mark = (cell, margin) =>
+    encodePng(renderMark(MARK_CELLS, BRAND_COLORS, cell, margin));
+  writeFileSync(
+    join(root, "src/app/icon.svg"),
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" fill="${BRAND_COLORS.ink}"/><g fill="${BRAND_COLORS.paper}">${MARK_CELLS.map(([x, y]) => `<rect x="${4 + x * 6}" y="${4 + y * 6}" width="6" height="6"/>`).join("")}</g></svg>\n`,
+  );
+  writeFileSync(
+    join(root, "src/app/favicon.ico"),
+    encodeIco([
+      { size: 16, png: mark(3, 2) },
+      { size: 32, png: mark(6, 4) },
+      { size: 48, png: mark(9, 6) },
+    ]),
+  );
+  writeFileSync(join(root, "src/app/apple-icon.png"), mark(36, 18));
+  mkdirSync(join(root, "public/icons"), { recursive: true });
+  writeFileSync(join(root, "public/icons/icon-192.png"), mark(36, 24));
+  writeFileSync(join(root, "public/icons/icon-512.png"), mark(96, 64));
+  console.log(
+    "icons → src/app/icon.svg, favicon.ico, apple-icon.png, public/icons/",
+  );
+  if (process.argv.includes("--icons")) process.exit(0);
+
   const { ALGORITHMS, PREVIEW_SOURCE, PREVIEW_SIZE } =
     await server.ssrLoadModule("/src/lib/algorithms.ts");
   const { renderPixels } = await server.ssrLoadModule(

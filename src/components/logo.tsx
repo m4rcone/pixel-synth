@@ -1,18 +1,7 @@
+import { MARK_CELLS } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 
-// A left-to-right ramp through a 4×4 Bayer matrix: the mark is literally the
-// output of an ordered-dither threshold map. Same cells as app/icon.svg.
-const CELLS: [number, number][] = [
-  [0, 0],
-  [2, 0],
-  [3, 0],
-  [1, 1],
-  [3, 1],
-  [2, 2],
-  [3, 2],
-  [3, 3],
-];
-
+/** The Bayer-ramp mark (src/lib/brand.ts) in a hairline frame. */
 export function LogoMark({ className }: { className?: string }) {
   return (
     <svg
@@ -29,7 +18,7 @@ export function LogoMark({ className }: { className?: string }) {
         stroke="var(--line-strong)"
       />
       <g fill="currentColor">
-        {CELLS.map(([x, y]) => (
+        {MARK_CELLS.map(([x, y]) => (
           <rect
             key={`${x}-${y}`}
             x={4 + x * 4}

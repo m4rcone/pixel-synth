@@ -18,7 +18,9 @@ export default async function OpengraphImage({
   return renderOgImage({
     eyebrow: `${getCategoryName(algorithm.category)} dithering`,
     title: algorithm.shortName,
-    subtitle: algorithm.description,
+    // The lede's first sentence, as in the page's meta description.
+    subtitle: algorithm.description.split(/(?<=\.) /)[0],
     image: algorithm.preview,
+    caption: `${algorithm.shortName} · 1-bit`,
   });
 }
