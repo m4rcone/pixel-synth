@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { FaqList } from "@/components/faq-list";
 import { AnimatedGifDemo } from "@/components/landing/animated-gif-demo";
 import {
   HeroInstrument,
@@ -23,7 +24,8 @@ import { MAX_ANIMATION_FRAMES } from "@/lib/editor/animation-limits";
 import { EXPORT_FACTORS } from "@/lib/editor/export";
 import { SUPPORTED_IMAGE_TYPES } from "@/lib/editor/load-image";
 import extractedColors from "@/data/sample-extracted-palette.json";
-import { faqStructuredData, HOME_FAQ, type FaqPart } from "@/lib/home-faq";
+import { faqStructuredData } from "@/lib/faq";
+import { HOME_FAQ } from "@/lib/home-faq";
 import {
   getPalettePreset,
   MAX_PALETTE_COLORS,
@@ -401,29 +403,7 @@ export default function HomePage() {
             >
               Frequently asked questions
             </h2>
-            <div className="border-line max-w-3xl border-b">
-              {HOME_FAQ.map((entry) => (
-                <details
-                  key={entry.question}
-                  className="group border-line border-t"
-                >
-                  <summary
-                    className={`flex cursor-pointer list-none items-baseline gap-3 py-4 font-medium ${focusRing}`}
-                  >
-                    <span
-                      aria-hidden="true"
-                      className="text-paper-dim transition-transform group-open:rotate-90 motion-reduce:transition-none"
-                    >
-                      &gt;
-                    </span>
-                    {entry.question}
-                  </summary>
-                  <p className="text-paper-dim border-line-strong mb-5 ml-1.5 border-l pl-5 leading-relaxed">
-                    <FaqAnswer parts={entry.answer} />
-                  </p>
-                </details>
-              ))}
-            </div>
+            <FaqList faq={HOME_FAQ} />
           </section>
 
           <section
@@ -597,17 +577,5 @@ function Cartridge({
         <p className="text-readout text-paper-dim truncate">{detail}</p>
       </div>
     </li>
-  );
-}
-
-function FaqAnswer({ parts }: { parts: FaqPart[] }) {
-  return parts.map((part, index) =>
-    typeof part === "string" ? (
-      part
-    ) : (
-      <Link key={index} href={part.href} className={textLink}>
-        {part.text}
-      </Link>
-    ),
   );
 }

@@ -1,10 +1,6 @@
 import { EXPORT_FACTORS } from "@/lib/editor/export";
+import type { FaqEntry } from "@/lib/faq";
 import { MAX_PALETTE_COLORS, MIN_PALETTE_COLORS } from "@/lib/palettes";
-
-/** Answer text, with optional internal links inside it. */
-export type FaqPart = string | { text: string; href: string };
-
-export type FaqEntry = { question: string; answer: FaqPart[] };
 
 /**
  * The landing page FAQ. The visible list and the FAQPage structured data are
@@ -71,22 +67,3 @@ export const HOME_FAQ: FaqEntry[] = [
     ],
   },
 ];
-
-export function faqAnswerText(answer: FaqPart[]) {
-  return answer
-    .map((part) => (typeof part === "string" ? part : part.text))
-    .join("");
-}
-
-/** FAQPage structured data with exactly the visible questions and answers. */
-export function faqStructuredData(faq: FaqEntry[]) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faq.map((entry) => ({
-      "@type": "Question",
-      name: entry.question,
-      acceptedAnswer: { "@type": "Answer", text: faqAnswerText(entry.answer) },
-    })),
-  };
-}

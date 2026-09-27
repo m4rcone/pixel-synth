@@ -80,10 +80,11 @@ export const ERROR_KERNELS = {
     [1, 1, 2],
     [2, 1, 1],
   ]),
+  // Sierra's "Filter Lite": 2 to the right, 1 below-left and 1 below.
   sierraLite: kernel(4, [
     [1, 0, 2],
+    [-1, 1, 1],
     [0, 1, 1],
-    [1, 1, 1],
   ]),
   // Atkinson intentionally diffuses only 6/8 of the error (crisper highlights).
   atkinson: kernel(8, [
