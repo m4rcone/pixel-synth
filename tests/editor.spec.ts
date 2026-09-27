@@ -30,11 +30,23 @@ test("renders a dithered image and offers a download", async ({ page }) => {
     "aria-pressed",
     "true",
   );
+  await expect(
+    dialog.getByRole("link", { name: /Support it on Ko-fi/ }),
+  ).toHaveAttribute("href", "https://ko-fi.com/m4rcone");
   const download = page.waitForEvent("download");
   await dialog.getByRole("button", { name: "Save PNG" }).click();
   expect((await download).suggestedFilename()).toBe(
     "pixelsynth-floyd-steinberg-8x.png",
   );
+});
+
+test("the studio sidebar links to Ko-fi", async ({ page }) => {
+  await page.goto("/editor");
+  await expect(
+    page
+      .getByRole("navigation", { name: "Studio" })
+      .getByRole("link", { name: /Support on Ko-fi/ }),
+  ).toHaveAttribute("href", "https://ko-fi.com/m4rcone");
 });
 
 test("a render worker that fails to load falls back to the main thread", async ({

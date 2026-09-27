@@ -2,13 +2,15 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Aperture, LayoutGrid, Palette } from "lucide-react";
+import { Aperture, Coffee, LayoutGrid, Palette } from "lucide-react";
 import { Logo } from "@/components/logo";
 
 import { NavMain } from "@/components/nav-main";
+import { siteConfig } from "@/lib/site";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -61,6 +63,31 @@ export function SidebarLeft({
         <SidebarContent>
           <NavMain items={data.navMain} />
         </SidebarContent>
+        <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                tooltip="Support on Ko-fi"
+                className="h-9"
+              >
+                <a
+                  href={siteConfig.links.support}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-paper-hot text-paper-dim flex items-center gap-2.5 transition-colors"
+                >
+                  <Coffee className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  <span className="text-caps">Support</span>
+                  <span className="sr-only">
+                    {" "}
+                    on Ko-fi (opens in a new tab)
+                  </span>
+                </a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
       </nav>
     </Sidebar>
   );

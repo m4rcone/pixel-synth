@@ -1,4 +1,4 @@
-/** Answer text, with optional internal links inside it. */
+/** Answer text, with optional links inside it (external when absolute). */
 export type FaqPart = string | { text: string; href: string };
 
 export type FaqEntry = { question: string; answer: FaqPart[] };

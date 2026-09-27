@@ -8,3 +8,9 @@ describe("site metadata", () => {
     expect(siteConfig.description.length).toBeLessThanOrEqual(160);
   });
 });
+
+describe("support link", () => {
+  it("points at the Ko-fi page", () => {
+    expect(siteConfig.links.support).toBe("https://ko-fi.com/m4rcone");
+  });
+});

@@ -139,3 +139,13 @@ test("a two-palette page switches every preview and editor link", async ({
     page.getByAltText(/dithered to the Game Boy Pocket palette with Bayer 4×4/),
   ).toHaveAttribute("src", /synthwave-sunset-bayer-4-4-gameboy-pocket\.png/);
 });
+
+test("the footer links to Ko-fi in a new tab", async ({ page }) => {
+  await page.goto("/");
+  const footer = page.getByRole("contentinfo");
+  for (const name of [/Support on Ko-fi/, /Buy me a coffee/]) {
+    const link = footer.getByRole("link", { name });
+    await expect(link).toHaveAttribute("href", "https://ko-fi.com/m4rcone");
+    await expect(link).toHaveAttribute("target", "_blank");
+  }
+});
