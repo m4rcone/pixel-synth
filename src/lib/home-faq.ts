@@ -1,5 +1,6 @@
 import { EXPORT_FACTORS } from "@/lib/editor/export";
 import type { FaqEntry } from "@/lib/faq";
+import { siteConfig } from "@/lib/site";
 import { MAX_PALETTE_COLORS, MIN_PALETTE_COLORS } from "@/lib/palettes";
 
 /**
@@ -16,7 +17,9 @@ export const HOME_FAQ: FaqEntry[] = [
   {
     question: "Is it free and private?",
     answer: [
-      "Yes. No account, no watermark, no usage limits, and every pixel is processed in your browser: your images never leave your device. The anonymous page-view counter never sees them.",
+      "Yes. No account, no watermark, no usage limits, and every pixel is processed in your browser: your images never leave your device. The anonymous page-view counter never sees them. If it’s useful to you, you can ",
+      { text: "support it on Ko-fi", href: siteConfig.links.support },
+      ".",
     ],
   },
   {

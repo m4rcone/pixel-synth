@@ -25,6 +25,7 @@ import {
 } from "@/lib/editor/export";
 import { TooManyColorsError } from "@/lib/editor/gif/errors";
 import type { Pixels } from "@/lib/editor/pixels";
+import { siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 type Format = "gif" | "png";
@@ -247,15 +248,29 @@ export function SaveButton() {
             {error}
           </p>
         )}
-        <Button onClick={save} disabled={saving} className="self-end">
-          {saving
-            ? progress === null
-              ? "Saving…"
-              : `Saving… ${Math.round(progress * 100)}%`
-            : saveGif
-              ? "Save GIF"
-              : "Save PNG"}
-        </Button>
+        <div className="border-line flex items-center justify-between gap-3 border-t pt-4">
+          <p className="text-paper-dim text-hint">
+            Free to use.{" "}
+            <a
+              href={siteConfig.links.support}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-paper hover:text-paper-hot focus-visible:ring-safelight underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
+            >
+              Support it on Ko-fi
+              <span className="sr-only"> (opens in a new tab)</span>
+            </a>
+          </p>
+          <Button onClick={save} disabled={saving} className="shrink-0">
+            {saving
+              ? progress === null
+                ? "Saving…"
+                : `Saving… ${Math.round(progress * 100)}%`
+              : saveGif
+                ? "Save GIF"
+                : "Save PNG"}
+          </Button>
+        </div>
       </PopoverContent>
     </Popover>
   );

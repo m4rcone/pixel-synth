@@ -32,11 +32,22 @@ export function FaqList({ faq }: { faq: FaqEntry[] }) {
   );
 }
 
-/** Text with inline internal links. */
+/** Text with inline links; absolute URLs open in a new tab. */
 export function RichText({ parts }: { parts: FaqPart[] }) {
   return parts.map((part, index) =>
     typeof part === "string" ? (
       part
+    ) : /^https?:/.test(part.href) ? (
+      <a
+        key={index}
+        href={part.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={textLink}
+      >
+        {part.text}
+        <span className="sr-only"> (opens in a new tab)</span>
+      </a>
     ) : (
       <Link key={index} href={part.href} className={textLink}>
         {part.text}

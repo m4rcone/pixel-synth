@@ -16,6 +16,8 @@ export const siteConfig = {
     github: "https://github.com/m4rcone",
     /** Source code (site navigation). */
     repository: "https://github.com/m4rcone/pixel-synth",
+    /** Donations (footer, studio sidebar, save dialog, FAQ). */
+    support: "https://ko-fi.com/m4rcone",
   },
 };
 

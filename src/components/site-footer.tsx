@@ -42,6 +42,11 @@ const COLUMNS: {
       },
       { label: "Suggest a feature", href: FEATURE_IDEA_URL, external: true },
       { label: "Report a bug", href: BUG_REPORT_URL, external: true },
+      {
+        label: "Support on Ko-fi",
+        href: siteConfig.links.support,
+        external: true,
+      },
     ],
   },
 ];
@@ -90,7 +95,18 @@ export function SiteFooter({ className }: { className?: string }) {
       </nav>
       <div className="border-line text-paper-dim mt-10 flex flex-col gap-2 border-t pt-7 text-sm sm:flex-row sm:justify-between">
         <p>© 2026 PixelSynth: Dithering & Pixel Art Tool</p>
-        <p>Runs entirely in your browser.</p>
+        <p>
+          Free, no ads, runs in your browser.{" "}
+          <a
+            href={siteConfig.links.support}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(linkClass, "text-paper")}
+          >
+            Buy me a coffee →
+            <span className="sr-only"> (opens in a new tab)</span>
+          </a>
+        </p>
       </div>
     </footer>
   );
