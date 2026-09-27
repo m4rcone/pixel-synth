@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { FileUp, Import } from "lucide-react";
 import {
   PALETTE_FILE_TYPES,
   parsePalette,
@@ -65,7 +64,6 @@ export function PaletteImport({
     >
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" disabled={disabled}>
-          <Import aria-hidden="true" />
           Import
         </Button>
       </PopoverTrigger>
@@ -86,10 +84,7 @@ export function PaletteImport({
             <h2 id="palette-import-title" className="text-lg font-semibold">
               Import a palette
             </h2>
-            <p
-              id="palette-import-hint"
-              className="text-paper-dim text-xs leading-relaxed"
-            >
+            <p id="palette-import-hint" className="text-paper-dim text-hint">
               Paste hex codes, or open a palette file. Lospec’s HEX, GPL, PAL
               and Paint.NET TXT downloads all work. The colors replace your
               custom palette.
@@ -136,7 +131,6 @@ export function PaletteImport({
               variant="outline"
               onClick={() => fileInput.current?.click()}
             >
-              <FileUp aria-hidden="true" />
               Open file
             </Button>
             <Button type="submit" disabled={!text.trim()}>

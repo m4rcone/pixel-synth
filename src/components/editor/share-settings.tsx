@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy, Link2 } from "lucide-react";
+import { Link2 } from "lucide-react";
 import { useEditorState } from "@/contexts/editor-context";
 import { settingsUrl } from "@/lib/editor/share";
 import { Button } from "@/components/ui/button";
@@ -83,11 +83,6 @@ function ShareLink() {
         className="border-input bg-ink-sunken text-readout text-paper focus-visible:ring-safelight h-9 w-full border px-2 focus-visible:ring-2 focus-visible:outline-none"
       />
       <Button id="share-settings-copy" onClick={copy} className="w-full">
-        {copied === "yes" ? (
-          <Check aria-hidden="true" />
-        ) : (
-          <Copy aria-hidden="true" />
-        )}
         {copied === "yes" ? "Link copied" : "Copy link"}
       </Button>
       <p aria-live="polite" className="text-label text-paper-dim min-h-4">

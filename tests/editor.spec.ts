@@ -18,7 +18,7 @@ async function upload(page: Page) {
 test("renders a dithered image and offers a download", async ({ page }) => {
   await page.goto("/editor");
   await upload(page);
-  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Dither image" }).click();
   await expect(page.locator('[aria-live="polite"]')).toContainText(
     "Rendered image is ready",
   );
@@ -43,7 +43,7 @@ test("a render worker that fails to load falls back to the main thread", async (
   await page.route(/worker/i, (route) => route.abort());
   await page.goto("/editor");
   await upload(page);
-  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Dither image" }).click();
   await expect(page.locator('[aria-live="polite"]')).toContainText(
     "Rendered image is ready",
   );
@@ -89,7 +89,7 @@ test("an image can be pasted from the clipboard", async ({ page }) => {
 test("split view compares original and processed", async ({ page }) => {
   await page.goto("/editor");
   await upload(page);
-  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Dither image" }).click();
 
   const split = page.getByRole("button", { name: "Split before and after" });
   await split.click();
@@ -152,7 +152,7 @@ test("palette mode dithers to a preset and names the export", async ({
   await page.goto("/editor");
   await page.waitForLoadState("networkidle");
   await page.getByLabel(/drop an image/i).setInputFiles(SPHERE);
-  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Dither image" }).click();
 
   await page.getByRole("button", { name: "Palette", exact: true }).click();
   await page.getByRole("combobox", { name: "Palette" }).click();
@@ -179,7 +179,7 @@ test("CMYK mode screens each ink at its angle and names the export", async ({
   await page.goto("/editor?algorithm=halftone");
   await page.waitForLoadState("networkidle");
   await page.getByLabel(/drop an image/i).setInputFiles(SPHERE);
-  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Dither image" }).click();
   await page.getByRole("button", { name: "CMYK", exact: true }).click();
 
   const inks = page.getByRole("list", { name: "Inks" });
@@ -389,7 +389,7 @@ test("the palettes page link applies the full pixel art preset", async ({
 test("1-bit mode names its dot colors", async ({ page }) => {
   await page.goto("/editor");
   await upload(page);
-  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Dither image" }).click();
 
   await expect(
     page.getByRole("button", { name: "1-bit", exact: true }),
@@ -434,7 +434,7 @@ test("'Report a bug' carries the settings, never the image", async ({
   await page.goto("/editor?algorithm=atkinson");
   await page.waitForLoadState("networkidle");
   await page.getByLabel(/drop an image/i).setInputFiles(SPHERE);
-  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Dither image" }).click();
   await page.getByRole("button", { name: "Editor help" }).click();
 
   const href = await page
@@ -461,7 +461,7 @@ test("a settings link reopens the editor with the same look", async ({
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   }
   await page.goto("/editor?sample=1&algorithm=atkinson&palette=gameboy");
-  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Dither image" }).click();
   const contrast = page.getByRole("slider", { name: "Contrast" });
   await contrast.focus();
   await page.keyboard.press("ArrowRight");
@@ -532,7 +532,7 @@ test("error diffusion strength shows only for diffusion algorithms", async ({
   page,
 }) => {
   await page.goto("/editor?sample=1");
-  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Dither image" }).click();
 
   const diffusion = page.getByRole("slider", { name: "Error diffusion" });
   await expect(diffusion).toHaveAttribute("aria-valuetext", "100%");
@@ -552,7 +552,7 @@ test("error diffusion strength shows only for diffusion algorithms", async ({
 
 test("halftone screens show their size, angle and shape", async ({ page }) => {
   await page.goto("/editor?sample=1&algorithm=halftone");
-  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Dither image" }).click();
   await expect(page.locator('[aria-live="polite"]')).toContainText(
     "Rendered image is ready",
   );
@@ -614,7 +614,7 @@ test("editing the NES palette keeps all 54 colors", async ({ page }) => {
 
 test("the save dialog blocks sizes browsers can't draw", async ({ page }) => {
   await page.goto("/editor?sample=1");
-  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Dither image" }).click();
   await page.getByRole("button", { name: "Save" }).click();
   const dialog = page.getByRole("dialog", { name: "Save image" });
 
@@ -634,7 +634,7 @@ test("a failed export says so and keeps the dialog open", async ({ page }) => {
     window.CompressionStream = undefined as never;
   });
   await page.goto("/editor?sample=1");
-  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Dither image" }).click();
   await page.getByRole("button", { name: "Save" }).click();
   const dialog = page.getByRole("dialog", { name: "Save image" });
   await dialog.getByRole("button", { name: "Save PNG" }).click();
@@ -649,7 +649,7 @@ test("a failed export says so and keeps the dialog open", async ({ page }) => {
 
 test("exports are indexed PNGs at the smallest bit depth", async ({ page }) => {
   await page.goto("/editor?sample=1&palette=gameboy");
-  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Dither image" }).click();
   const header = async (factor: string) => {
     await page.getByRole("button", { name: "Save", exact: true }).click();
     const dialog = page.getByRole("dialog", { name: "Save image" });
@@ -682,7 +682,7 @@ test("a transparent 1-bit background saves as a PNG with transparency", async ({
   page,
 }) => {
   await page.goto("/editor?sample=1");
-  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Dither image" }).click();
   await page.getByRole("checkbox", { name: "Transparent" }).click();
   await expect(page.getByLabel("Background", { exact: true })).toBeDisabled();
   await expect(page.locator('[aria-live="polite"]')).toContainText(
@@ -708,7 +708,7 @@ test("after a reset, transparency toggles back to the default background", async
   page,
 }) => {
   await page.goto("/editor?sample=1");
-  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Dither image" }).click();
   const background = page.getByLabel("Background", { exact: true });
   const transparent = page.getByRole("checkbox", { name: "Transparent" });
   await background.fill("#1e88e5");
@@ -719,7 +719,7 @@ test("after a reset, transparency toggles back to the default background", async
     .getByRole("alertdialog", { name: "Reset adjustments?" })
     .getByRole("button", { name: "Reset", exact: true })
     .click();
-  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Dither image" }).click();
   await expect(background).toHaveValue("#000000");
 
   await transparent.click();
@@ -806,7 +806,7 @@ test("every filter changes the image, and its reset restores it exactly", async 
   page,
 }) => {
   await page.goto("/editor?sample=1");
-  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Dither image" }).click();
   await expect(page.locator('[aria-live="polite"]')).toContainText(
     "Rendered image is ready",
   );
@@ -845,7 +845,7 @@ test("every dot color control changes the image, and bands can't cross", async (
   page,
 }) => {
   await page.goto("/editor?sample=1");
-  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Dither image" }).click();
   await expect(page.locator('[aria-live="polite"]')).toContainText(
     "Rendered image is ready",
   );

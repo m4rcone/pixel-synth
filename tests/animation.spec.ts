@@ -19,7 +19,7 @@ async function openSample(page: Page, query = "", { motion = false } = {}) {
 }
 
 async function applyDither(page: Page) {
-  await page.getByRole("button", { name: "Apply dither" }).click();
+  await page.getByRole("button", { name: "Dither image" }).click();
   await expect(page.locator('[aria-live="polite"]')).toContainText(
     "Animation ready.",
   );

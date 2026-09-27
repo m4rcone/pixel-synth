@@ -1,6 +1,6 @@
 "use client";
 
-import { Pipette, Plus, SwatchBook, X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { useEditorActions, useEditorState } from "@/contexts/editor-context";
@@ -17,6 +17,7 @@ import {
   type PaletteMatch,
 } from "@/lib/palettes";
 import { Button } from "@/components/ui/button";
+import { ColorInput } from "@/components/ui/color-input";
 import { Label } from "@/components/ui/label";
 import { Segmented } from "@/components/ui/segmented";
 import {
@@ -164,7 +165,7 @@ function PaletteControls({
             </span>
           </div>
         ) : (
-          <span className="text-paper-dim text-xs">
+          <span className="text-paper-dim text-hint">
             Colors appear after the next render.
           </span>
         )}
@@ -213,9 +214,7 @@ function PaletteControls({
           onChange={(match) => setColor({ match })}
           disabled={disabled}
         />
-        <p className="text-paper-dim text-xs leading-relaxed">
-          {MATCH_HINTS[color.match]}
-        </p>
+        <p className="text-paper-dim text-hint">{MATCH_HINTS[color.match]}</p>
       </div>
 
       <div className="flex flex-col gap-2">
@@ -230,7 +229,6 @@ function PaletteControls({
                 setColor({ palette: "extracted", match: "color" });
               }}
             >
-              <Pipette aria-hidden="true" />
               Extract from image
             </Button>
           )}
@@ -246,7 +244,6 @@ function PaletteControls({
                 })
               }
             >
-              <SwatchBook aria-hidden="true" />
               Edit colors
             </Button>
           )}
@@ -268,7 +265,7 @@ function PaletteControls({
           />
         </div>
         {/* Always rendered, so screen readers track it before a message. */}
-        <p role="status" className="text-paper-dim text-xs">
+        <p role="status" className="text-paper-dim text-hint">
           {imported}
         </p>
       </div>
@@ -302,9 +299,8 @@ function CustomPaletteEditor({
             <label className="sr-only" htmlFor={`custom-color-${index}`}>
               Color {index + 1}
             </label>
-            <input
+            <ColorInput
               id={`custom-color-${index}`}
-              type="color"
               value={color}
               onChange={(event) => {
                 const next = [...colors];
@@ -312,7 +308,6 @@ function CustomPaletteEditor({
                 onChange(next);
                 settle();
               }}
-              className="border-line-strong block size-8 cursor-pointer border bg-transparent p-0.5 disabled:cursor-not-allowed"
             />
             {colors.length > MIN_PALETTE_COLORS && (
               <button
@@ -339,7 +334,7 @@ function CustomPaletteEditor({
           </li>
         )}
       </ul>
-      <p className="text-paper-dim text-xs">
+      <p className="text-paper-dim text-hint">
         Saved in this browser. {MIN_PALETTE_COLORS}–{MAX_PALETTE_COLORS} colors.
       </p>
     </fieldset>

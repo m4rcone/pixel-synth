@@ -12,6 +12,7 @@ import {
 } from "@/lib/editor/settings";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { ColorInput } from "@/components/ui/color-input";
 import {
   Select,
   SelectContent,
@@ -95,10 +96,7 @@ export function ToneControls() {
             <SelectItem value="3">3 colors</SelectItem>
           </SelectContent>
         </Select>
-        <p
-          id="tone-color-count-hint"
-          className="text-paper-dim text-xs leading-relaxed"
-        >
+        <p id="tone-color-count-hint" className="text-paper-dim text-hint">
           Each dot takes the color of its brightness band; neighboring bands
           blend where they meet.
         </p>
@@ -140,16 +138,14 @@ export function ToneControls() {
                 <label htmlFor={colorId} className="sr-only">
                   {label} color
                 </label>
-                <input
+                <ColorInput
                   id={colorId}
-                  type="color"
                   value={tone.color.toLowerCase()}
                   disabled={slotDisabled}
                   onChange={(event) => {
                     update(setTone(slot, { color: event.target.value }));
                     commitColor();
                   }}
-                  className="border-line-strong h-6 w-10 shrink-0 cursor-pointer border bg-transparent p-0.5 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </>
             }
@@ -188,14 +184,12 @@ function BackgroundField({
         <Label htmlFor="tone-background" className="text-label text-paper-dim">
           Background
         </Label>
-        <input
+        <ColorInput
           id="tone-background"
           aria-describedby="tone-background-hint"
-          type="color"
           value={(background ?? lastColor).toLowerCase()}
           disabled={disabled || transparent}
           onChange={(event) => onPick(event.target.value)}
-          className="border-line-strong h-6 w-10 shrink-0 cursor-pointer border bg-transparent p-0.5 disabled:cursor-not-allowed disabled:opacity-50"
         />
         <div className="ml-auto flex items-center gap-2">
           <Checkbox
@@ -210,10 +204,7 @@ function BackgroundField({
           <Label htmlFor="tone-transparent">Transparent</Label>
         </div>
       </div>
-      <p
-        id="tone-background-hint"
-        className="text-paper-dim text-xs leading-relaxed"
-      >
+      <p id="tone-background-hint" className="text-paper-dim text-hint">
         {ink
           ? "Dots darker than the background mark the shadows, like ink."
           : "Dots lighter than the background mark the light areas."}

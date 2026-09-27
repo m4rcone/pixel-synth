@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Grid2x2 } from "lucide-react";
 import { useEditorActions, useEditorState } from "@/contexts/editor-context";
 import {
   algorithmsByCategory,
@@ -77,7 +76,6 @@ export function DitherControls() {
             disabled={disabled}
             onClick={applyPixelArt}
           >
-            <Grid2x2 aria-hidden="true" />
             Pixel art preset
           </Button>
         </div>
@@ -113,10 +111,7 @@ export function DitherControls() {
           </SelectContent>
         </Select>
         {shimmers && (
-          <p
-            id="algorithm-hint"
-            className="text-paper-dim text-xs leading-relaxed"
-          >
+          <p id="algorithm-hint" className="text-paper-dim text-hint">
             Error diffusion can shimmer between frames; Bayer or Blue Noise stay
             stable.
           </p>

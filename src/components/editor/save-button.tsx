@@ -54,7 +54,7 @@ export function SaveButton() {
   const gifHint = !animation
     ? null
     : status !== "dithered"
-      ? "Apply dither to save a GIF."
+      ? "Dither the image to save a GIF."
       : !gifFrames
         ? "Wait for every frame to render to save a GIF."
         : null;
@@ -164,7 +164,8 @@ export function SaveButton() {
           disabled={!result}
           className="max-sm:size-9 max-sm:px-0"
         >
-          <Download aria-hidden="true" />
+          {/* Icon-only on phones, where the toolbar is tight; a label from sm up. */}
+          <Download className="sm:hidden" aria-hidden="true" />
           <span className="sr-only sm:not-sr-only">Save</span>
         </Button>
       </PopoverTrigger>
@@ -199,11 +200,7 @@ export function SaveButton() {
                 }
               }}
             />
-            {gifHint && (
-              <p className="text-paper-dim text-xs leading-relaxed">
-                {gifHint}
-              </p>
-            )}
+            {gifHint && <p className="text-paper-dim text-hint">{gifHint}</p>}
           </div>
         )}
         <div
@@ -237,7 +234,7 @@ export function SaveButton() {
             </button>
           ))}
         </div>
-        <p className="text-paper-dim text-xs leading-relaxed">
+        <p className="text-paper-dim text-hint">
           {saveGif &&
             `${frameCount} frames at ${width * factor} × ${height * factor} px. `}
           Enlarged without smoothing, so every pixel stays a crisp block. ×1 is

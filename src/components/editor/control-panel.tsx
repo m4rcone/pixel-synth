@@ -1,5 +1,3 @@
-import type { LucideIcon } from "lucide-react";
-import { Palette, Settings2, SlidersHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ControlPanelActions } from "./control-panel-actions";
 import { DitherControls } from "./dither-controls";
@@ -11,17 +9,15 @@ import { ColorControls } from "./color-controls";
 const SECTIONS: {
   id: string;
   title: string;
-  icon: LucideIcon;
   Controls: () => React.ReactNode;
 }[] = [
-  { id: "dither", title: "Dither", icon: Settings2, Controls: DitherControls },
+  { id: "dither", title: "Dither", Controls: DitherControls },
   {
     id: "filters",
     title: "Filters",
-    icon: SlidersHorizontal,
     Controls: FilterControls,
   },
-  { id: "color", title: "Color", icon: Palette, Controls: ColorControls },
+  { id: "color", title: "Color", Controls: ColorControls },
 ];
 
 /**
@@ -53,7 +49,7 @@ export function ControlPanel({ className }: { className?: string }) {
         tabIndex={0}
         className="focus-visible:ring-ring flex flex-1 flex-col focus-visible:ring-2 focus-visible:outline-hidden focus-visible:ring-inset lg:overflow-y-auto"
       >
-        {SECTIONS.map(({ id, title, icon: Icon, Controls }) => (
+        {SECTIONS.map(({ id, title, Controls }) => (
           <section
             key={id}
             aria-labelledby={`panel-${id}-heading`}
@@ -63,7 +59,6 @@ export function ControlPanel({ className }: { className?: string }) {
               id={`panel-${id}-heading`}
               className="text-caps text-paper flex items-center gap-2 font-semibold"
             >
-              <Icon className="text-paper-dim size-4" aria-hidden="true" />
               {title}
             </h3>
             <Controls />
