@@ -284,6 +284,11 @@
   }
 }
 
+/* Fills the viewport below the sticky global header (h-14). */
+@utility h-below-header {
+  height: calc(100svh - 3.5rem);
+}
+
 /* Images are enlarged nearest-neighbor: every pixel stays a sharp block. */
 @utility pixelated {
   image-rendering: pixelated;

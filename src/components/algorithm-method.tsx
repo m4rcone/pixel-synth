@@ -239,6 +239,7 @@ function MatrixTable({
                   key={x}
                   className="text-readout size-10 text-center"
                   // Heat stays in the dark range so paper text keeps ≥ 5:1.
+                  // --paper as plain rgb(), so axe can measure the contrast.
                   style={{
                     background: `rgb(207 230 255 / ${(0.04 + t * 0.32).toFixed(3)})`,
                   }}

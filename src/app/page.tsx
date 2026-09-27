@@ -133,7 +133,7 @@ const homeStructuredData = [
 const focusRing =
   "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-safelight";
 
-const navLink = `text-caps px-2 py-1.5 text-paper-dim transition-colors hover:text-paper ${focusRing}`;
+const navLink = `text-caps px-2 py-1.5 text-paper-dim transition-colors hover:text-paper-hot ${focusRing}`;
 
 const textLink = `text-paper hover:text-paper-hot hover:decoration-paper-hot decoration-line-strong underline underline-offset-4 transition-colors ${focusRing}`;
 

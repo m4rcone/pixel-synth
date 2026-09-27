@@ -15,7 +15,7 @@ const buttonVariants = cva(
         destructive: "btn-notch-destructive text-paper",
         outline: "text-paper hover:text-paper-hot",
         secondary: "bg-secondary text-secondary-foreground hover:bg-accent",
-        ghost: "text-paper-dim hover:bg-accent hover:text-paper",
+        ghost: "text-paper-dim hover:bg-accent hover:text-paper-hot",
         link: "text-paper underline decoration-line-strong underline-offset-4 hover:text-paper-hot hover:decoration-paper-hot",
       },
       size: {

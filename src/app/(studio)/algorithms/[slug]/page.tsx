@@ -139,7 +139,7 @@ export default async function AlgorithmPage({
               </span>
               <Link
                 href={`/algorithms#family-${category.id}`}
-                className="hover:text-paper focus-visible:ring-safelight underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:outline-none"
+                className="hover:text-paper-hot focus-visible:ring-safelight underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:outline-none"
               >
                 {category.name}
               </Link>

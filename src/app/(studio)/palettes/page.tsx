@@ -113,7 +113,7 @@ export default function PalettesPage() {
                 <li key={group}>
                   <a
                     href={`#group-${slug(group)}`}
-                    className="border-line-strong text-paper-dim hover:text-paper hover:border-paper focus-visible:ring-safelight inline-flex h-9 items-center border px-3.5 text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                    className="border-line-strong text-paper-dim hover:text-paper-hot hover:border-paper focus-visible:ring-safelight inline-flex h-9 items-center border px-3.5 text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
                   >
                     {group === "Dynamic" ? "Your own colors" : group}
                   </a>
@@ -342,7 +342,7 @@ function PaletteCard({
             <li
               key={`${color}-${index}`}
               title={color}
-              className="size-6 shadow-[inset_0_0_0_1px_var(--line-strong)]"
+              className="inset-ring-line-strong size-6 inset-ring"
               style={{ background: color }}
             >
               <span className="sr-only">{color}</span>

@@ -175,7 +175,7 @@ export function SaveButton() {
         aria-labelledby="save-title"
         className="flex w-80 flex-col gap-4"
       >
-        <h2 id="save-title" className="text-lg font-semibold">
+        <h2 id="save-title" className="text-heading font-semibold">
           {animation ? "Save animation" : "Save image"}
         </h2>
         {animation && (
@@ -224,7 +224,7 @@ export function SaveButton() {
                 "focus-visible:ring-safelight flex items-baseline justify-between gap-2 border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none",
                 k === factor
                   ? "border-paper bg-paper text-ink"
-                  : "border-input text-paper-dim hover:text-paper",
+                  : "border-input text-paper-dim hover:text-paper-hot",
               )}
             >
               ×{k}

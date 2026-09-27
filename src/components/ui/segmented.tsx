@@ -43,7 +43,7 @@ export function Segmented<T extends string>({
             option.disabled && !disabled && "opacity-45",
             option.value === value
               ? "bg-paper text-ink"
-              : "text-paper-dim hover:text-paper",
+              : "text-paper-dim hover:text-paper-hot",
           )}
         >
           {option.label}

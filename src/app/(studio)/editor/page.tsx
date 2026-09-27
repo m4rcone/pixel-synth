@@ -75,7 +75,7 @@ export default function EditorPage() {
         {announcement}
       </p>
 
-      <div className="flex flex-col lg:h-[calc(100svh-3.5rem)] lg:flex-row">
+      <div className="lg:h-below-header flex flex-col lg:flex-row">
         <section
           aria-label="Image editor workspace"
           className="relative flex min-w-0 flex-1 flex-col"
@@ -89,7 +89,7 @@ export default function EditorPage() {
               <button
                 type="button"
                 onClick={() => setError(null)}
-                className="text-label text-paper-dim hover:text-paper focus-visible:ring-ring shrink-0 focus-visible:ring-2 focus-visible:outline-hidden"
+                className="text-label text-paper-dim hover:text-paper-hot focus-visible:ring-ring shrink-0 focus-visible:ring-2 focus-visible:outline-hidden"
               >
                 Dismiss
               </button>

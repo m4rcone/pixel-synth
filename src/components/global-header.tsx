@@ -21,7 +21,7 @@ export function GlobalHeader({ page, parent }: GlobalHeaderProps) {
   return (
     <header className="border-line bg-ink/85 sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b backdrop-blur-sm">
       <div className="flex flex-1 items-center gap-2 px-3">
-        <SidebarTrigger className="text-paper-dim hover:text-paper" />
+        <SidebarTrigger className="text-paper-dim hover:text-paper-hot" />
         <Separator
           orientation="vertical"
           className="bg-line-strong mr-1 data-[orientation=vertical]:h-4"
@@ -31,7 +31,7 @@ export function GlobalHeader({ page, parent }: GlobalHeaderProps) {
             <BreadcrumbItem>
               <BreadcrumbLink
                 asChild
-                className="text-paper-dim hover:text-paper transition-colors"
+                className="text-paper-dim hover:text-paper-hot transition-colors"
               >
                 <Link href="/">Home</Link>
               </BreadcrumbLink>
@@ -42,7 +42,7 @@ export function GlobalHeader({ page, parent }: GlobalHeaderProps) {
                 <BreadcrumbItem>
                   <BreadcrumbLink
                     asChild
-                    className="text-paper-dim hover:text-paper transition-colors"
+                    className="text-paper-dim hover:text-paper-hot transition-colors"
                   >
                     <Link href={parent.href}>{parent.label}</Link>
                   </BreadcrumbLink>

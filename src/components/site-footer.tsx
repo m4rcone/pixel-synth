@@ -47,7 +47,7 @@ const COLUMNS: {
 ];
 
 const linkClass =
-  "text-paper-dim hover:text-paper focus-visible:ring-safelight  text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none";
+  "text-paper-dim hover:text-paper-hot focus-visible:ring-safelight  text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none";
 
 /**
  * Site index for the landing and the catalog pages (not the editor): every

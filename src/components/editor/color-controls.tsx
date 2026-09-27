@@ -330,7 +330,7 @@ function CustomPaletteEditor({
               type="button"
               onClick={() => onCommit([...colors, colors.at(-1) ?? "#ffffff"])}
               aria-label="Add color"
-              className="border-input text-paper-dim hover:text-paper hover:border-paper/60 focus-visible:ring-safelight grid size-8 place-items-center border border-dashed transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed"
+              className="border-input text-paper-dim hover:text-paper-hot hover:border-paper/60 focus-visible:ring-safelight grid size-8 place-items-center border border-dashed transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed"
             >
               <Plus className="size-4" aria-hidden="true" />
             </button>

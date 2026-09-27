@@ -22,7 +22,7 @@ export function ShareSettings() {
           type="button"
           aria-label="Share settings"
           disabled={status === "empty"}
-          className="text-paper-dim hover:text-paper hover:bg-accent focus-visible:ring-safelight grid size-9 place-items-center transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-45"
+          className="text-paper-dim hover:text-paper-hot hover:bg-accent focus-visible:ring-safelight grid size-9 place-items-center transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-45"
         >
           <Link2 className="size-4.5" aria-hidden="true" />
         </button>

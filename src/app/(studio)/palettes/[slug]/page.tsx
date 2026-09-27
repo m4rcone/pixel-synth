@@ -418,7 +418,7 @@ function ColorTable({
                   <td className="w-12 px-3 py-2">
                     <span
                       aria-hidden="true"
-                      className="block size-6 shadow-[inset_0_0_0_1px_var(--line-strong)]"
+                      className="inset-ring-line-strong block size-6 inset-ring"
                       style={{ background: color.hex }}
                     />
                   </td>
@@ -446,7 +446,7 @@ function ColorTable({
             >
               <span
                 aria-hidden="true"
-                className="size-6 shrink-0 shadow-[inset_0_0_0_1px_var(--line-strong)]"
+                className="inset-ring-line-strong size-6 shrink-0 inset-ring"
                 style={{ background: color.hex }}
               />
               <span className="text-readout">{color.hex}</span>

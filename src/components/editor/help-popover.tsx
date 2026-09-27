@@ -70,7 +70,7 @@ export function HelpPopover() {
         <button
           type="button"
           aria-label="Editor help"
-          className="text-paper-dim hover:text-paper hover:bg-accent focus-visible:ring-safelight grid size-9 place-items-center transition-colors focus-visible:ring-2 focus-visible:outline-none"
+          className="text-paper-dim hover:text-paper-hot hover:bg-accent focus-visible:ring-safelight grid size-9 place-items-center transition-colors focus-visible:ring-2 focus-visible:outline-none"
         >
           <CircleHelp className="size-4.5" aria-hidden="true" />
         </button>
