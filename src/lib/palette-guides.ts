@@ -147,22 +147,9 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
     related: ["pico-8", "nes", "zx-spectrum"],
     faq: [
       {
-        question: "What are the Game Boy palette hex codes?",
-        answer: [
-          `From darkest to lightest: ${hexList("gameboy")}. They approximate the green screen of the original 1989 Game Boy (DMG-01).`,
-        ],
-      },
-      {
         question: "Did the Game Boy have an official color palette?",
         answer: [
           "No. The LCD shows four levels of darkness and its green tint comes from the screen, so every RGB version, including this one, is an approximation.",
-        ],
-      },
-      {
-        question:
-          "What’s the difference between the Game Boy and Game Boy Pocket palettes?",
-        answer: [
-          `The Pocket (1996) used an improved FSTN screen that looks black and white rather than green, so its four shades are much grayer, with only an olive hint: ${hexList("gameboy-pocket")}.`,
         ],
       },
       {
@@ -253,16 +240,6 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
     related: ["game-boy", "nes", "commodore-64"],
     faq: [
       {
-        question: "What are the PICO-8 palette hex codes?",
-        answer: [`In order, colors 0 to 15: ${hexList("pico8")}.`],
-      },
-      {
-        question: "What are the names of the PICO-8 colors?",
-        answer: [
-          "The manual names them: black, dark blue, dark purple, dark green, brown, dark gray, light gray, white, red, orange, yellow, green, blue, indigo, pink and peach.",
-        ],
-      },
-      {
         question: "Does PixelSynth include PICO-8’s secret palette?",
         answer: [
           "No, the preset has the 16 standard colors. To use the hidden ones, build a ",
@@ -343,12 +320,6 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
         question: "How many colors are in the NES palette?",
         answer: [
           "64 entries, of which about 54 are distinct; the rest repeat black or gray. A single screen shows at most 25 of them.",
-        ],
-      },
-      {
-        question: "Why do NES palettes differ between emulators?",
-        answer: [
-          "The console produced a TV signal, not RGB values, and TVs decoded it differently. Every RGB palette is someone’s measurement or interpretation of that signal.",
         ],
       },
       {
@@ -439,12 +410,6 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
     related: ["zx-spectrum", "nes", "apple-ii"],
     faq: [
       {
-        question: "What are the Commodore 64 hex codes?",
-        answer: [
-          `In the Pepto calibration, colors 0 to 15: ${hexList("c64")}.`,
-        ],
-      },
-      {
         question: "Why are there different C64 palettes?",
         answer: [
           "The VIC-II output a video signal, not RGB, so every palette is a measurement or an interpretation. Pepto is the most widely used; Colodore is its author’s later, more detailed model.",
@@ -490,7 +455,7 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
       },
     ],
     accuracy:
-      "The Spectrum outputs its colors as voltage levels. Emulators usually render normal colors at about 85% (#D7) and bright ones at full strength (#FF), as here.",
+      "The Spectrum outputs its colors as voltage levels, which emulators render at slightly different strengths. Here normal colors sit at about 85% (#D7) and bright ones at full strength (#FF).",
     sections: [
       {
         heading: "Eight colors, two brightnesses",
@@ -537,21 +502,15 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
     related: ["commodore-64", "cga", "apple-ii"],
     faq: [
       {
-        question: "What are the ZX Spectrum color hex codes?",
+        question: "Why do ZX Spectrum hex codes differ between sources?",
         answer: [
-          `Normal, then bright: ${hexList("zx-spectrum")}. Emulators pick different levels for the normal colors, from about #B2 to #D7 (Fuse uses #C0); all approximate the same voltages.`,
+          "Emulators pick different levels for the normal colors, from about #B2 to #D7 (Fuse uses #C0); all approximate the same voltages. This palette uses #D7, with the bright colors at #FF.",
         ],
       },
       {
         question: "Why does the ZX Spectrum have 15 colors and not 16?",
         answer: [
           "The bright bit brightens the channels that are on. Black has none on, so bright black is the same black.",
-        ],
-      },
-      {
-        question: "What is attribute clash?",
-        answer: [
-          "Color is stored per 8 × 8 block, with one ink and one paper each. When two differently colored objects share a block, one takes on the other’s colors.",
         ],
       },
     ],
@@ -627,12 +586,6 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
     related: ["ega", "apple-ii", "zx-spectrum"],
     faq: [
       {
-        question: "What are the CGA palette hex codes?",
-        answer: [
-          `Palette 1, high intensity: ${hexList("cga-cyan-magenta")}. Palette 0, high intensity: ${hexList("cga-green-red")}.`,
-        ],
-      },
-      {
         question: "Why are old DOS games cyan and magenta?",
         answer: [
           "CGA’s 320 × 200 mode allowed 4 colors from two fixed palettes. Palette 1 at high intensity, black, cyan, magenta and white, is the best known of them.",
@@ -703,10 +656,6 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
     examples: ["bayer-4-4", "bayer-2-2", "floyd-steinberg", "blue-noise"],
     related: ["cga", "commodore-64", "apple-ii"],
     faq: [
-      {
-        question: "What are the EGA palette hex codes?",
-        answer: [`Colors 0 to 15: ${hexList("ega")}.`],
-      },
       {
         question: "How many colors does EGA have?",
         answer: [
@@ -781,12 +730,6 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
     examples: ["floyd-steinberg", "bayer-2-2", "bayer-4-4", "atkinson"],
     related: ["commodore-64", "cga", "zx-spectrum"],
     faq: [
-      {
-        question: "What are the Apple II hi-res hex codes?",
-        answer: [
-          `Black, green, purple, orange, blue and white: ${hexList("apple-ii")}.`,
-        ],
-      },
       {
         question: "Why does the Apple II have only six colors in hi-res?",
         answer: [

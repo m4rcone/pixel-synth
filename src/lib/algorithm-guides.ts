@@ -126,16 +126,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
       },
       colorFaq("Floyd–Steinberg"),
       {
-        question: "Why does my animated GIF flicker?",
-        answer: [
-          "Error diffusion reacts to tiny changes between frames: a one-pixel difference changes where every later dot lands. Try ",
-          algo("bayer-8-8", "Bayer"),
-          " or ",
-          algo("blue-noise", "blue noise"),
-          " dithering for animations; their dots stay fixed from frame to frame.",
-        ],
-      },
-      {
         question: "How do I get rid of worm patterns?",
         answer: [
           "Lower the Error diffusion slider in the editor so less error travels from pixel to pixel, add a touch of noise in the filters, or switch to an algorithm with a wider spread such as ",
@@ -181,13 +171,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
       { slug: "sierra", look: "Close to JJN, less work" },
     ],
     faq: [
-      {
-        question: "What’s the difference between JJN and Floyd–Steinberg?",
-        answer: [
-          algo("floyd-steinberg"),
-          " spreads the error over 4 neighbors, JJN over 12 across three rows. JJN gives smoother gradients with fewer worm patterns; Floyd–Steinberg is faster and keeps edges a little sharper.",
-        ],
-      },
       {
         question: "Is JJN dithering slow?",
         answer: [
@@ -239,14 +222,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     ],
     faq: [
       {
-        question: "What’s the difference between Stucki and JJN?",
-        answer: [
-          "Both spread the error over the same 12 neighbors. Stucki’s weights (1, 2, 4, 8 over 42) keep more of it close to the current pixel than ",
-          algo("jarvis-judice-and-ninke-jjn", "JJN"),
-          "’s (1, 3, 5, 7 over 48), so edges come out a little sharper.",
-        ],
-      },
-      {
         question: "Is Stucki good for laser engraving?",
         answer: [
           "Yes. It keeps fine detail and gives clean, well-separated dots. Stay in 1-bit, set the output width to what your engraver needs and save the PNG at ×1, then turn off the laser software’s own dithering.",
@@ -295,14 +270,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
       { slug: "atkinson", look: "Only 3/4 of the error, more contrast" },
     ],
     faq: [
-      {
-        question: "What’s the difference between Burkes and Stucki?",
-        answer: [
-          "Burkes is ",
-          algo("stucki"),
-          " without its third row: the same 8, 4 and 2, 4, 8, 4, 2 weights, over 32 instead of 42. It does a little over half the work for almost the same look.",
-        ],
-      },
       {
         question: "When should I pick Burkes over Floyd–Steinberg?",
         answer: [
@@ -361,14 +328,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
           " over just 3. Smaller filters are faster and grainier.",
         ],
       },
-      {
-        question: "Is Sierra better than Jarvis–Judice–Ninke?",
-        answer: [
-          "They look almost the same. Sierra uses 10 weights instead of 12 and a divisor of 32 instead of 48, so it does a bit less work for a result that’s hard to tell from ",
-          algo("jarvis-judice-and-ninke-jjn", "JJN"),
-          ".",
-        ],
-      },
       colorFaq("Sierra"),
     ],
   },
@@ -405,13 +364,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
       { slug: "burkes", look: "Same footprint, crisper" },
     ],
     faq: [
-      {
-        question: "What’s the difference between Two-Row Sierra and Sierra?",
-        answer: [
-          algo("sierra"),
-          " adds a third row of weights (10 neighbors instead of 7). Two-Row Sierra is faster and nearly as smooth; the difference shows mostly in large, flat gradients.",
-        ],
-      },
       {
         question: "Two-Row Sierra or Burkes?",
         answer: [
@@ -462,12 +414,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
           " spreads its error over 4 neighbors instead of 3, which gives a slightly more even texture. Sierra Lite is a little faster.",
         ],
       },
-      {
-        question: "When should I use Sierra Lite?",
-        answer: [
-          "When speed matters more than the last bit of smoothness: huge images, quick tests, or pixel art at a small processing scale, where every dot is enlarged and fine texture differences disappear.",
-        ],
-      },
       colorFaq("Sierra Lite"),
     ],
   },
@@ -502,14 +448,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
         question: "Why is Atkinson dithering called the Mac look?",
         answer: [
           "Bill Atkinson wrote it for the original 1984 Macintosh, whose screen could show only black and white. MacPaint, HyperCard and countless early Mac images were dithered with it, so its crisp stipple became the look of the era.",
-        ],
-      },
-      {
-        question: "Why do dark areas turn solid black?",
-        answer: [
-          "Atkinson drops a quarter of the error, so shadows never collect enough brightness to place a white dot. Lift the shadows with the brightness, gamma or black point controls before dithering, or pick ",
-          algo("floyd-steinberg"),
-          " for the full tonal range.",
         ],
       },
       {
@@ -553,12 +491,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
       { slug: "floyd-steinberg", look: "Organic, detailed" },
     ],
     faq: [
-      {
-        question: "How many gray levels can Bayer 2×2 show?",
-        answer: [
-          "Five in 1-bit: black, white and three patterns in between, with one, two or three lit pixels per 2×2 cell.",
-        ],
-      },
       {
         question: "Is Bayer dithering good for animated GIFs?",
         answer: [
@@ -614,14 +546,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
         ],
       },
       {
-        question: "Bayer 4×4 or 8×8?",
-        answer: [
-          "4×4 has a bolder, more recognizable pattern and 17 levels. ",
-          algo("bayer-8-8", "8×8"),
-          " has a finer pattern and 65 levels, for smoother gradients.",
-        ],
-      },
-      {
         question: "Why does my dithered image show moiré when resized?",
         answer: [
           "The pattern repeats every 4 pixels, so scaling by a fraction makes it beat against the new pixel grid. PixelSynth enlarges the view and the export nearest-neighbor by whole multiples, which keeps it crisp; resize by whole multiples elsewhere too.",
@@ -660,14 +584,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
       { slug: "floyd-steinberg", look: "Organic, flickers in animation" },
     ],
     faq: [
-      {
-        question: "Is Bayer 8×8 better than Floyd–Steinberg?",
-        answer: [
-          "For animation, yes: its dots stay put between frames. For still photos, ",
-          algo("floyd-steinberg"),
-          " usually keeps more detail and looks less mechanical.",
-        ],
-      },
       {
         question: "Why not use an even bigger Bayer matrix?",
         answer: [
@@ -717,14 +633,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     ],
     faq: [
       {
-        question: "What’s the difference between Clustered Dot and Halftone?",
-        answer: [
-          "Clustered Dot uses a fixed 4×4 cell aligned to the pixel grid. ",
-          algo("halftone"),
-          " builds a real print screen at any size and angle, with round, square or diamond dots.",
-        ],
-      },
-      {
         question: "Clustered or dispersed dots?",
         answer: [
           "Dispersed dithers like ",
@@ -762,12 +670,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
       { slug: "random-dither", look: "Clumpy white noise" },
     ],
     faq: [
-      {
-        question: "What is blue noise dithering?",
-        answer: [
-          "Ordered dithering with a mask whose thresholds are spread evenly without any pattern. The dots look random but never clump, so it reads as a fine grain instead of a grid or blotchy noise.",
-        ],
-      },
       {
         question: "Blue noise or Floyd–Steinberg?",
         answer: [
@@ -830,12 +732,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
         ],
       },
       {
-        question: "Does the grain change every time?",
-        answer: [
-          "No. PixelSynth uses a seeded generator, so the same image with the same settings always gets the same grain, and animated frames don’t flicker.",
-        ],
-      },
-      {
         question: "When is random dithering useful?",
         answer: [
           "When you want grit rather than precision: a photocopied zine, a lo-fi poster or a noisy texture to layer over other artwork with a transparent background.",
@@ -884,14 +780,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
           "They come from the same method. ",
           algo("blue-noise"),
           " uses a larger mask for a grain with no visible repetition; Void-and-Cluster’s smaller array has a slight rhythm that some images benefit from.",
-        ],
-      },
-      {
-        question: "Void-and-Cluster or Bayer?",
-        answer: [
-          "Both are ordered and stable in animation. ",
-          algo("bayer-8-8", "Bayer"),
-          " has a regular cross-hatch; void-and-cluster disperses its dots without a lattice, so it looks more natural.",
         ],
       },
     ],
