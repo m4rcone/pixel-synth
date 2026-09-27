@@ -24,7 +24,7 @@ async function uploadTinyImage(page: Page) {
 test.describe("accessibility", () => {
   // Popovers, dialogs and transitions appear at rest, so contrast is measured
   // on their final colors without waiting out an animation.
-  test.use({ reducedMotion: "reduce" });
+  test.use({ contextOptions: { reducedMotion: "reduce" } });
 
   for (const route of [
     "/",
