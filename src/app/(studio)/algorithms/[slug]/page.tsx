@@ -92,11 +92,17 @@ export default async function AlgorithmPage({
         name: "Dithering algorithms",
         url: absoluteUrl("/algorithms"),
       },
+      author: {
+        "@type": "Person",
+        name: siteConfig.creator,
+        url: siteConfig.links.github,
+      },
       publisher: {
         "@type": "Person",
         name: siteConfig.creator,
         url: siteConfig.links.github,
       },
+      dateModified: siteConfig.updated,
     },
     breadcrumbStructuredData([
       { name: "Algorithms", path: "/algorithms" },

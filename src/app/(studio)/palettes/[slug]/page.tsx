@@ -105,11 +105,17 @@ export default async function PaletteGuidePage({
         name: "Color palettes",
         url: absoluteUrl("/palettes"),
       },
+      author: {
+        "@type": "Person",
+        name: siteConfig.creator,
+        url: siteConfig.links.github,
+      },
       publisher: {
         "@type": "Person",
         name: siteConfig.creator,
         url: siteConfig.links.github,
       },
+      dateModified: siteConfig.updated,
     },
     breadcrumbStructuredData([
       { name: "Palettes", path: "/palettes" },
