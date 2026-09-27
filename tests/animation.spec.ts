@@ -207,8 +207,7 @@ for (const viewport of [
     await expect(
       page.getByRole("button", { name: "Animated GIF" }),
     ).toHaveAttribute("aria-pressed", "true");
-    // Let the open animation finish so contrast is measured at rest.
-    await page.waitForTimeout(400);
+    // Reduced motion (openSample): the dialog opens at rest.
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   });
 }
