@@ -168,11 +168,19 @@ export function Canvas({ onStatusChange }: CanvasProps) {
       draw(original!);
       ctx.restore();
       // Paper divider with a square grip: the console has no round shapes.
+      // The grip is dark with a paper edge, so it shows on black and white.
+      const styles = getComputedStyle(canvas);
+      const paper = styles.getPropertyValue("--paper");
       ctx.save();
       ctx.globalAlpha = 0.9;
-      ctx.fillStyle = getComputedStyle(canvas).getPropertyValue("--paper");
+      ctx.fillStyle = paper;
       ctx.fillRect(dividerX - 0.5, 0, 1, view.height);
-      ctx.fillRect(dividerX - 5, view.height / 2 - 5, 10, 10);
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = styles.getPropertyValue("--ink");
+      ctx.fillRect(dividerX - 6, view.height / 2 - 6, 12, 12);
+      ctx.strokeStyle = paper;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(dividerX - 5.5, view.height / 2 - 5.5, 11, 11);
       ctx.restore();
     }
     // frame is derived from source.

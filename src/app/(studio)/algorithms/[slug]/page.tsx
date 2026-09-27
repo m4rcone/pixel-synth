@@ -235,7 +235,7 @@ export default async function AlgorithmPage({
             </p>
           </div>
 
-          <ul className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {guide.compare.map(({ slug }) => {
               const other = getAlgorithm(slug)!;
               return (
@@ -248,7 +248,7 @@ export default async function AlgorithmPage({
                         width={PREVIEW_SIZE}
                         height={PREVIEW_SIZE}
                         unoptimized
-                        className="pixelated aspect-square w-full object-none"
+                        className="pixelated aspect-4/3 w-full object-none sm:aspect-square"
                       />
                     </div>
                     <figcaption className="text-sm">
@@ -268,66 +268,71 @@ export default async function AlgorithmPage({
             })}
           </ul>
 
-          <div
-            role="region"
-            aria-label={`${algorithm.shortName} comparison table`}
-            // Scrolls sideways on phones; focusable so keyboards can too.
-            // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
-            tabIndex={0}
-            className="focus-visible:ring-safelight overflow-x-auto focus-visible:ring-2 focus-visible:outline-none"
-          >
-            <table className="border-line w-full min-w-xl border-collapse border text-left text-sm">
-              <caption className="sr-only">
-                {algorithm.shortName} compared with{" "}
-                {guide.compare
-                  .slice(1)
-                  .map(({ slug }) => getAlgorithm(slug)!.shortName)
-                  .join(", ")}
-              </caption>
-              <thead>
-                <tr className="border-line border-b">
-                  {["Algorithm", "Method", "Animation", "Look"].map((col) => (
-                    <th
-                      key={col}
-                      scope="col"
-                      className="text-caps text-paper-dim px-4 py-3 font-normal"
-                    >
-                      {col}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {guide.compare.map(({ slug, look }) => {
-                  const other = getAlgorithm(slug)!;
-                  return (
-                    <tr key={slug} className="border-line border-b">
-                      <th scope="row" className="px-4 py-3 font-semibold">
-                        {slug === algorithm.slug ? (
-                          other.shortName
-                        ) : (
-                          <Link
-                            href={`/algorithms/${slug}`}
-                            className={textLink}
-                          >
-                            {other.shortName}
-                          </Link>
-                        )}
+          {/* On phones the table scrolls sideways: a fade at the right edge
+              hints at the hidden columns, and the end padding lets the last
+              one scroll clear of it. */}
+          <div className="after:from-ink/0 after:to-ink relative after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:w-10 after:bg-linear-to-r sm:after:hidden">
+            <div
+              role="region"
+              aria-label={`${algorithm.shortName} comparison table`}
+              // Scrolls sideways on phones; focusable so keyboards can too.
+              // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+              tabIndex={0}
+              className="focus-visible:ring-safelight overflow-x-auto pr-10 focus-visible:ring-2 focus-visible:outline-none sm:pr-0"
+            >
+              <table className="border-line w-full min-w-xl border-collapse border text-left text-sm">
+                <caption className="sr-only">
+                  {algorithm.shortName} compared with{" "}
+                  {guide.compare
+                    .slice(1)
+                    .map(({ slug }) => getAlgorithm(slug)!.shortName)
+                    .join(", ")}
+                </caption>
+                <thead>
+                  <tr className="border-line border-b">
+                    {["Algorithm", "Method", "Animation", "Look"].map((col) => (
+                      <th
+                        key={col}
+                        scope="col"
+                        className="text-caps text-paper-dim px-4 py-3 font-normal"
+                      >
+                        {col}
                       </th>
-                      <td className="text-paper-dim px-4 py-3">
-                        {methodSummary(slug)}
-                      </td>
-                      <td className="text-paper-dim px-4 py-3">
-                        {getMethod(slug).kind === "diffusion"
-                          ? "Flickers"
-                          : "Stable"}
-                      </td>
-                      <td className="text-paper-dim px-4 py-3">{look}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {guide.compare.map(({ slug, look }) => {
+                    const other = getAlgorithm(slug)!;
+                    return (
+                      <tr key={slug} className="border-line border-b">
+                        <th scope="row" className="px-4 py-3 font-semibold">
+                          {slug === algorithm.slug ? (
+                            other.shortName
+                          ) : (
+                            <Link
+                              href={`/algorithms/${slug}`}
+                              className={textLink}
+                            >
+                              {other.shortName}
+                            </Link>
+                          )}
+                        </th>
+                        <td className="text-paper-dim px-4 py-3">
+                          {methodSummary(slug)}
+                        </td>
+                        <td className="text-paper-dim px-4 py-3">
+                          {getMethod(slug).kind === "diffusion"
+                            ? "Flickers"
+                            : "Stable"}
+                        </td>
+                        <td className="text-paper-dim px-4 py-3">{look}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
 
