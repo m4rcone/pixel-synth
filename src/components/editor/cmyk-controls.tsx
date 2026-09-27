@@ -47,7 +47,7 @@ export function CmykControls() {
             </li>
           ))}
         </ul>
-        <p className="text-paper-dim text-xs leading-relaxed">
+        <p className="text-paper-dim text-hint">
           Each ink is dithered on its own, then overprinted on white paper.
           {screens &&
             " The screen angle sets black; the other inks keep the classic 30° and 45° offsets, so the screens form rosettes instead of moiré."}
@@ -66,7 +66,7 @@ export function CmykControls() {
         onChange={(black) => setBlack(update, black)}
         onCommit={(black) => setBlack(apply, black)}
       />
-      <p className="text-paper-dim -mt-2 text-xs leading-relaxed">
+      <p className="text-paper-dim text-hint -mt-2">
         How much of the gray that cyan, magenta and yellow share prints in black
         instead. 0% prints no black.
       </p>

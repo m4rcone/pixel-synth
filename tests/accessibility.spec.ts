@@ -29,6 +29,8 @@ test.describe("accessibility", () => {
     "/algorithms/floyd-steinberg",
     "/algorithms/blue-noise",
     "/algorithms/random-dither",
+    "/palettes/game-boy",
+    "/palettes/nes",
     "/palettes",
   ]) {
     test(`has no axe violations on ${route}`, async ({ page }) => {
@@ -123,7 +125,7 @@ test.describe("accessibility", () => {
   }) => {
     await page.goto("/editor");
     await uploadTinyImage(page);
-    await page.getByRole("button", { name: "Apply dither" }).click();
+    await page.getByRole("button", { name: "Dither image" }).click();
     await expect(
       page.getByRole("button", { name: "Reset", exact: true }),
     ).toBeVisible();
@@ -136,7 +138,7 @@ test.describe("accessibility", () => {
   }) => {
     await page.goto("/editor");
     await uploadTinyImage(page);
-    await page.getByRole("button", { name: "Apply dither" }).click();
+    await page.getByRole("button", { name: "Dither image" }).click();
     await page.getByRole("button", { name: "Palette", exact: true }).click();
     await page.getByRole("button", { name: "Edit colors" }).click();
     await expectNoAccessibilityViolations(page);
@@ -153,7 +155,7 @@ test.describe("accessibility", () => {
   test("CMYK controls have no axe violations", async ({ page }) => {
     await page.goto("/editor?algorithm=halftone");
     await uploadTinyImage(page);
-    await page.getByRole("button", { name: "Apply dither" }).click();
+    await page.getByRole("button", { name: "Dither image" }).click();
     await page.getByRole("button", { name: "CMYK", exact: true }).click();
     await expect(page.getByRole("list", { name: "Inks" })).toBeVisible();
     // Let the mode switch's color transition finish.
@@ -232,6 +234,7 @@ test.describe("accessibility on a phone", () => {
     "/algorithms",
     "/algorithms/bayer-4-4",
     "/palettes",
+    "/palettes/cga",
   ]) {
     test(`has no axe violations on ${route}`, async ({ page }) => {
       await page.goto(route);

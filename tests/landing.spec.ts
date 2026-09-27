@@ -29,9 +29,7 @@ test("every internal landing link resolves", async ({ page, request }) => {
   }
 });
 
-test("a palette cartridge opens that palette in the gallery", async ({
-  page,
-}) => {
+test("a palette cartridge opens that palette's page", async ({ page }) => {
   await page.goto("/");
   await page.waitForLoadState("networkidle");
   await page
@@ -39,9 +37,25 @@ test("a palette cartridge opens that palette in the gallery", async ({
     .getByRole("link", { name: "PICO-8" })
     .click();
 
-  await expect(page).toHaveURL(/\/palettes#palette-pico8$/);
-  await expect(page.locator("#palette-pico8")).toBeFocused();
-  await expect(page.locator("#palette-pico8")).toBeInViewport();
+  await expect(page).toHaveURL(/\/palettes\/pico-8$/);
+  await expect(
+    page.getByRole("heading", { level: 1, name: "PICO-8 Palette" }),
+  ).toBeFocused();
+});
+
+test("a cartridge without a page opens its card in the gallery", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.waitForLoadState("networkidle");
+  await page
+    .getByRole("region", { name: "Retro palettes: Game Boy, NES, PICO-8, CGA" })
+    .getByRole("link", { name: "Riso pink & blue" })
+    .click();
+
+  await expect(page).toHaveURL(/\/palettes#palette-riso$/);
+  await expect(page.locator("#palette-riso")).toBeFocused();
+  await expect(page.locator("#palette-riso")).toBeInViewport();
 });
 
 test("the FAQ opens from the keyboard", async ({ page }) => {
@@ -98,4 +112,30 @@ test("the hero steps through algorithms and palettes", async ({ page }) => {
     "href",
     "/editor?sample=1&algorithm=line-screen&palette=gameboy",
   );
+});
+
+test("a two-palette page switches every preview and editor link", async ({
+  page,
+}) => {
+  await page.goto("/palettes/game-boy");
+  await page.waitForLoadState("networkidle");
+  const editorLink = page.getByRole("link", {
+    name: "Use Game Boy in the editor",
+  });
+  await expect(editorLink).toHaveAttribute("href", "/editor?palette=gameboy");
+
+  await page
+    .getByRole("group", { name: "Palette shown", exact: true })
+    .getByRole("button", { name: "Game Boy Pocket" })
+    .click();
+
+  await expect(
+    page.getByRole("link", { name: "Use Game Boy Pocket in the editor" }),
+  ).toHaveAttribute("href", "/editor?palette=gameboy-pocket");
+  await expect(
+    page.getByRole("button", { name: "Game Boy Pocket" }).last(),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(
+    page.getByAltText(/dithered to the Game Boy Pocket palette with Bayer 4×4/),
+  ).toHaveAttribute("src", /synthwave-sunset-bayer-4-4-gameboy-pocket\.png/);
 });

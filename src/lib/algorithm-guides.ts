@@ -12,6 +12,7 @@ import {
   type AlgorithmId,
 } from "@/lib/algorithms";
 import type { FaqEntry, FaqPart } from "@/lib/faq";
+import { paletteHref } from "@/lib/palette-guides";
 
 export type AlgorithmGuide = {
   /** Meta description, at most 160 characters. */
@@ -39,7 +40,7 @@ const algo = (slug: AlgorithmId, text?: string): FaqPart => ({
 
 const palette = (id: string, text: string): FaqPart => ({
   text,
-  href: `/palettes#palette-${id}`,
+  href: paletteHref(id),
 });
 
 const RETRO_PALETTES: FaqPart[] = [

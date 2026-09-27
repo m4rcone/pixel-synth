@@ -1,7 +1,7 @@
 "use client";
 
 import { type ChangeEvent, type DragEvent, useRef, useState } from "react";
-import { ImageUp, LoaderCircle, Sunset } from "lucide-react";
+import { ImageUp, LoaderCircle } from "lucide-react";
 import { useEditorActions } from "@/contexts/editor-context";
 import {
   ImageLoadError,
@@ -107,7 +107,7 @@ export function ImageDropzone() {
           id="image-upload-description"
           className="text-paper-dim mt-4 text-center text-sm"
         >
-          {SUPPORTED_FORMATS_DETAIL} · Processed locally
+          {SUPPORTED_FORMATS_DETAIL}
         </p>
 
         <div className="mt-6 flex flex-col items-center gap-3">
@@ -117,10 +117,8 @@ export function ImageDropzone() {
             onClick={() => loadSample("still")}
             disabled={loadingSample !== null}
           >
-            {loadingSample === "still" ? (
+            {loadingSample === "still" && (
               <LoaderCircle className="animate-spin" aria-hidden="true" />
-            ) : (
-              <Sunset aria-hidden="true" />
             )}
             {loadingSample === "still"
               ? "Loading sample…"

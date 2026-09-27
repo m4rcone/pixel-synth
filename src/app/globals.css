@@ -135,6 +135,14 @@
   letter-spacing: 0.02em;
 }
 
+/* Help text under a control: one step below text-label, so instructions
+   read as secondary to the control they describe. */
+@utility text-hint {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  line-height: 1.6;
+}
+
 /* Console label: section heads, card meta, column titles. Tracked caps. */
 @utility text-caps {
   font-family: var(--font-sans);

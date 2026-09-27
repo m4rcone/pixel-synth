@@ -1,6 +1,5 @@
 "use client";
 
-import { RotateCcw, Sparkles, Trash2 } from "lucide-react";
 import { useCanvasContext } from "@/contexts/canvas-context";
 import { useEditorActions, useEditorState } from "@/contexts/editor-context";
 import { Button } from "@/components/ui/button";
@@ -29,8 +28,7 @@ export function ControlPanelActions() {
         disabled={status === "empty"}
         className="w-full"
       >
-        <Sparkles aria-hidden="true" />
-        Apply dither
+        Dither image
       </Button>
     );
   }
@@ -39,7 +37,6 @@ export function ControlPanelActions() {
     <div className="flex w-full gap-2">
       <ConfirmButton
         label="Discard"
-        icon={<Trash2 aria-hidden="true" />}
         variant="destructive"
         title="Discard image?"
         description="The image, all adjustments and the processed result will be removed. This action cannot be undone."
@@ -52,7 +49,6 @@ export function ControlPanelActions() {
       />
       <ConfirmButton
         label="Reset"
-        icon={<RotateCcw aria-hidden="true" />}
         variant="outline"
         title="Reset adjustments?"
         description="Dither, filter and tone settings return to their defaults. The image stays loaded."
@@ -69,14 +65,12 @@ export function ControlPanelActions() {
 
 function ConfirmButton({
   label,
-  icon,
   variant,
   title,
   description,
   onConfirm,
 }: {
   label: string;
-  icon: React.ReactNode;
   variant: "destructive" | "outline";
   title: string;
   description: string;
@@ -92,7 +86,6 @@ function ConfirmButton({
             variant === "destructive" && "text-danger hover:text-danger",
           )}
         >
-          {icon}
           {label}
         </Button>
       </AlertDialogTrigger>

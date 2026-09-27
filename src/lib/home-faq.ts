@@ -36,7 +36,7 @@ export const HOME_FAQ: FaqEntry[] = [
     question: "How do I make Game Boy style images?",
     answer: [
       "Choose the ",
-      { text: "Game Boy palette", href: "/palettes#palette-gameboy" },
+      { text: "Game Boy palette", href: "/palettes/game-boy" },
       ", or apply the ",
       { text: "pixel art preset", href: "/editor?preset=pixel-art" },
       " and switch its palette to Game Boy.",
