@@ -43,7 +43,6 @@ import {
   HERO_SIZE,
   heroVariant,
   PIXEL_ART_PREVIEW,
-  SAMPLE_IMAGE,
 } from "@/lib/samples";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
@@ -174,10 +173,6 @@ export default function HomePage() {
         >
           <section className="grid items-center gap-12 pt-12 pb-16 lg:pt-20 lg:pb-20 xl:grid-cols-2">
             <div className="flex max-w-xl flex-col gap-7">
-              <p className="text-caps text-paper-dim">
-                Specimen: {SAMPLE_IMAGE.name} · {SAMPLE_IMAGE.width} ×{" "}
-                {SAMPLE_IMAGE.height} · sRGB
-              </p>
               <h1
                 tabIndex={-1}
                 className="font-display text-display font-normal focus:outline-hidden"
