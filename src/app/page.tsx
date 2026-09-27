@@ -187,8 +187,8 @@ export default function HomePage() {
               <p className="text-paper-dim max-w-md text-lg leading-relaxed">
                 Turn photos and animated GIFs into 1-bit, halftone or pixel art.{" "}
                 {ALGORITHMS.length} algorithms, {PALETTE_PRESETS.length}{" "}
-                palettes from Game Boy to risograph. Every pixel is processed on
-                your device.
+                palettes from Game Boy to Riso. Every pixel is processed on your
+                device.
               </p>
 
               <div className="flex flex-col gap-4">

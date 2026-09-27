@@ -81,7 +81,7 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
       "Floyd–Steinberg is the most widely used error-diffusion dithering algorithm. Published by Robert W. Floyd and Louis Steinberg in 1976, it reduces a grayscale or color image to a few colors, even pure black and white, while keeping smooth gradients and fine detail. Drag the slider to compare, then try it on your own image; nothing is uploaded.",
     method: [
       "The image is scanned pixel by pixel. Each pixel is rounded to the nearest available color, and the rounding error is passed on to four neighbors that haven’t been processed yet: 7/16 to the right, 3/16 below-left, 5/16 below and 1/16 below-right. Because all of the error is carried forward, the average brightness of every area is preserved: a 25% gray comes out as roughly one lit pixel in four.",
-      "The weights were chosen so that a flat 50% gray becomes a clean checkerboard. PixelSynth scans rows in alternating directions (serpentine), mirroring the weights on right-to-left rows, which breaks up the diagonal streaks a strict left-to-right scan leaves behind.",
+      "The weights were chosen so that a flat 50% gray becomes a clean checkerboard. On the right-to-left rows of the serpentine scan, PixelSynth mirrors them.",
     ],
     use: {
       bestFor: [
@@ -142,8 +142,8 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     intro:
       "Jarvis, Judice and Ninke (JJN) is an error-diffusion algorithm that spreads each pixel’s error over 12 neighbors across three rows. J. F. Jarvis, C. N. Judice and W. H. Ninke of Bell Labs described it in 1976, the same year as Floyd–Steinberg, in a survey of ways to show continuous-tone pictures on two-level displays. The wider spread gives smoother gradients and fewer artifacts, at the cost of speed.",
     method: [
-      "Pixels are processed one at a time and rounded to the nearest available color. The error is split into 48ths: 7 and 5 go to the next two pixels on the same row, and the two rows below receive weights that fall off with distance, 3, 5, 7, 5, 3 and then 1, 3, 5, 3, 1. All 48/48 of the error is carried forward.",
-      "Because each pixel’s error is shared by three times as many neighbors as in Floyd–Steinberg, no single neighbor gets a large push, and the dots settle into a more even, less structured texture. The price is three times as many updates per pixel and a slightly softer rendering of fine edges, which the wider spread blurs a little.",
+      "Pixels are processed one at a time and rounded to the nearest available color. The error is split into 48ths: 7 and 5 go to the next two pixels on the same row, and the two rows below receive weights that fall off with distance, 3, 5, 7, 5, 3 and then 1, 3, 5, 3, 1.",
+      "Because each pixel’s error is shared by three times as many neighbors as in Floyd–Steinberg, no single neighbor gets a large push, and the dots settle into a more even, less structured texture. The price is three times as many updates per pixel, and fine edges come out slightly softer.",
     ],
     use: {
       bestFor: [
@@ -192,7 +192,7 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     intro:
       "Stucki is an error-diffusion algorithm introduced by Peter Stucki at IBM Research in 1981. It uses the same 12-neighbor footprint as Jarvis–Judice–Ninke, but with weights that are powers of two and a steeper falloff, which gives a crisper, cleaner result with excellent detail.",
     method: [
-      "Each pixel is rounded to the nearest available color and its error is split into 42nds: 8 and 4 to the next two pixels on the same row, 2, 4, 8, 4, 2 on the row below and 1, 2, 4, 2, 1 two rows down. All of the error is carried forward.",
+      "Each pixel is rounded to the nearest available color and its error is split into 42nds: 8 and 4 to the next two pixels on the same row, 2, 4, 8, 4, 2 on the row below and 1, 2, 4, 2, 1 two rows down.",
       "Weights that are powers of two were cheap for the hardware of the time, since multiplying by 8, 4 or 2 is a bit shift. And because more of the error stays next to the current pixel than in JJN (8/42 instead of 7/48), edges stay sharper while the wide footprint still smooths out gradients.",
     ],
     use: {
@@ -242,7 +242,7 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     intro:
       "Burkes is an error-diffusion algorithm by Daniel Burkes, shared in 1988 as a simplification of Stucki. It keeps Stucki’s first two rows of weights and drops the third, so each pixel’s error reaches 7 neighbors instead of 12. The result looks nearly the same as Stucki and renders noticeably faster.",
     method: [
-      "Each pixel is rounded to the nearest available color and the error is split into 32nds: 8 and 4 go to the next two pixels on the same row, and 2, 4, 8, 4, 2 to the five pixels below. All of the error is carried forward, over two rows only.",
+      "Each pixel is rounded to the nearest available color and the error is split into 32nds: 8 and 4 go to the next two pixels on the same row, and 2, 4, 8, 4, 2 to the five pixels below, over two rows only.",
       "Dividing by 32 is a single bit shift, which Stucki’s 42 is not, and only one row ahead has to be kept in memory. Dropping the third row makes the texture slightly less smooth than Stucki’s in large gradients, but on most images the two are hard to tell apart.",
     ],
     use: {
@@ -288,7 +288,7 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     intro:
       "Sierra, sometimes called Sierra-3, is an error-diffusion algorithm Frankie Sierra published in 1989. It spreads each pixel’s error over 10 neighbors across three rows, a footprint close to Jarvis–Judice–Ninke’s but with fewer, simpler weights. It gives natural, crisp textures and smooth gradients at a lower cost than JJN.",
     method: [
-      "Each pixel is rounded to the nearest available color and its error split into 32nds: 5 and 3 to the next two pixels on the row, 2, 4, 5, 4, 2 on the row below, and 2, 3, 2 on the three pixels centered two rows down. All of the error is carried forward.",
+      "Each pixel is rounded to the nearest available color and its error split into 32nds: 5 and 3 to the next two pixels on the row, 2, 4, 5, 4, 2 on the row below, and 2, 3, 2 on the three pixels centered two rows down.",
       "Compared with JJN, Sierra drops the two outer corners of the bottom row and divides by 32, a bit shift, instead of 48. That saves work on every pixel while keeping the wide, three-row spread that smooths gradients and suppresses worm patterns.",
     ],
     use: {
@@ -338,7 +338,7 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     intro:
       "Two-Row Sierra is the reduced version of the Sierra filter that Frankie Sierra published a year after it, in 1990. It drops the third row and spreads each pixel’s error over 7 neighbors on just two rows, so it runs faster while keeping most of the smoothness of the full filter.",
     method: [
-      "Each pixel is rounded to the nearest available color and its error is split into 16ths: 4 and 3 go to the next two pixels on the row, and 1, 2, 3, 2, 1 to the five pixels below. All of the error is carried forward.",
+      "Each pixel is rounded to the nearest available color and its error is split into 16ths: 4 and 3 go to the next two pixels on the row, and 1, 2, 3, 2, 1 to the five pixels below.",
       "It has the same footprint as Burkes, but its weights fall off more gently: the pixel two steps ahead gets 3/16 instead of Burkes’ 2/16, and the one straight below 3/16 instead of 4/16. The error spreads a little wider along the row, for a softer, more even texture.",
     ],
     use: {
@@ -382,7 +382,7 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     intro:
       "Sierra Lite, also known as Filter Lite, is the smallest filter in Frankie Sierra’s family and one of the cheapest error-diffusion algorithms there is. Each pixel’s error goes to just three neighbors, which makes it very fast while staying close to Floyd–Steinberg in look.",
     method: [
-      "Each pixel is rounded to the nearest available color and its error is split into quarters: half goes to the next pixel on the row, and the other half is shared by two pixels on the row below. All of the error is carried forward.",
+      "Each pixel is rounded to the nearest available color and its error is split into quarters: half goes to the next pixel on the row, and the other half is shared by two pixels on the row below.",
       "With so few neighbors the error doesn’t travel far, so the texture is a little coarser and more directional than Floyd–Steinberg’s, with more visible worms in flat areas. In exchange, it’s the fastest error diffusion in PixelSynth, and at small output sizes, where each dot is large anyway, the difference is hard to see.",
     ],
     use: {
@@ -424,7 +424,7 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     intro:
       "Atkinson dithering was written by Bill Atkinson at Apple for the original Macintosh in 1984, and it gave MacPaint and early Mac software their signature look. It diffuses only three quarters of each pixel’s error, so highlights and shadows clip to clean white and black while midtones keep a crisp, stippled texture.",
     method: [
-      "Each pixel is rounded to the nearest available color and 1/8 of its error goes to each of six neighbors: two to the right, three on the row below and one two rows down. That hands out 6/8 of the error; the remaining quarter is simply dropped. PixelSynth scans every row left to right.",
+      "Each pixel is rounded to the nearest available color and 1/8 of its error goes to each of six neighbors: two to the right, three on the row below and one two rows down. That hands out 6/8 of the error; the remaining quarter is simply dropped.",
       "Dropping error means that near-black areas never build up enough brightness to place a white dot, and near-white areas never collect enough darkness for a black one. Small errors vanish instead of spreading, so the image gains contrast and clean flat areas, at the cost of detail in deep shadows and bright highlights.",
     ],
     use: {
@@ -671,10 +671,10 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     ],
     faq: [
       {
-        question: "Blue noise or Floyd–Steinberg?",
+        question: "Blue Noise or Floyd–Steinberg?",
         answer: [
           algo("floyd-steinberg"),
-          " keeps a little more detail in stills. Blue noise is steadier: its dots don’t shimmer in animations, and it has no worm patterns.",
+          " keeps a little more detail in stills. Blue Noise is steadier: its dots don’t shimmer in animations, and it has no worm patterns.",
         ],
       },
       {
@@ -696,7 +696,7 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
       "Random dithering is the simplest way to break up banding: each pixel is compared with a random threshold instead of a fixed one. It’s the oldest idea in dithering, and it gives a coarse, grainy, photographic texture with no pattern at all.",
     method: [
       "For every pixel a random number between 0 and 255 is drawn, and the pixel turns white if its brightness is higher. On average a 30% gray lights 30% of the pixels, so tones come out right, but the dots fall wherever chance puts them: some clump together and some areas are left bare.",
-      "That’s white noise, with energy at every frequency, including the low ones the eye sees as blotches, which is why random dither looks noisier than blue noise at the same density. PixelSynth seeds the generator, so the grain stays in place while you adjust other settings and in every frame of an animation.",
+      "That’s white noise, with energy at every frequency, including the low ones the eye sees as blotches, which is why random dither looks noisier than blue noise at the same density.",
     ],
     use: {
       bestFor: ["gritty film-grain, photocopy and glitch textures."],

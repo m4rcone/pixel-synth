@@ -262,7 +262,7 @@ export default async function PaletteGuidePage({
           >
             <div className="max-w-prose">
               <h2 id="examples-heading" className="text-heading font-semibold">
-                The {guide.name} palette with different dithers
+                The {guide.name} palette with different dithering algorithms
               </h2>
               <p className="text-paper-dim mt-2 leading-relaxed">
                 The same sunset at {HERO_SIZE.width} × {HERO_SIZE.height}{" "}
@@ -310,8 +310,8 @@ export default async function PaletteGuidePage({
             <p className="text-paper-dim mt-2 leading-relaxed">
               Open the editor with <VariantName /> already selected, drop in a
               photo or an animated GIF, pick a dithering algorithm and export a
-              PNG. Free, no account, no watermark, and your image never leaves
-              your device.
+              PNG or an animated GIF. Free, no account, no watermark, and your
+              image never leaves your device.
             </p>
             <VariantEditorButton verb="Open" className="mt-6" />
           </section>

@@ -128,12 +128,12 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
         "Open the editor with the Game Boy palette selected and drop in your image.",
       ],
       [
-        "Lower the processing scale until the image is about 160 pixels wide, the Game Boy’s own resolution, or apply the ",
+        "Set Output size to 160 pixels, the Game Boy’s own resolution, or apply the ",
         PIXEL_ART_PRESET,
         " and switch its palette to Game Boy.",
       ],
       [
-        "Pick a dither: ",
+        "Pick an algorithm: ",
         algo("bayer-4-4", "Bayer 4×4"),
         " gives an even, tile-like pattern, ",
         algo("floyd-steinberg", "Floyd–Steinberg"),
@@ -230,7 +230,7 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
         ": it shrinks the image to about 128 × 96 pixels’ worth of detail and uses PICO-8 with a 2×2 Bayer pattern.",
       ],
       [
-        "For a real cart screen, crop the image square first and lower the processing scale until it’s 128 pixels wide.",
+        "For a real cart screen, crop the image square first and set Output size to 128 pixels.",
       ],
       [
         "Save at ×4 or ×8 to share. At ×1 and 128 × 128, the PNG is ready for PICO-8’s import command, which loads it onto the sprite sheet.",
@@ -250,7 +250,7 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
       {
         question: "Why does my PICO-8 image look noisy?",
         answer: [
-          "At full resolution, 16 colors dither into fine noise. Shrink the image first, with the processing scale or the ",
+          "At full resolution, 16 colors dither into fine noise. Shrink the image first, with Output size or the ",
           PIXEL_ART_PRESET,
           ", so each pixel becomes a visible block, and prefer an ordered pattern like ",
           algo("bayer-2-2", "Bayer 2×2"),
@@ -300,7 +300,7 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
         "Open the editor with the NES palette selected. It matches by color, picking the nearest of the 54.",
       ],
       [
-        "Shrink the image toward the NES resolution, 256 × 240, with the processing scale, or apply the ",
+        "Shrink the image toward the NES resolution, 256 × 240, with Output size, or apply the ",
         PIXEL_ART_PRESET,
         " and switch its palette to NES.",
       ],
@@ -392,9 +392,7 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
       [
         "Open the editor with the Commodore 64 palette selected. It matches by color.",
       ],
-      [
-        "Lower the processing scale until the image is about 320 pixels wide, the C64’s hi-res width.",
-      ],
+      ["Set Output size to 320 pixels, the C64’s hi-res width."],
       [
         "Try ",
         algo("bayer-4-4", "Bayer 4×4"),
@@ -475,7 +473,7 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
             "Each attribute byte sets an ink color and a paper color from the 8, one bright bit for both, and a flash bit that swaps ink and paper at a steady rate. So any 8 × 8 block holds only two colors, and both are normal or both bright.",
           ],
           [
-            "When a character of one color crossed a background of another, the whole block changed color: the attribute clash that gave Spectrum games their look. Many games avoided it with a single-color play area. PixelSynth doesn’t apply the two-colors-per-block rule; for a clash-free Spectrum look, stay in 1-bit mode with a Spectrum ink and paper.",
+            "When a character of one color crossed a background of another, the whole block changed color: the attribute clash that gave Spectrum games their look. Many games avoided it with a single-color play area. PixelSynth doesn’t apply the two-colors-per-block rule; for a clash-free Spectrum look, stay in 1-bit mode and pick two Spectrum colors for the dots and the background.",
           ],
         ],
       },
@@ -484,9 +482,7 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
       [
         "Open the editor with the ZX Spectrum palette selected. It matches by color.",
       ],
-      [
-        "Lower the processing scale until the image is about 256 pixels wide, the Spectrum’s resolution.",
-      ],
+      ["Set Output size to 256 pixels, the Spectrum’s resolution."],
       [
         "Use ",
         algo("bayer-2-2", "Bayer 2×2"),
@@ -568,9 +564,7 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
       [
         "Open the editor with a CGA palette selected: cyan/magenta or green/red. Both match by color.",
       ],
-      [
-        "Lower the processing scale until the image is about 320 pixels wide, CGA’s 4-color resolution.",
-      ],
+      ["Set Output size to 320 pixels, CGA’s 4-color resolution."],
       [
         "Use ",
         algo("bayer-2-2", "Bayer 2×2"),
@@ -639,9 +633,7 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
     ],
     steps: [
       ["Open the editor with the EGA palette selected. It matches by color."],
-      [
-        "Lower the processing scale until the image is about 320 pixels wide, the resolution of most EGA games.",
-      ],
+      ["Set Output size to 320 pixels, the resolution of most EGA games."],
       [
         "Use ",
         algo("bayer-4-4", "Bayer 4×4"),
@@ -716,7 +708,7 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
         "Open the editor with the Apple II hi-res palette selected. It matches by color.",
       ],
       [
-        "Lower the processing scale until the image is about 280 pixels wide, or 140 for the Apple II’s real color resolution.",
+        "Set Output size to 280 pixels, or 140 for the Apple II’s real color resolution.",
       ],
       [
         "With six colors, ",

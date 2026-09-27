@@ -39,7 +39,7 @@ export default function EditorPage() {
         setError(
           error instanceof ImageLoadError
             ? error.message
-            : "Could not open the pasted image.",
+            : "Couldn’t open the pasted image.",
         );
       }
     };

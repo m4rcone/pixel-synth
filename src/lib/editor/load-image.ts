@@ -94,7 +94,7 @@ export async function loadImageFile(
   canvas.width = width;
   canvas.height = height;
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
-  if (!ctx) throw new ImageLoadError("Could not prepare the image.");
+  if (!ctx) throw new ImageLoadError("Couldn’t prepare the image.");
   ctx.imageSmoothingQuality = "high";
   ctx.drawImage(decoded, 0, 0, width, height);
   decoded.close();

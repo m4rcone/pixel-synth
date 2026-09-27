@@ -25,7 +25,7 @@ export function ImageDropzone() {
       setError(
         error instanceof ImageLoadError
           ? error.message
-          : "Could not open that image.",
+          : "Couldn’t open that image.",
       );
     }
   }

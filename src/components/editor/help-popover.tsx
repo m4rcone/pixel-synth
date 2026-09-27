@@ -20,7 +20,7 @@ const TIPS = [
   },
   {
     title: "Halftone screens",
-    body: "Halftone and Line Screen draw a grid of dots or lines that grow with the tone. Screen size is the distance between dots, in processed pixels; angle turns the grid (45° is the classic for one ink). Big screens read best at full processing scale. On Line Screen, displacement lifts the lines where the image is bright (an oscilloscope or CRT look) and wave ripples them; both are measured in line spacings.",
+    body: "Halftone and Line Screen draw a grid of dots or lines that grow with the tone. Screen size is the distance between dots or lines, in processed pixels; angle turns the grid (45° is the classic for one ink). Big screens read best at full processing scale. On Line Screen, displacement lifts the lines where the image is bright (an oscilloscope or CRT look) and wave ripples them; both are measured in line spacings.",
   },
   {
     title: "Palette",
@@ -32,7 +32,7 @@ const TIPS = [
   },
   {
     title: "Pixel art preset",
-    body: "Shrinks the image to about 128 × 96 pixels’ worth of detail, whatever its shape, and applies PICO-8 with a 2×2 Bayer pattern. Save it ×4 or ×8 to share.",
+    body: "Shrinks the image to about 128 × 96 pixels’ worth of detail, whatever its shape, and applies PICO-8 with a 2×2 Bayer pattern. Save it at ×4 or ×8 to share.",
   },
   {
     title: "1-bit dot colors",

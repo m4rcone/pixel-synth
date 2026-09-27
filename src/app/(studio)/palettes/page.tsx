@@ -29,7 +29,7 @@ import {
   siteConfig,
 } from "@/lib/site";
 
-const description = `Dither images to ${PALETTE_PRESETS.length} retro color palettes, with every hex value: Game Boy, NES, PICO-8, CGA, ZX Spectrum, Commodore 64, riso, cyanotype or your own colors.`;
+const description = `Dither images to ${PALETTE_PRESETS.length} retro color palettes, with every hex value: Game Boy, NES, PICO-8, CGA, ZX Spectrum, Commodore 64, Riso, cyanotype or your own colors.`;
 
 export const metadata: Metadata = pageMetadata({
   title: "Retro Color Palettes: Game Boy, NES, PICO-8",
@@ -251,9 +251,9 @@ export default function PalettesPage() {
                   Build a palette of {MIN_PALETTE_COLORS} to{" "}
                   {MAX_PALETTE_COLORS} colors with the color picker, start from
                   any palette above with “Edit colors”, or import one from
-                  Lospec: paste its hex codes or open its HEX, GPL, PAL or TXT
-                  file. It is saved in your browser. Use it for brand colors or
-                  for systems not listed here.
+                  Lospec: paste its hex codes or open its HEX, GPL, PAL or
+                  Paint.NET TXT file. It is saved in your browser. Use it for
+                  brand colors or for systems not listed here.
                 </p>
                 <Link
                   href="/editor?palette=custom"
