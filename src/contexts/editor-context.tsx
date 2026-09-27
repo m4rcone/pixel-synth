@@ -336,6 +336,9 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   }, []);
   const customPalette = settings.color.custom;
   useEffect(() => {
+    // The untouched default is never written: on mount this effect runs
+    // before the restored palette lands, and would overwrite it.
+    if (customPalette === DEFAULT_SETTINGS.color.custom) return;
     try {
       localStorage.setItem(CUSTOM_PALETTE_KEY, JSON.stringify(customPalette));
     } catch {

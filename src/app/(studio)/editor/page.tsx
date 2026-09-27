@@ -14,7 +14,15 @@ export default function EditorPage() {
   const { status, source, result, isRendering, renderProgress, error } =
     useEditorState();
   const { setError, load, readImage } = useEditorActions();
-  const [manualAnnouncement, setManualAnnouncement] = useState("");
+  // A canvas or toolbar message ("Canvas panned up.") holds only until the
+  // image or its render changes; then the render state speaks again.
+  const [manual, setManual] = useState<{ text: string; context: unknown }>({
+    text: "",
+    context: null,
+  });
+  const context = result ?? source;
+  const manualAnnouncement = manual.context === context ? manual.text : "";
+  const announce = (text: string) => setManual({ text, context });
 
   // Paste an image from the clipboard to start (never replaces work in progress).
   useEffect(() => {
@@ -91,11 +99,11 @@ export default function EditorPage() {
             {status === "empty" ? (
               <ImageDropzone />
             ) : (
-              <Canvas onStatusChange={setManualAnnouncement} />
+              <Canvas onStatusChange={announce} />
             )}
             {renderProgress && <RenderProgress {...renderProgress} />}
           </div>
-          <CanvasToolbar onStatusChange={setManualAnnouncement} />
+          <CanvasToolbar onStatusChange={announce} />
         </section>
 
         <ControlPanel className="border-line lg:w-80 lg:shrink-0 lg:border-l" />

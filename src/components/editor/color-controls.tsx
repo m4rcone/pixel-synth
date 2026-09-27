@@ -4,7 +4,7 @@ import { Plus, X } from "lucide-react";
 import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { useEditorActions, useEditorState } from "@/contexts/editor-context";
-import type { ColorSettings } from "@/lib/editor/settings";
+import { DEFAULT_SETTINGS, type ColorSettings } from "@/lib/editor/settings";
 import {
   DYNAMIC_PALETTES,
   defaultMatch,
@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { ColorInput } from "@/components/ui/color-input";
 import { Label } from "@/components/ui/label";
 import { Segmented } from "@/components/ui/segmented";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -176,7 +177,7 @@ function PaletteControls({
           id="extract-count"
           label="Colors"
           value={color.extractCount}
-          defaultValue={8}
+          defaultValue={DEFAULT_SETTINGS.color.extractCount}
           min={MIN_PALETTE_COLORS}
           max={MAX_PALETTE_COLORS}
           step={1}
@@ -293,7 +294,7 @@ function CustomPaletteEditor({
   return (
     <fieldset className="flex flex-col gap-2" disabled={disabled}>
       <legend className="text-label text-paper-dim mb-2">Custom colors</legend>
-      <ul className="flex flex-wrap gap-1.5">
+      <ul className="flex flex-wrap gap-2">
         {colors.map((color, index) => (
           <li key={index} className="group relative">
             <label className="sr-only" htmlFor={`custom-color-${index}`}>
@@ -314,9 +315,11 @@ function CustomPaletteEditor({
                 type="button"
                 onClick={() => onCommit(colors.filter((_, i) => i !== index))}
                 aria-label={`Remove color ${index + 1}`}
-                className="bg-ink-raised border-input text-paper-dim hover:text-paper focus-visible:ring-safelight absolute -top-1.5 -right-1.5 grid size-4 place-items-center border opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:outline-none"
+                // 20px, with a 24px hit area (WCAG 2.5.8); always shown on
+                // touch screens, where there is no hover to reveal it.
+                className="bg-ink-raised border-input text-paper-dim hover:text-paper-hot focus-visible:ring-safelight absolute -top-2 -right-2 grid size-5 place-items-center border opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 before:absolute before:-inset-0.5 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:outline-none pointer-coarse:opacity-100"
               >
-                <X className="size-2.5" aria-hidden="true" />
+                <X className="size-3" aria-hidden="true" />
               </button>
             )}
           </li>
@@ -351,7 +354,10 @@ function SwatchStrip({
   return (
     <span
       aria-hidden="true"
-      className={`flex h-3.5 overflow-hidden shadow-[inset_0_0_0_1px_var(--line-strong)] ${className ?? "w-full"}`}
+      className={cn(
+        "inset-ring-line-strong flex h-3.5 overflow-hidden inset-ring",
+        className ?? "w-full",
+      )}
     >
       {colors.map((color, index) => (
         <span key={index} className="flex-1" style={{ background: color }} />

@@ -51,12 +51,15 @@ export function CompareSlider({
   return (
     <div
       ref={containerRef}
-      className="bg-ink-sunken relative w-full cursor-ew-resize touch-none overflow-hidden select-none"
+      // Vertical swipes keep scrolling the page (the browser cancels the
+      // pointer); horizontal ones move the divider.
+      className="bg-ink-sunken relative w-full cursor-ew-resize touch-pan-y overflow-hidden select-none"
       style={{ aspectRatio: `${width} / ${height}` }}
       onPointerDown={(e) => {
         e.currentTarget.setPointerCapture(e.pointerId);
         setDragging(true);
-        setFromClientX(e.clientX);
+        // A touch may be the start of a scroll: only a drag moves the divider.
+        if (e.pointerType !== "touch") setFromClientX(e.clientX);
       }}
       onPointerMove={(e) => {
         if (dragging) setFromClientX(e.clientX);
@@ -100,7 +103,7 @@ export function CompareSlider({
       />
 
       <div
-        className="pointer-events-none absolute inset-y-0 z-10 w-px bg-white/75"
+        className="bg-paper-hot/75 pointer-events-none absolute inset-y-0 z-10 w-px"
         style={{ left: `${reveal}%` }}
       >
         <button
@@ -125,7 +128,7 @@ export function CompareSlider({
             e.preventDefault();
             setReveal((r) => Math.min(100, Math.max(0, move(r))));
           }}
-          className="focus-visible:ring-safelight pointer-events-auto absolute top-1/2 left-1/2 grid size-9 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize place-items-center border border-white/40 bg-black/65 text-white backdrop-blur-sm focus-visible:ring-2 focus-visible:outline-none"
+          className="focus-visible:ring-safelight border-paper-hot/40 bg-ink/65 text-paper-hot pointer-events-auto absolute top-1/2 left-1/2 grid size-9 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize place-items-center border backdrop-blur-sm focus-visible:ring-2 focus-visible:outline-none"
         >
           <svg viewBox="0 0 16 16" aria-hidden="true" className="size-4">
             <path
