@@ -201,6 +201,8 @@ test.describe("accessibility", () => {
   test("landing instrument and GIF are operable without a pointer", async ({
     page,
   }) => {
+    // The GIF only plays (and offers Pause) when motion is welcome.
+    await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/");
 
     const divider = page.getByRole("slider", {
