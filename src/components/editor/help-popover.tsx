@@ -12,7 +12,7 @@ import {
 const TIPS = [
   {
     title: "Processing scale",
-    body: "Dithers a smaller copy of the image, then scales it back up to the original size. Lower values give bigger, chunkier grain.",
+    body: "Dithers a smaller copy of the image; the canvas and the export enlarge it without smoothing, so every pixel stays a crisp block. Lower values give bigger, chunkier grain.",
   },
   {
     title: "Error diffusion",

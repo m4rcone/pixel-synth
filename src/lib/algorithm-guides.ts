@@ -560,7 +560,7 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     intro:
       "Bayer 8×8 is the largest Bayer matrix in PixelSynth: 64 thresholds tiled every 8 pixels, from Bryce Bayer’s 1973 method. It renders 65 gray levels, so gradients look smooth while keeping the tidy, regular texture of ordered dithering, and it stays perfectly stable from frame to frame.",
     method: [
-      "The 8×8 matrix holds the ranks 0 to 63, built by nesting the 2×2 pattern inside itself three times. Each pixel is compared with the threshold at its position in the tile: brighter pixels turn white, darker ones black. Nothing is carried between pixels.",
+      "The 8×8 matrix holds the ranks 0 to 63, built by nesting the 2×2 pattern inside itself twice. Each pixel is compared with the threshold at its position in the tile: brighter pixels turn white, darker ones black. Nothing is carried between pixels.",
       "Every level lights the pixel farthest from those already lit, so dots are spread as evenly as the grid allows. With 64 thresholds the steps between levels are small enough for smooth gradients, and the cross-hatch is fine enough to recede on most images.",
     ],
     use: {
