@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { faqAnswerText, faqStructuredData, HOME_FAQ } from "@/lib/home-faq";
+import { faqAnswerText, faqStructuredData } from "@/lib/faq";
+import { HOME_FAQ } from "@/lib/home-faq";
 
 describe("home FAQ", () => {
   it("structured data mirrors the visible questions and answers", () => {

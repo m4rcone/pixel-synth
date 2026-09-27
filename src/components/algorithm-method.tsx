@@ -253,3 +253,99 @@ function MatrixTable({
     </table>
   );
 }
+
+/** Offset in pseudocode, padded so the columns line up: "x+1", "y  ". */
+const offset = (axis: string, d: number) =>
+  d === 0 ? `${axis}  ` : `${axis}${d > 0 ? "+" : "-"}${Math.abs(d)}`;
+
+/** The algorithm as pseudocode, written from the engine's own data. */
+export function pseudocode(algorithm: AlgorithmId): string {
+  const method = getMethod(algorithm);
+
+  if (method.kind === "diffusion") {
+    const { kernel, serpentine } = method;
+    return [
+      "for each row y, top to bottom:",
+      ...(serpentine
+        ? [
+            "  # odd rows go right to left, mirroring dx",
+            "  for each x in the row:",
+          ]
+        : ["  for each x, left to right:"]),
+      "    old = pixel[x][y]",
+      "    new = nearest_color(old)",
+      "    pixel[x][y] = new",
+      "    error = old - new",
+      ...kernel.taps.map(
+        ([dx, dy, weight]) =>
+          `    pixel[${offset("x", dx)}][${offset("y", dy)}] += error * ${weight}/${kernel.divisor}`,
+      ),
+    ].join("\n");
+  }
+
+  const decide = "  pixel = gray < t ? black : white";
+  const withPalette =
+    "# with a palette, t shifts the color before nearest_color";
+
+  if (method.kind === "ordered") {
+    const { size } = method.matrix();
+    return [
+      `M = ${size}×${size} matrix of ranks 0…${size * size - 1}`,
+      "for each pixel (x, y):",
+      `  t = (M[y mod ${size}][x mod ${size}] + 0.5) / ${size * size} * 255`,
+      decide,
+      withPalette,
+    ].join("\n");
+  }
+
+  if (method.kind === "screen" && method.lines) {
+    return [
+      "for each pixel (x, y):",
+      "  # u along the lines, v across, in line spacings",
+      "  (u, v) = (x, y) rotated by the screen angle",
+      "  v += displacement * blurred_gray / 255",
+      "  v += wave * sin(2π * u / wavelength)",
+      "  d = distance from v to its line's middle (0…1)",
+      "  t = 1 - d",
+      "  pixel = gray < t * 255 ? ink : paper",
+      withPalette,
+    ].join("\n");
+  }
+
+  if (method.kind === "screen") {
+    return [
+      "for each pixel (x, y):",
+      "  (u, v) = (x, y) rotated by the angle, in cells",
+      "  (a, b) = distance from its cell center (0…1)",
+      "  s = spot(a, b)  # round, square or diamond",
+      "  # rank: share of pixels with a smaller s",
+      "  t = 1 - rank(s)  # the center inks first",
+      "  pixel = gray < t * 255 ? ink : paper",
+      withPalette,
+    ].join("\n");
+  }
+
+  return [
+    "seed the random generator",
+    "for each pixel (x, y):",
+    "  t = random() * 255",
+    decide,
+    withPalette,
+  ].join("\n");
+}
+
+export function AlgorithmPseudocode({ algorithm }: { algorithm: AlgorithmId }) {
+  return (
+    <figure className="flex max-w-full flex-col gap-2">
+      <figcaption className="text-caps text-paper-dim">Pseudocode</figcaption>
+      <pre
+        // Long lines scroll on phones; focusable so keyboards can too.
+        // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+        tabIndex={0}
+        className="border-line bg-ink-sunken text-paper focus-visible:ring-safelight overflow-x-auto border p-4 text-xs leading-relaxed focus-visible:ring-2 focus-visible:outline-none sm:text-sm"
+      >
+        <code>{pseudocode(algorithm)}</code>
+      </pre>
+    </figure>
+  );
+}

@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AlgorithmMethod } from "@/components/algorithm-method";
+import Image from "next/image";
+import {
+  AlgorithmMethod,
+  AlgorithmPseudocode,
+} from "@/components/algorithm-method";
 import { CompareSlider } from "@/components/compare-slider";
+import { FaqList, RichText, textLink } from "@/components/faq-list";
 import { GlobalHeader } from "@/components/global-header";
 import { SiteFooter } from "@/components/site-footer";
 import { StructuredData } from "@/components/structured-data";
@@ -15,7 +20,11 @@ import {
   PREVIEW_SIZE,
   PREVIEW_SOURCE,
   type Algorithm,
+  type AlgorithmId,
 } from "@/lib/algorithms";
+import { getGuide, guideTitle } from "@/lib/algorithm-guides";
+import { getMethod } from "@/lib/editor/dither";
+import { faqStructuredData } from "@/lib/faq";
 import {
   absoluteUrl,
   breadcrumbStructuredData,
@@ -31,14 +40,9 @@ export function generateStaticParams(): Params[] {
   return ALGORITHMS.map(({ slug }) => ({ slug }));
 }
 
-/** Meta description: the lede's first sentence and a call to action. */
-function describe(algorithm: Algorithm) {
-  const [lede] = algorithm.description.split(/(?<=\.) /);
-  return `${lede} See it before and after, then try it free in your browser.`;
-}
-
 /** "Atkinson Dithering", "Random Dithering". */
-const title = (algorithm: Algorithm) => `${ditheringName(algorithm)} Dithering`;
+const heading = (algorithm: Algorithm) =>
+  `${ditheringName(algorithm)} Dithering`;
 
 export async function generateMetadata({
   params,
@@ -48,8 +52,8 @@ export async function generateMetadata({
   const algorithm = getAlgorithm((await params).slug);
   if (!algorithm) return {};
   return pageMetadata({
-    title: title(algorithm),
-    description: describe(algorithm),
+    title: guideTitle(algorithm),
+    description: getGuide(algorithm).description,
     path: `/algorithms/${algorithm.slug}`,
   });
 }
@@ -67,13 +71,14 @@ export default async function AlgorithmPage({
   const next = ALGORITHMS[index + 1];
   const category = getCategory(algorithm.category);
   const path = `/algorithms/${algorithm.slug}`;
+  const guide = getGuide(algorithm);
 
   const structuredData = [
     {
       "@context": "https://schema.org",
       "@type": "TechArticle",
-      headline: title(algorithm),
-      description: describe(algorithm),
+      headline: heading(algorithm),
+      description: guide.description,
       url: absoluteUrl(path),
       image: absoluteUrl(algorithm.preview),
       inLanguage: "en",
@@ -97,6 +102,7 @@ export default async function AlgorithmPage({
       { name: "Algorithms", path: "/algorithms" },
       { name: algorithm.name, path },
     ]),
+    faqStructuredData(guide.faq),
   ];
 
   return (
@@ -142,22 +148,19 @@ export default async function AlgorithmPage({
               tabIndex={-1}
               className="font-display text-glow text-title mt-3 font-normal focus:outline-hidden"
             >
-              {algorithm.name}
+              {heading(algorithm)}
             </h1>
             <p className="text-paper-dim mt-5 max-w-prose text-lg leading-relaxed">
-              {algorithm.description}
+              {guide.intro}
             </p>
 
-            <dl className="border-line mt-8 grid grid-cols-2 gap-x-6 gap-y-4 border-t pt-6 text-sm sm:grid-cols-4">
+            <dl className="border-line mt-8 grid grid-cols-2 gap-x-6 gap-y-4 border-t pt-6 text-sm sm:grid-cols-3">
               <Meta label="Author">{algorithm.author ?? "Unknown"}</Meta>
               <Meta label="Year">
                 <span className="text-readout">{algorithm.year ?? "—"}</span>
               </Meta>
               <Meta label="Complexity">
                 <span className="capitalize">{algorithm.complexity}</span>
-              </Meta>
-              <Meta label="Processing cost">
-                <span className="text-readout">{algorithm.cost} / 5</span>
               </Meta>
             </dl>
 
@@ -178,15 +181,172 @@ export default async function AlgorithmPage({
           aria-labelledby="method-heading"
           className="flex flex-col gap-6"
         >
-          <div className="max-w-prose">
+          <div className="flex max-w-prose flex-col gap-4">
             <h2 id="method-heading" className="text-heading font-semibold">
-              How it works
+              How {algorithm.shortName} dithering works
             </h2>
-            <p className="text-paper-dim mt-2 leading-relaxed">
-              {category.description}
-            </p>
+            {guide.method.map((paragraph) => (
+              <p key={paragraph} className="text-paper-dim leading-relaxed">
+                {paragraph}
+              </p>
+            ))}
           </div>
           <AlgorithmMethod algorithm={algorithm.slug} />
+          <AlgorithmPseudocode algorithm={algorithm.slug} />
+        </section>
+
+        <section aria-labelledby="use-heading" className="max-w-prose">
+          <h2 id="use-heading" className="text-heading font-semibold">
+            When to use it (and when not to)
+          </h2>
+          <ul className="text-paper-dim mt-4 flex list-disc flex-col gap-3 pl-5 leading-relaxed">
+            {(
+              [
+                ["Best for", guide.use.bestFor],
+                ["Works well with", guide.use.worksWith],
+                ["Watch out for", guide.use.watchOut],
+                ["In animation", guide.use.animation],
+              ] as const
+            ).map(([label, text]) => (
+              <li key={label}>
+                <strong className="text-paper font-semibold">{label}:</strong>{" "}
+                <RichText parts={text} />
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section
+          aria-labelledby="compare-heading"
+          className="flex flex-col gap-6"
+        >
+          <div className="max-w-prose">
+            <h2 id="compare-heading" className="text-heading font-semibold">
+              {algorithm.shortName} vs other algorithms
+            </h2>
+            <p className="text-paper-dim mt-2 leading-relaxed">
+              The same terminal in 1-bit, center crop at actual size.
+            </p>
+          </div>
+
+          <ul className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            {guide.compare.map(({ slug }) => {
+              const other = getAlgorithm(slug)!;
+              return (
+                <li key={slug}>
+                  <figure className="flex flex-col gap-2">
+                    <div className="border-line-strong bg-ink-sunken border">
+                      <Image
+                        src={other.preview}
+                        alt={`Center of the terminal specimen dithered with ${other.name}`}
+                        width={PREVIEW_SIZE}
+                        height={PREVIEW_SIZE}
+                        unoptimized
+                        className="aspect-square w-full object-none [image-rendering:pixelated]"
+                      />
+                    </div>
+                    <figcaption className="text-sm">
+                      {slug === algorithm.slug ? (
+                        <span className="text-paper font-semibold">
+                          {other.shortName}
+                        </span>
+                      ) : (
+                        <Link href={`/algorithms/${slug}`} className={textLink}>
+                          {other.shortName}
+                        </Link>
+                      )}
+                    </figcaption>
+                  </figure>
+                </li>
+              );
+            })}
+          </ul>
+
+          <div
+            role="region"
+            aria-label={`${algorithm.shortName} comparison table`}
+            // Scrolls sideways on phones; focusable so keyboards can too.
+            // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+            tabIndex={0}
+            className="focus-visible:ring-safelight overflow-x-auto focus-visible:ring-2 focus-visible:outline-none"
+          >
+            <table className="border-line w-full min-w-xl border-collapse border text-left text-sm">
+              <caption className="sr-only">
+                {algorithm.shortName} compared with{" "}
+                {guide.compare
+                  .slice(1)
+                  .map(({ slug }) => getAlgorithm(slug)!.shortName)
+                  .join(", ")}
+              </caption>
+              <thead>
+                <tr className="border-line border-b">
+                  {["Algorithm", "Method", "Animation", "Look"].map((col) => (
+                    <th
+                      key={col}
+                      scope="col"
+                      className="text-caps text-paper-dim px-4 py-3 font-normal"
+                    >
+                      {col}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {guide.compare.map(({ slug, look }) => {
+                  const other = getAlgorithm(slug)!;
+                  return (
+                    <tr key={slug} className="border-line border-b">
+                      <th scope="row" className="px-4 py-3 font-semibold">
+                        {slug === algorithm.slug ? (
+                          other.shortName
+                        ) : (
+                          <Link
+                            href={`/algorithms/${slug}`}
+                            className={textLink}
+                          >
+                            {other.shortName}
+                          </Link>
+                        )}
+                      </th>
+                      <td className="text-paper-dim px-4 py-3">
+                        {methodSummary(slug)}
+                      </td>
+                      <td className="text-paper-dim px-4 py-3">
+                        {getMethod(slug).kind === "diffusion"
+                          ? "Flickers"
+                          : "Stable"}
+                      </td>
+                      <td className="text-paper-dim px-4 py-3">{look}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section aria-labelledby="try-heading" className="max-w-prose">
+          <h2 id="try-heading" className="text-heading font-semibold">
+            Try {algorithm.shortName} on your image
+          </h2>
+          <p className="text-paper-dim mt-2 leading-relaxed">
+            Open the editor with {algorithm.shortName} already selected, drop in
+            a photo or an animated GIF, {tryTip(algorithm.slug)}, pick a palette
+            and export the result. Free, no account, no watermark, and your
+            image never leaves your device.
+          </p>
+          <Button asChild size="lg" className="mt-6">
+            <Link href={`/editor?algorithm=${algorithm.slug}`}>
+              Open {algorithm.shortName} in the editor
+            </Link>
+          </Button>
+        </section>
+
+        <section aria-labelledby="faq-heading">
+          <h2 id="faq-heading" className="text-heading mb-4 font-semibold">
+            {algorithm.shortName} FAQ
+          </h2>
+          <FaqList faq={guide.faq} />
         </section>
 
         <nav
@@ -210,6 +370,12 @@ export default async function AlgorithmPage({
               alignEnd
             />
           )}
+          <Link
+            href="/algorithms"
+            className={`${textLink} self-start text-sm sm:col-span-2`}
+          >
+            All dithering algorithms
+          </Link>
         </nav>
       </article>
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-8">
@@ -217,6 +383,34 @@ export default async function AlgorithmPage({
       </div>
     </>
   );
+}
+
+/** Comparison table cell: how the algorithm decides, from the engine. */
+function methodSummary(slug: AlgorithmId) {
+  const method = getMethod(slug);
+  if (method.kind === "diffusion") {
+    const { taps, divisor } = method.kernel;
+    const carried = taps.reduce((sum, [, , weight]) => sum + weight, 0);
+    return `Error to ${taps.length} neighbors (${Math.round((carried / divisor) * 100)}% carried)`;
+  }
+  if (method.kind === "ordered") {
+    const { size } = method.matrix();
+    return `${size}×${size} threshold matrix`;
+  }
+  if (method.kind === "screen") {
+    return method.lines ? "Angled line screen" : "Angled dot screen";
+  }
+  return "Random threshold";
+}
+
+/** The setting worth trying first, by family. */
+function tryTip(slug: AlgorithmId) {
+  const kind = getMethod(slug).kind;
+  if (kind === "diffusion") {
+    return "adjust how much error travels with the Error diffusion slider";
+  }
+  if (kind === "screen") return "set the screen size and angle";
+  return "choose the processing scale for the dot size";
 }
 
 function Meta({

@@ -44,11 +44,15 @@ export type AlgorithmInfo = {
   category: AlgorithmCategory;
   era: "classic" | "modern";
   description: string;
+  /**
+   * How involved the method is, not its speed: "low" for a fixed threshold
+   * per pixel, "medium" for error diffusion (sequential, with an error
+   * buffer) or a rotated screen, "high" when the threshold matrix itself is
+   * built by optimization (void-and-cluster).
+   */
   complexity: "low" | "medium" | "high";
   year: string | null;
   author: string | null;
-  /** Relative processing cost, 1 (cheap) to 5 (expensive). */
-  cost: 1 | 2 | 3 | 4 | 5;
   /** The specimen (PREVIEW_SOURCE) rendered with this algorithm in 1-bit. */
   preview: string;
 };
@@ -65,7 +69,6 @@ export const ALGORITHMS = [
     complexity: "medium",
     year: "1976",
     author: "Robert W. Floyd & Louis Steinberg",
-    cost: 3,
     preview: "/specimens/floyd-steinberg.png",
   },
   {
@@ -76,10 +79,9 @@ export const ALGORITHMS = [
     era: "classic",
     description:
       "Spreads the error over 12 neighbors for smoother, more natural textures, at a slower speed.",
-    complexity: "high",
+    complexity: "medium",
     year: "1976",
     author: "J.F. Jarvis, C.N. Judice & W.H. Ninke",
-    cost: 4,
     preview: "/specimens/jarvis-judice-and-ninke-jjn.png",
   },
   {
@@ -90,10 +92,9 @@ export const ALGORITHMS = [
     era: "classic",
     description:
       "An optimized version of JJN with smaller weights. Produces sharper results with excellent detail preservation.",
-    complexity: "high",
+    complexity: "medium",
     year: "1981",
     author: "Peter Stucki",
-    cost: 4,
     preview: "/specimens/stucki.png",
   },
   {
@@ -107,7 +108,6 @@ export const ALGORITHMS = [
     complexity: "medium",
     year: "1988",
     author: "Daniel Burkes",
-    cost: 2,
     preview: "/specimens/burkes.png",
   },
   {
@@ -119,9 +119,8 @@ export const ALGORITHMS = [
     description:
       "Balances quality and performance with a three-line diffusion. Produces natural and crisp textures.",
     complexity: "medium",
-    year: "1986",
-    author: "Frank Sierra",
-    cost: 3,
+    year: "1989",
+    author: "Frankie Sierra",
     preview: "/specimens/sierra.png",
   },
   {
@@ -132,10 +131,9 @@ export const ALGORITHMS = [
     era: "classic",
     description:
       "Reduced version of Sierra using two diffusion rows. Faster execution with slight quality loss.",
-    complexity: "low",
-    year: "1986",
-    author: "Frank Sierra",
-    cost: 2,
+    complexity: "medium",
+    year: "1990",
+    author: "Frankie Sierra",
     preview: "/specimens/two-row-sierra.png",
   },
   {
@@ -146,10 +144,9 @@ export const ALGORITHMS = [
     era: "classic",
     description:
       "Lightweight and fast variant of Sierra, ideal for real-time applications or previews.",
-    complexity: "low",
-    year: "1986",
-    author: "Frank Sierra",
-    cost: 1,
+    complexity: "medium",
+    year: "1990",
+    author: "Frankie Sierra",
     preview: "/specimens/sierra-lite.png",
   },
   {
@@ -160,10 +157,9 @@ export const ALGORITHMS = [
     era: "classic",
     description:
       "Passes on only 3/4 of the error, so highlights and shadows clip to clean white and black. The crisp, stippled look of the early Macintosh.",
-    complexity: "low",
+    complexity: "medium",
     year: "1984",
     author: "Bill Atkinson (Apple)",
-    cost: 2,
     preview: "/specimens/atkinson.png",
   },
   {
@@ -177,7 +173,6 @@ export const ALGORITHMS = [
     complexity: "low",
     year: "1973",
     author: "Bryce Bayer",
-    cost: 1,
     preview: "/specimens/bayer-2-2.png",
   },
   {
@@ -191,7 +186,6 @@ export const ALGORITHMS = [
     complexity: "low",
     year: "1973",
     author: "Bryce Bayer",
-    cost: 1,
     preview: "/specimens/bayer-4-4.png",
   },
   {
@@ -202,10 +196,9 @@ export const ALGORITHMS = [
     era: "classic",
     description:
       "Larger Bayer matrix that minimizes visible patterns, resulting in smoother gradients.",
-    complexity: "medium",
+    complexity: "low",
     year: "1973",
     author: "Bryce Bayer",
-    cost: 2,
     preview: "/specimens/bayer-8-8.png",
   },
   {
@@ -216,10 +209,9 @@ export const ALGORITHMS = [
     era: "classic",
     description:
       "Groups pixels to simulate offset printing. Ideal for ink-dot or halftone-style appearances.",
-    complexity: "medium",
+    complexity: "low",
     year: "1980s",
     author: "Various researchers",
-    cost: 2,
     preview: "/specimens/clustered-dot-halftone-ordered.png",
   },
   {
@@ -233,7 +225,6 @@ export const ALGORITHMS = [
     complexity: "high",
     year: "1993",
     author: "Robert Ulichney",
-    cost: 4,
     preview: "/specimens/blue-noise.png",
   },
   {
@@ -247,7 +238,6 @@ export const ALGORITHMS = [
     complexity: "low",
     year: null,
     author: null,
-    cost: 1,
     preview: "/specimens/random-dither.png",
   },
   {
@@ -261,7 +251,6 @@ export const ALGORITHMS = [
     complexity: "high",
     year: "1993",
     author: "Robert Ulichney",
-    cost: 4,
     preview: "/specimens/void-and-cluster.png",
   },
   {
@@ -275,7 +264,6 @@ export const ALGORITHMS = [
     complexity: "medium",
     year: "1880s",
     author: "Frederic Ives",
-    cost: 2,
     preview: "/specimens/halftone.png",
   },
   {
@@ -286,10 +274,9 @@ export const ALGORITHMS = [
     era: "classic",
     description:
       "Parallel lines whose thickness follows the tone, like an engraving or a banknote. Set the line spacing and angle, let the light lift the lines like an oscilloscope, or make them wave.",
-    complexity: "low",
+    complexity: "medium",
     year: null,
     author: null,
-    cost: 2,
     preview: "/specimens/line-screen.png",
   },
 ] as const satisfies readonly AlgorithmInfo[];
