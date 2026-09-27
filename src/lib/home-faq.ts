@@ -1,6 +1,5 @@
-import { MAX_ANIMATION_FRAMES } from "@/lib/editor/animation-limits";
 import { EXPORT_FACTORS } from "@/lib/editor/export";
-import { SUPPORTED_FORMATS_DETAIL } from "@/lib/editor/load-image";
+import { MAX_PALETTE_COLORS, MIN_PALETTE_COLORS } from "@/lib/palettes";
 
 /** Answer text, with optional internal links inside it. */
 export type FaqPart = string | { text: string; href: string };
@@ -19,13 +18,9 @@ export const HOME_FAQ: FaqEntry[] = [
     ],
   },
   {
-    question: "Is PixelSynth free?",
-    answer: ["Yes. No account, no watermark, no usage limits."],
-  },
-  {
-    question: "Are my images uploaded?",
+    question: "Is it free and private?",
     answer: [
-      "No. Every pixel is processed in your browser. The anonymous page-view counter never sees your images.",
+      "Yes. No account, no watermark, no usage limits, and every pixel is processed in your browser: your images never leave your device. The anonymous page-view counter never sees them.",
     ],
   },
   {
@@ -52,30 +47,27 @@ export const HOME_FAQ: FaqEntry[] = [
     ],
   },
   {
-    question: "Can I share my settings?",
+    question: "Can I use my own palette, like one from Lospec?",
     answer: [
-      "Yes. The link icon in the editor copies a link that reopens the editor with the same look for any image. It never includes your image.",
+      "Yes. Choose the ",
+      { text: "Custom palette", href: "/palettes#palette-custom" },
+      ` and press Import: paste hex codes, or open a palette file downloaded from Lospec (HEX, GPL, PAL or Paint.NET TXT). It takes ${MIN_PALETTE_COLORS} to ${MAX_PALETTE_COLORS} colors.`,
     ],
   },
   {
-    question: "Can I dither an animated GIF?",
+    question: "Can I use it for album covers, posters or social posts?",
     answer: [
-      `Yes, up to ${MAX_ANIMATION_FRAMES} frames. Every frame is dithered with the same palette and saved as an animated GIF with the original timing. `,
-      { text: "Bayer", href: "/algorithms/bayer-8-8" },
-      " and ",
-      { text: "Blue Noise", href: "/algorithms/blue-noise" },
-      " stay steady from frame to frame; try them on the ",
-      {
-        text: "animated sample",
-        href: "/editor?sample=animated&algorithm=bayer-8-8",
-      },
-      ".",
+      `Yes. Export PNGs up to ×${EXPORT_FACTORS.at(-1)}, enlarged without smoothing, so the dots stay crisp at any size. In 1-bit mode, give the dots up to three colors and make the background transparent to lay the dither over other artwork.`,
     ],
   },
   {
-    question: "Which formats are supported?",
+    question: "Can I use it for laser engraving?",
     answer: [
-      `${SUPPORTED_FORMATS_DETAIL.replace(" or ", " and ")} in; PNG or animated GIF out, enlarged ×1 to ×${EXPORT_FACTORS.at(-1)}.`,
+      "Yes. Stay in 1-bit, pick ",
+      { text: "Atkinson", href: "/algorithms/atkinson" },
+      " or ",
+      { text: "Floyd–Steinberg", href: "/algorithms/floyd-steinberg" },
+      ", set the output size to the width in pixels your engraving needs (up to the image’s own width) and save the PNG at ×1. The file carries no DPI, so set the physical size in your laser software, and turn off its own dithering.",
     ],
   },
 ];

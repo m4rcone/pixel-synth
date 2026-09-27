@@ -248,10 +248,11 @@ export default function PalettesPage() {
                 </h3>
                 <p className="text-paper-dim text-sm leading-relaxed">
                   Build a palette of {MIN_PALETTE_COLORS} to{" "}
-                  {MAX_PALETTE_COLORS} colors with the color picker, or start
-                  from any palette above with “Edit colors”. It is saved in your
-                  browser. Use it for brand colors or for systems not listed
-                  here.
+                  {MAX_PALETTE_COLORS} colors with the color picker, start from
+                  any palette above with “Edit colors”, or import one from
+                  Lospec: paste its hex codes or open its HEX, GPL, PAL or TXT
+                  file. It is saved in your browser. Use it for brand colors or
+                  for systems not listed here.
                 </p>
                 <Link
                   href="/editor?palette=custom"

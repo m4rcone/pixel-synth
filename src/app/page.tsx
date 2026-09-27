@@ -22,9 +22,6 @@ import {
 import { MAX_ANIMATION_FRAMES } from "@/lib/editor/animation-limits";
 import { EXPORT_FACTORS } from "@/lib/editor/export";
 import { SUPPORTED_IMAGE_TYPES } from "@/lib/editor/load-image";
-import { PIXEL_ART_PRESET } from "@/lib/editor/pixel-art";
-import { DEFAULT_SETTINGS } from "@/lib/editor/settings";
-import { encodeSettings, SHARE_PARAM } from "@/lib/editor/share";
 import extractedColors from "@/data/sample-extracted-palette.json";
 import { faqStructuredData, HOME_FAQ, type FaqPart } from "@/lib/home-faq";
 import {
@@ -42,8 +39,6 @@ import {
   HERO_VARIANT_PATTERN,
   HERO_SIZE,
   heroVariant,
-  PALETTE_PREVIEW_SIZE,
-  palettePreview,
   PIXEL_ART_PREVIEW,
   SAMPLE_IMAGE,
 } from "@/lib/samples";
@@ -52,15 +47,6 @@ import { absoluteUrl, siteConfig } from "@/lib/site";
 const SAMPLE_LINK = "/editor?sample=1";
 const ANIMATED_SAMPLE_LINK = "/editor?sample=animated";
 const PIXEL_ART_LINK = "/editor?preset=pixel-art";
-/** The sample, halftone screens, separated into CMYK. */
-const CMYK_LINK = `/editor?sample=1&${SHARE_PARAM}=${encodeSettings(
-  {
-    ...DEFAULT_SETTINGS,
-    algorithm: "halftone",
-    color: { ...DEFAULT_SETTINGS.color, mode: "cmyk" },
-  },
-  true,
-)}`;
 
 const paletteName = (id: string) => getPalettePreset(id)?.name ?? id;
 const algorithmName = (slug: string) => getAlgorithm(slug)?.shortName ?? slug;
@@ -92,105 +78,6 @@ const SPECS: { label: string; value: string; numeric?: boolean }[] = [
   { label: "PNG export", value: `×1 to ×${MAX_EXPORT_FACTOR}` },
   { label: "Animated GIF", value: `Up to ${MAX_ANIMATION_FRAMES} frames` },
   { label: "Opens", value: INPUT_FORMATS },
-];
-
-type Thumbnail = {
-  src: string;
-  width: number;
-  height: number;
-  /** Shown enlarged with crisp pixels. */
-  pixelated?: boolean;
-};
-
-const MODES: {
-  title: string;
-  text: string;
-  image: Thumbnail;
-  params: [string, string][];
-  links: { label: string; href: string }[];
-}[] = [
-  {
-    title: "Pixel art & game assets",
-    text: "Shrink a photo to sprite size, snap it to a console palette and export at ×1 for your engine.",
-    image: { ...PIXEL_ART_PREVIEW, pixelated: true },
-    params: [
-      ["Algorithm", algorithmName(PIXEL_ART_PRESET.algorithm)],
-      ["Palette", paletteName(PIXEL_ART_PRESET.palette)],
-      ["Size", `≈ ${PIXEL_ART_PREVIEW.width} × ${PIXEL_ART_PREVIEW.height}`],
-    ],
-    links: [
-      { label: "Pixel art preset", href: PIXEL_ART_LINK },
-      {
-        label: `${paletteName("pico8")} palette`,
-        href: "/palettes#palette-pico8",
-      },
-    ],
-  },
-  {
-    title: "Print, zines & risograph",
-    text: "Split an image into CMYK and screen each ink at its classic angle, or print in two riso colors.",
-    image: {
-      src: palettePreview("riso"),
-      ...PALETTE_PREVIEW_SIZE,
-    },
-    params: [
-      ["Color", "CMYK separation"],
-      ["Screen", algorithmName("halftone")],
-      ["Two inks", paletteName("riso")],
-    ],
-    links: [
-      { label: "Try CMYK separation", href: CMYK_LINK },
-      {
-        label: algorithmName("clustered-dot-halftone-ordered"),
-        href: "/algorithms/clustered-dot-halftone-ordered",
-      },
-      {
-        label: `${paletteName("riso")} palette`,
-        href: "/palettes#palette-riso",
-      },
-    ],
-  },
-  {
-    title: "Laser engraving",
-    text: "Engravers burn dots, not grays: error diffusion gives pure black-and-white PNGs.",
-    image: {
-      src: getAlgorithm("atkinson")?.preview ?? "",
-      width: PREVIEW_SIZE,
-      height: PREVIEW_SIZE,
-    },
-    params: [
-      ["Color", "1-bit"],
-      ["Algorithm", "Atkinson or Floyd–Steinberg"],
-      ["Export", "PNG ×1"],
-    ],
-    links: [
-      { label: algorithmName("atkinson"), href: "/algorithms/atkinson" },
-      {
-        label: algorithmName("floyd-steinberg"),
-        href: "/algorithms/floyd-steinberg",
-      },
-    ],
-  },
-  {
-    title: "Posters, covers & social",
-    text: "A printed, retro texture for album art, posters and posts, crisp at any size or on a transparent background.",
-    image: {
-      src: palettePreview("zx-spectrum"),
-      ...PALETTE_PREVIEW_SIZE,
-    },
-    params: [
-      ["Export", `PNG up to ×${MAX_EXPORT_FACTOR}`],
-      ["Background", "Transparent"],
-      ["Palette", "Any, or your own"],
-    ],
-    links: [
-      {
-        label: `${paletteName("zx-spectrum")} palette`,
-        href: "/palettes#palette-zx-spectrum",
-      },
-      { label: "Your own colors", href: "/palettes#palette-custom" },
-    ],
-  },
 ];
 
 const homeStructuredData = [
@@ -456,7 +343,8 @@ export default function HomePage() {
               <p className="text-paper-dim text-lg leading-relaxed">
                 The pixel art preset shrinks any image to about 128 × 96 pixels’
                 worth of detail, whatever its shape, snaps it to PICO-8 with a
-                2×2 Bayer pattern and exports crisp at ×4 or ×8.
+                2×2 Bayer pattern and exports crisp at ×4 or ×8. For sprites and
+                game assets, save at ×1: dithered images export as indexed PNGs.
               </p>
               <Button asChild size="lg" className="self-start">
                 <Link href={PIXEL_ART_LINK}>Try the pixel art preset</Link>
@@ -479,7 +367,15 @@ export default function HomePage() {
                 Open a GIF and every frame is dithered with one shared palette,
                 so colors hold still from frame to frame. Up to{" "}
                 {MAX_ANIMATION_FRAMES} frames, exported as a GIF that loops like
-                the original.
+                the original. Ordered patterns like{" "}
+                <Link href="/algorithms/bayer-8-8" className={textLink}>
+                  Bayer
+                </Link>{" "}
+                and{" "}
+                <Link href="/algorithms/blue-noise" className={textLink}>
+                  Blue Noise
+                </Link>{" "}
+                stay put between frames, so the animation doesn’t shimmer.
               </p>
               <Link
                 href={ANIMATED_SAMPLE_LINK}
@@ -496,61 +392,6 @@ export default function HomePage() {
               alt={`The animated sample, a neon grid rolling toward a striped sun, dithered with ${algorithmName(ANIMATED_DITHER.algorithm)} and the ${paletteName(ANIMATED_DITHER.palette)} palette`}
               caption={`${ANIMATED_SAMPLE.frames} frames · ${ANIMATED_SAMPLE.delay} ms · ${algorithmName(ANIMATED_DITHER.algorithm)} · ${paletteName(ANIMATED_DITHER.palette)}`}
             />
-          </section>
-
-          <section aria-labelledby="modes-heading" className="pb-20">
-            <SectionHead
-              id="modes-heading"
-              title="For pixel art, print, riso and laser"
-            >
-              Four ways people use it, with the settings to start from.
-            </SectionHead>
-            <ul className="grid gap-4 md:grid-cols-2">
-              {MODES.map((mode) => (
-                <li
-                  key={mode.title}
-                  className="border-line-strong bg-ink-raised flex flex-col gap-5 border p-5 sm:flex-row"
-                >
-                  <Image
-                    src={mode.image.src}
-                    alt=""
-                    width={mode.image.width}
-                    height={mode.image.height}
-                    unoptimized
-                    className={
-                      mode.image.pixelated
-                        ? "border-line bg-ink-sunken aspect-3/2 w-34 shrink-0 self-start border object-cover [image-rendering:pixelated]"
-                        : "border-line bg-ink-sunken aspect-3/2 w-34 shrink-0 self-start border object-cover"
-                    }
-                  />
-                  <div className="flex min-w-0 flex-col gap-3">
-                    <h3 className="text-heading font-semibold">{mode.title}</h3>
-                    <p className="text-paper-dim leading-relaxed">
-                      {mode.text}
-                    </p>
-                    <dl className="border-line flex flex-col gap-1 border-t pt-3">
-                      {mode.params.map(([label, value]) => (
-                        <div key={label} className="flex items-baseline gap-3">
-                          <dt className="text-caps text-paper-dim w-24 shrink-0">
-                            {label}
-                          </dt>
-                          <dd className="text-readout">{value}</dd>
-                        </div>
-                      ))}
-                    </dl>
-                    <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
-                      {mode.links.map((link) => (
-                        <li key={link.href}>
-                          <Link href={link.href} className={textLink}>
-                            {link.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </li>
-              ))}
-            </ul>
           </section>
 
           <section aria-labelledby="faq-heading" className="pb-20">

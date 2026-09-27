@@ -7,7 +7,7 @@ test("every internal landing link resolves", async ({ page, request }) => {
     .evaluateAll((links) => [
       ...new Set(links.map((link) => link.getAttribute("href")!)),
     ]);
-  // Hero, algorithm grid, palette cartridges, modes, FAQ and footer.
+  // Hero, algorithm grid, palette cartridges, FAQ and footer.
   expect(hrefs).toEqual(
     expect.arrayContaining([
       "/editor?sample=1&algorithm=floyd-steinberg",
@@ -46,11 +46,11 @@ test("a palette cartridge opens that palette in the gallery", async ({
 
 test("the FAQ opens from the keyboard", async ({ page }) => {
   await page.goto("/");
-  const question = page.getByText("Are my images uploaded?");
+  const question = page.getByText("Is it free and private?");
   await question.focus();
   await page.keyboard.press("Enter");
   await expect(
-    page.getByText("Every pixel is processed in your browser."),
+    page.getByText(/your images never leave your device/),
   ).toBeVisible();
 });
 
@@ -98,13 +98,4 @@ test("the hero steps through algorithms and palettes", async ({ page }) => {
     "href",
     "/editor?sample=1&algorithm=line-screen&palette=gameboy",
   );
-});
-
-test("the CMYK link opens the sample separated into inks", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("link", { name: "Try CMYK separation" }).click();
-  await expect(page).toHaveURL(/\/editor\?sample=1&s=/);
-  await expect(
-    page.getByRole("button", { name: "CMYK", exact: true }),
-  ).toHaveAttribute("aria-pressed", "true");
 });

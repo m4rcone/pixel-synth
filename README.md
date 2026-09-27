@@ -28,7 +28,7 @@ A free online dithering and pixel art tool. Turn any photo into dithered, 1-bit 
 
 | Route                | What it is                                                             |
 | -------------------- | ---------------------------------------------------------------------- |
-| `/`                  | Landing page: before/after hero, algorithms, palettes, GIFs, uses, FAQ |
+| `/`                  | Landing page: before/after hero, algorithms, palettes, GIFs, FAQ       |
 | `/editor`            | The editor                                                             |
 | `/algorithms`        | The algorithm catalog, grouped by family (`#algorithm-<slug>` anchors) |
 | `/algorithms/<slug>` | One page per algorithm                                                 |

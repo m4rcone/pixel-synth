@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { SUPPORTED_IMAGE_TYPES } from "@/lib/editor/load-image";
 import { faqAnswerText, faqStructuredData, HOME_FAQ } from "@/lib/home-faq";
 
 describe("home FAQ", () => {
@@ -13,15 +12,5 @@ describe("home FAQ", () => {
       );
       expect(item.acceptedAnswer.text).not.toMatch(/[<>]/);
     });
-  });
-
-  it("lists every supported input format", () => {
-    const formats = faqAnswerText(
-      HOME_FAQ.find((e) => e.question.includes("formats"))!.answer,
-    );
-    for (const type of SUPPORTED_IMAGE_TYPES) {
-      const name = type.replace("image/", "");
-      expect(formats.toLowerCase()).toContain(name);
-    }
   });
 });
