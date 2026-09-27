@@ -242,7 +242,7 @@ export default async function AlgorithmPage({
                         width={PREVIEW_SIZE}
                         height={PREVIEW_SIZE}
                         unoptimized
-                        className="aspect-square w-full object-none [image-rendering:pixelated]"
+                        className="pixelated aspect-square w-full object-none"
                       />
                     </div>
                     <figcaption className="text-sm">

@@ -81,7 +81,7 @@ export function CompareSlider({
         priority
         draggable={false}
         className={cn(
-          "absolute inset-0 size-full object-cover [image-rendering:pixelated]",
+          "pixelated absolute inset-0 size-full object-cover",
           afterClassName,
         )}
       />

@@ -324,7 +324,7 @@ export default function HomePage() {
                 width={PIXEL_ART_PREVIEW.width}
                 height={PIXEL_ART_PREVIEW.height}
                 unoptimized
-                className="w-full [image-rendering:pixelated]"
+                className="pixelated w-full"
               />
               <figcaption className="text-readout text-paper-dim mt-2">
                 {PIXEL_ART_PREVIEW.width} × {PIXEL_ART_PREVIEW.height} px, shown

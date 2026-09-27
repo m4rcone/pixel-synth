@@ -150,7 +150,7 @@ export default async function PaletteGuidePage({
                   width={PALETTE_PREVIEW_SIZE.width}
                   height={PALETTE_PREVIEW_SIZE.height}
                   beforeSizes={`(max-width: 640px) 100vw, ${PALETTE_PREVIEW_SIZE.width}px`}
-                  afterClassName="max-sm:[image-rendering:auto]"
+                  afterClassName="max-sm:image-smooth"
                 />
                 <figcaption className="text-readout text-paper-dim mt-2">
                   {previewAlgorithm.shortName} · <VariantName /> ·{" "}
@@ -283,7 +283,7 @@ export default async function PaletteGuidePage({
                         unoptimized
                         // 1:1 from sm up; smaller screens scale it down
                         // smoothly (nearest-neighbor would add moiré).
-                        className="border-line-strong bg-ink-sunken h-auto max-w-full border [image-rendering:pixelated] max-sm:[image-rendering:auto]"
+                        className="border-line-strong bg-ink-sunken pixelated max-sm:image-smooth h-auto max-w-full border"
                       />
                       <figcaption className="text-sm">
                         <Link href={`/algorithms/${slug}`} className={textLink}>

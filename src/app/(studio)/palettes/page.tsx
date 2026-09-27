@@ -135,7 +135,7 @@ export default function PalettesPage() {
               height={PIXEL_ART_PREVIEW.height}
               unoptimized
               priority
-              className="w-full [image-rendering:pixelated]"
+              className="pixelated w-full"
             />
             <figcaption className="text-readout text-paper-dim mt-2">
               {PIXEL_ART_PREVIEW.width} × {PIXEL_ART_PREVIEW.height} px, shown
@@ -311,7 +311,7 @@ function PaletteCard({
         height={PALETTE_PREVIEW_SIZE.height}
         unoptimized
         className={cn(
-          "border-line bg-ink-sunken w-full border-b sm:[image-rendering:pixelated]",
+          "border-line bg-ink-sunken sm:pixelated w-full border-b",
           wide &&
             "sm:w-1/2 sm:shrink-0 sm:self-start sm:border-r sm:border-b-0",
         )}

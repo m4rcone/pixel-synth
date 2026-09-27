@@ -283,3 +283,25 @@
     text-shadow: none;
   }
 }
+
+/* Images are enlarged nearest-neighbor: every pixel stays a sharp block. */
+@utility pixelated {
+  image-rendering: pixelated;
+}
+/* Smooth scaling, for images shown below their native size. */
+@utility image-smooth {
+  image-rendering: auto;
+}
+
+/* Reduced motion: popovers, sheets, dialogs and spinners appear at rest.
+   Radix still receives animationend, so open and close keep working. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
