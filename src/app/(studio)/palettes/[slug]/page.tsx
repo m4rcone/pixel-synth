@@ -105,11 +105,17 @@ export default async function PaletteGuidePage({
         name: "Color palettes",
         url: absoluteUrl("/palettes"),
       },
+      author: {
+        "@type": "Person",
+        name: siteConfig.creator,
+        url: siteConfig.links.github,
+      },
       publisher: {
         "@type": "Person",
         name: siteConfig.creator,
         url: siteConfig.links.github,
       },
+      dateModified: siteConfig.updated,
     },
     breadcrumbStructuredData([
       { name: "Palettes", path: "/palettes" },
@@ -150,7 +156,7 @@ export default async function PaletteGuidePage({
                   width={PALETTE_PREVIEW_SIZE.width}
                   height={PALETTE_PREVIEW_SIZE.height}
                   beforeSizes={`(max-width: 640px) 100vw, ${PALETTE_PREVIEW_SIZE.width}px`}
-                  afterClassName="max-sm:[image-rendering:auto]"
+                  afterClassName="max-sm:image-smooth"
                 />
                 <figcaption className="text-readout text-paper-dim mt-2">
                   {previewAlgorithm.shortName} · <VariantName /> ·{" "}
@@ -241,10 +247,17 @@ export default async function PaletteGuidePage({
             <h2 id="steps-heading" className="text-heading font-semibold">
               How to make {guide.name}-style images
             </h2>
-            <ol className="text-paper-dim mt-4 flex list-decimal flex-col gap-3 pl-5 leading-relaxed">
+            {/* Numbers drawn in the flow, not as outside markers, so they
+                stay inside the page padding with a hanging indent. */}
+            <ol className="text-paper-dim mt-4 flex flex-col gap-3 leading-relaxed">
               {guide.steps.map((step, index) => (
-                <li key={index}>
-                  <RichText parts={step} />
+                <li key={index} className="flex gap-3">
+                  <span aria-hidden="true" className="shrink-0 tabular-nums">
+                    {index + 1}.
+                  </span>
+                  <span>
+                    <RichText parts={step} />
+                  </span>
                 </li>
               ))}
             </ol>
@@ -256,7 +269,7 @@ export default async function PaletteGuidePage({
           >
             <div className="max-w-prose">
               <h2 id="examples-heading" className="text-heading font-semibold">
-                The {guide.name} palette with different dithers
+                The {guide.name} palette with different dithering algorithms
               </h2>
               <p className="text-paper-dim mt-2 leading-relaxed">
                 The same sunset at {HERO_SIZE.width} × {HERO_SIZE.height}{" "}
@@ -283,7 +296,7 @@ export default async function PaletteGuidePage({
                         unoptimized
                         // 1:1 from sm up; smaller screens scale it down
                         // smoothly (nearest-neighbor would add moiré).
-                        className="border-line-strong bg-ink-sunken h-auto max-w-full border [image-rendering:pixelated] max-sm:[image-rendering:auto]"
+                        className="border-line-strong bg-ink-sunken pixelated max-sm:image-smooth h-auto max-w-full border"
                       />
                       <figcaption className="text-sm">
                         <Link href={`/algorithms/${slug}`} className={textLink}>
@@ -304,8 +317,8 @@ export default async function PaletteGuidePage({
             <p className="text-paper-dim mt-2 leading-relaxed">
               Open the editor with <VariantName /> already selected, drop in a
               photo or an animated GIF, pick a dithering algorithm and export a
-              PNG. Free, no account, no watermark, and your image never leaves
-              your device.
+              PNG or an animated GIF. Free, no account, no watermark, and your
+              image never leaves your device.
             </p>
             <VariantEditorButton verb="Open" className="mt-6" />
           </section>
@@ -418,7 +431,7 @@ function ColorTable({
                   <td className="w-12 px-3 py-2">
                     <span
                       aria-hidden="true"
-                      className="block size-6 shadow-[inset_0_0_0_1px_var(--line-strong)]"
+                      className="inset-ring-line-strong block size-6 inset-ring"
                       style={{ background: color.hex }}
                     />
                   </td>
@@ -446,7 +459,7 @@ function ColorTable({
             >
               <span
                 aria-hidden="true"
-                className="size-6 shrink-0 shadow-[inset_0_0_0_1px_var(--line-strong)]"
+                className="inset-ring-line-strong size-6 shrink-0 inset-ring"
                 style={{ background: color.hex }}
               />
               <span className="text-readout">{color.hex}</span>

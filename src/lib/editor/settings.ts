@@ -1,5 +1,5 @@
 import { DEFAULT_ALGORITHM, type AlgorithmId } from "@/lib/algorithms";
-import { hexToRgb } from "./pixels";
+import { hexToRgb, luma } from "./pixels";
 import {
   DEFAULT_CUSTOM_COLORS,
   DEFAULT_EXTRACT_COUNT,
@@ -173,9 +173,6 @@ export const DEFAULT_SETTINGS: EditorSettings = {
     black: 0.5,
   },
 };
-
-const luma = ([r, g, b]: [number, number, number]) =>
-  0.299 * r + 0.587 * g + 0.114 * b;
 
 /**
  * Whether 1-bit dots mark the dark areas (ink on a lighter background)

@@ -175,6 +175,8 @@ export class RenderClient {
 
   dispose() {
     this.worker?.terminate();
+    // Later calls fall back to the main thread instead of hanging.
+    this.worker = null;
     this.rejectPending(new Error("Renderer disposed"));
   }
 

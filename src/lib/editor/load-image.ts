@@ -62,13 +62,14 @@ export async function loadImageFile(
       `SVG files aren’t supported. Export “${file.name}” as PNG and try again.`,
     );
   }
-  if (!file.type.startsWith("image/") && !(await isGifFile(file))) {
+  const gif = await isGifFile(file);
+  if (!file.type.startsWith("image/") && !gif) {
     throw new ImageLoadError(
       `“${file.name}” is not an image. Choose a ${SUPPORTED_FORMATS_LABEL} file.`,
     );
   }
 
-  if (decoder && (await isGifFile(file))) {
+  if (decoder && gif) {
     const animated = await loadAnimation(file, decoder);
     if (animated) return animated;
   }
@@ -93,7 +94,7 @@ export async function loadImageFile(
   canvas.width = width;
   canvas.height = height;
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
-  if (!ctx) throw new ImageLoadError("Could not prepare the image.");
+  if (!ctx) throw new ImageLoadError("Couldn’t prepare the image.");
   ctx.imageSmoothingQuality = "high";
   ctx.drawImage(decoded, 0, 0, width, height);
   decoded.close();

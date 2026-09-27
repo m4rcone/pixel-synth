@@ -22,6 +22,10 @@ async function uploadTinyImage(page: Page) {
 }
 
 test.describe("accessibility", () => {
+  // Popovers, dialogs and transitions appear at rest, so contrast is measured
+  // on their final colors without waiting out an animation.
+  test.use({ contextOptions: { reducedMotion: "reduce" } });
+
   for (const route of [
     "/",
     "/editor",
@@ -63,8 +67,6 @@ test.describe("accessibility", () => {
     await expect(
       page.getByRole("dialog", { name: "Editor help" }),
     ).toContainText("Processing scale");
-    // Let the open animation finish so contrast is measured at rest.
-    await page.waitForTimeout(400);
     await expectNoAccessibilityViolations(page);
   });
 
@@ -147,8 +149,6 @@ test.describe("accessibility", () => {
     await expect(
       page.getByRole("dialog", { name: "Save image" }),
     ).toBeVisible();
-    // Let the open animation finish so contrast is measured at rest.
-    await page.waitForTimeout(400);
     await expectNoAccessibilityViolations(page);
   });
 
@@ -158,8 +158,6 @@ test.describe("accessibility", () => {
     await page.getByRole("button", { name: "Dither image" }).click();
     await page.getByRole("button", { name: "CMYK", exact: true }).click();
     await expect(page.getByRole("list", { name: "Inks" })).toBeVisible();
-    // Let the mode switch's color transition finish.
-    await page.waitForTimeout(400);
     await expectNoAccessibilityViolations(page);
   });
 
@@ -168,7 +166,6 @@ test.describe("accessibility", () => {
     await uploadTinyImage(page);
     await page.getByRole("button", { name: "Share settings" }).click();
     await expect(page.getByLabel("Settings link")).toBeVisible();
-    await page.waitForTimeout(400);
     await expectNoAccessibilityViolations(page);
   });
 
@@ -183,7 +180,6 @@ test.describe("accessibility", () => {
     await dialog.getByLabel("Colors").fill("no colors");
     await dialog.getByRole("button", { name: "Import colors" }).click();
     await expect(dialog.getByRole("alert")).toBeVisible();
-    await page.waitForTimeout(400);
     await expectNoAccessibilityViolations(page);
   });
 
@@ -205,6 +201,8 @@ test.describe("accessibility", () => {
   test("landing instrument and GIF are operable without a pointer", async ({
     page,
   }) => {
+    // The GIF only plays (and offers Pause) when motion is welcome.
+    await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/");
 
     const divider = page.getByRole("slider", {

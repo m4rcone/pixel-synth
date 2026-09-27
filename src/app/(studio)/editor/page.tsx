@@ -14,7 +14,15 @@ export default function EditorPage() {
   const { status, source, result, isRendering, renderProgress, error } =
     useEditorState();
   const { setError, load, readImage } = useEditorActions();
-  const [manualAnnouncement, setManualAnnouncement] = useState("");
+  // A canvas or toolbar message ("Canvas panned up.") holds only until the
+  // image or its render changes; then the render state speaks again.
+  const [manual, setManual] = useState<{ text: string; context: unknown }>({
+    text: "",
+    context: null,
+  });
+  const context = result ?? source;
+  const manualAnnouncement = manual.context === context ? manual.text : "";
+  const announce = (text: string) => setManual({ text, context });
 
   // Paste an image from the clipboard to start (never replaces work in progress).
   useEffect(() => {
@@ -31,7 +39,7 @@ export default function EditorPage() {
         setError(
           error instanceof ImageLoadError
             ? error.message
-            : "Could not open the pasted image.",
+            : "Couldn’t open the pasted image.",
         );
       }
     };
@@ -67,7 +75,7 @@ export default function EditorPage() {
         {announcement}
       </p>
 
-      <div className="flex flex-col lg:h-[calc(100svh-3.5rem)] lg:flex-row">
+      <div className="lg:h-below-header flex flex-col lg:flex-row">
         <section
           aria-label="Image editor workspace"
           className="relative flex min-w-0 flex-1 flex-col"
@@ -81,7 +89,7 @@ export default function EditorPage() {
               <button
                 type="button"
                 onClick={() => setError(null)}
-                className="text-label text-paper-dim hover:text-paper focus-visible:ring-ring shrink-0 focus-visible:ring-2 focus-visible:outline-hidden"
+                className="text-label text-paper-dim hover:text-paper-hot focus-visible:ring-ring shrink-0 focus-visible:ring-2 focus-visible:outline-hidden"
               >
                 Dismiss
               </button>
@@ -91,11 +99,11 @@ export default function EditorPage() {
             {status === "empty" ? (
               <ImageDropzone />
             ) : (
-              <Canvas onStatusChange={setManualAnnouncement} />
+              <Canvas onStatusChange={announce} />
             )}
             {renderProgress && <RenderProgress {...renderProgress} />}
           </div>
-          <CanvasToolbar onStatusChange={setManualAnnouncement} />
+          <CanvasToolbar onStatusChange={announce} />
         </section>
 
         <ControlPanel className="border-line lg:w-80 lg:shrink-0 lg:border-l" />

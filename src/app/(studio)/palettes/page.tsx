@@ -29,7 +29,7 @@ import {
   siteConfig,
 } from "@/lib/site";
 
-const description = `Dither images to ${PALETTE_PRESETS.length} retro color palettes, with every hex value: Game Boy, NES, PICO-8, CGA, ZX Spectrum, Commodore 64, riso, cyanotype or your own colors.`;
+const description = `Dither images to ${PALETTE_PRESETS.length} retro color palettes, with every hex value: Game Boy, NES, PICO-8, CGA, ZX Spectrum, Commodore 64, Riso, cyanotype or your own colors.`;
 
 export const metadata: Metadata = pageMetadata({
   title: "Retro Color Palettes: Game Boy, NES, PICO-8",
@@ -113,7 +113,7 @@ export default function PalettesPage() {
                 <li key={group}>
                   <a
                     href={`#group-${slug(group)}`}
-                    className="border-line-strong text-paper-dim hover:text-paper hover:border-paper focus-visible:ring-safelight inline-flex h-9 items-center border px-3.5 text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                    className="border-line-strong text-paper-dim hover:text-paper-hot hover:border-paper focus-visible:ring-safelight inline-flex h-9 items-center border px-3.5 text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
                   >
                     {group === "Dynamic" ? "Your own colors" : group}
                   </a>
@@ -135,7 +135,7 @@ export default function PalettesPage() {
               height={PIXEL_ART_PREVIEW.height}
               unoptimized
               priority
-              className="w-full [image-rendering:pixelated]"
+              className="pixelated w-full"
             />
             <figcaption className="text-readout text-paper-dim mt-2">
               {PIXEL_ART_PREVIEW.width} × {PIXEL_ART_PREVIEW.height} px, shown
@@ -251,9 +251,9 @@ export default function PalettesPage() {
                   Build a palette of {MIN_PALETTE_COLORS} to{" "}
                   {MAX_PALETTE_COLORS} colors with the color picker, start from
                   any palette above with “Edit colors”, or import one from
-                  Lospec: paste its hex codes or open its HEX, GPL, PAL or TXT
-                  file. It is saved in your browser. Use it for brand colors or
-                  for systems not listed here.
+                  Lospec: paste its hex codes or open its HEX, GPL, PAL or
+                  Paint.NET TXT file. It is saved in your browser. Use it for
+                  brand colors or for systems not listed here.
                 </p>
                 <Link
                   href="/editor?palette=custom"
@@ -311,7 +311,7 @@ function PaletteCard({
         height={PALETTE_PREVIEW_SIZE.height}
         unoptimized
         className={cn(
-          "border-line bg-ink-sunken w-full border-b sm:[image-rendering:pixelated]",
+          "border-line bg-ink-sunken sm:pixelated w-full border-b",
           wide &&
             "sm:w-1/2 sm:shrink-0 sm:self-start sm:border-r sm:border-b-0",
         )}
@@ -342,7 +342,7 @@ function PaletteCard({
             <li
               key={`${color}-${index}`}
               title={color}
-              className="size-6 shadow-[inset_0_0_0_1px_var(--line-strong)]"
+              className="inset-ring-line-strong size-6 inset-ring"
               style={{ background: color }}
             >
               <span className="sr-only">{color}</span>

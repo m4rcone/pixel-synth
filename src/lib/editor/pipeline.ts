@@ -3,7 +3,13 @@ import { ditherCmyk } from "./cmyk";
 import { dither } from "./dither";
 import { applyFilters } from "./filters";
 import { ditherToPalette, extractPalette } from "./palette-dither";
-import { clonePixels, createPixels, luminance, type Pixels } from "./pixels";
+import {
+  clonePixels,
+  createPixels,
+  luminance,
+  transparentMask,
+  type Pixels,
+} from "./pixels";
 import { resizeArea } from "./resize";
 import { dotsAreInk, hasActiveFilters, type EditorSettings } from "./settings";
 import { toneMap } from "./tone-mapping";
@@ -73,6 +79,8 @@ export function renderPixels(
     settings.diffusion,
     // Screen dots take the shape of whatever the tone map draws as dots.
     { ...settings.screen, light: !dotsAreInk(settings) },
+    0,
+    transparentMask(pixels),
   );
   const out = createPixels(pixels.width, pixels.height);
   toneMap(bits, gray, pixels.data, out.data, pixels.width, settings);

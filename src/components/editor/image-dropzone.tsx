@@ -25,7 +25,7 @@ export function ImageDropzone() {
       setError(
         error instanceof ImageLoadError
           ? error.message
-          : "Could not open that image.",
+          : "Couldn’t open that image.",
       );
     }
   }
@@ -57,7 +57,7 @@ export function ImageDropzone() {
   }
 
   return (
-    <div className="relative flex min-h-[420px] items-center justify-center px-6 py-8 md:min-h-[500px] lg:h-full">
+    <div className="relative flex min-h-105 items-center justify-center px-6 py-8 md:min-h-125 lg:h-full">
       <div className="relative w-full max-w-md">
         {/* The label wraps the visually hidden input, so it is the click target. */}
         <label
@@ -129,7 +129,7 @@ export function ImageDropzone() {
             size="sm"
             onClick={() => loadSample("animated")}
             disabled={loadingSample !== null}
-            className="text-paper-dim hover:text-paper"
+            className="text-paper-dim hover:text-paper-hot"
           >
             {loadingSample === "animated" && (
               <LoaderCircle className="animate-spin" aria-hidden="true" />

@@ -107,7 +107,7 @@ export function HeroInstrument({
             beforeSizes="(max-width: 640px) 100vw, 480px"
             // Shown 1:1 from sm up; smaller screens scale it down smoothly
             // (nearest-neighbor would add moiré).
-            afterClassName="max-sm:[image-rendering:auto]"
+            afterClassName="max-sm:image-smooth"
             onPointerPosition={setPoint}
           />
         </div>

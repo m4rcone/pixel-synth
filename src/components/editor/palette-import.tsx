@@ -81,7 +81,10 @@ export function PaletteImport({
           }}
         >
           <div className="flex flex-col gap-1">
-            <h2 id="palette-import-title" className="text-lg font-semibold">
+            <h2
+              id="palette-import-title"
+              className="text-heading font-semibold"
+            >
               Import a palette
             </h2>
             <p id="palette-import-hint" className="text-paper-dim text-hint">
@@ -105,7 +108,7 @@ export function PaletteImport({
               setText(event.target.value);
               setError(null);
             }}
-            className="border-input bg-ink-sunken text-readout text-paper placeholder:text-paper-dim focus-visible:ring-safelight aria-invalid:border-safelight w-full resize-y border px-2 py-1.5 focus-visible:ring-2 focus-visible:outline-none"
+            className="border-input bg-ink-sunken text-readout text-paper placeholder:text-paper-dim focus-visible:ring-safelight aria-invalid:border-danger w-full resize-y border px-2 py-1.5 focus-visible:ring-2 focus-visible:outline-none"
           />
           {error && (
             <p role="alert" className="text-danger text-xs leading-relaxed">

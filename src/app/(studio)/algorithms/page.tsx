@@ -84,7 +84,7 @@ export default function AlgorithmsPage() {
                 <li key={family.id}>
                   <a
                     href={`#family-${family.id}`}
-                    className="border-line-strong text-paper-dim hover:text-paper hover:border-paper focus-visible:ring-safelight inline-flex h-9 items-center gap-2 border px-3.5 text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                    className="border-line-strong text-paper-dim hover:text-paper-hot hover:border-paper focus-visible:ring-safelight inline-flex h-9 items-center gap-2 border px-3.5 text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
                   >
                     {family.name}
                     <span className="text-readout">

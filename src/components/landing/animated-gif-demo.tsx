@@ -6,7 +6,7 @@ import { Pause, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 
-const imageClass = "w-full [image-rendering:pixelated]";
+const imageClass = "w-full pixelated";
 
 /**
  * The animated sample, dithered, in a loop. A GIF can't be paused, so pausing

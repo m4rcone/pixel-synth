@@ -15,6 +15,35 @@ const nextConfig: NextConfig = {
     // blocking.
     qualities: [75, 95],
   },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), payment=()",
+          },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+        ],
+      },
+      {
+        // Generated previews keep their names when regenerated, so they are
+        // cached for a day and revalidated in the background, not immutable.
+        source:
+          "/:dir(landing|palettes|samples|specimens|icons)/:file([^/]+\\.(?:png|gif))",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

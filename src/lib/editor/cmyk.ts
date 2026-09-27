@@ -1,5 +1,5 @@
 import { dither } from "./dither";
-import { createPixels, hexToRgb, type Pixels } from "./pixels";
+import { createPixels, hexToRgb, transparentMask, type Pixels } from "./pixels";
 import type { EditorSettings } from "./settings";
 
 /**
@@ -76,6 +76,7 @@ export function inkMasks(src: Pixels, settings: EditorSettings): Uint8Array {
   const { width, height } = src;
   const { algorithm, diffusion, screen } = settings;
   const masks = new Uint8Array(width * height);
+  const transparent = transparentMask(src);
 
   separate(src, settings.color.black).forEach((plane, n) => {
     const bits = dither(
@@ -90,6 +91,7 @@ export function inkMasks(src: Pixels, settings: EditorSettings): Uint8Array {
         light: false,
       },
       n,
+      transparent,
     );
     const bit = 1 << n;
     for (let p = 0; p < bits.length; p++) {

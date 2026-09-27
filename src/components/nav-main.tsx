@@ -18,7 +18,6 @@ export function NavMain({
     title: string;
     url: string;
     icon: LucideIcon;
-    isActive?: boolean;
   }[];
 }) {
   const pathname = usePathname();
@@ -46,7 +45,7 @@ export function NavMain({
                   className={`relative flex items-center gap-2.5 transition-colors ${
                     isActive
                       ? "text-foreground"
-                      : "hover:text-foreground text-paper-dim"
+                      : "hover:text-paper-hot text-paper-dim"
                   }`}
                 >
                   <span

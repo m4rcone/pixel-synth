@@ -21,32 +21,43 @@ export function ControlPanelActions() {
   const { applyDither, discard, reset } = useEditorActions();
   const { resetView, setShowProcessed, setSplit } = useCanvasContext();
 
+  const resetCanvas = () => {
+    resetView();
+    setShowProcessed(true);
+    setSplit(null);
+  };
+  // Also offered before the first dither, so a wrong image can go right away.
+  const discardButton = (
+    <ConfirmButton
+      label="Discard"
+      variant="destructive"
+      title="Discard image?"
+      description="The image, all adjustments and the processed result will be removed. This action cannot be undone."
+      onConfirm={() => {
+        discard();
+        resetCanvas();
+      }}
+    />
+  );
+
   if (status !== "dithered") {
     return (
-      <Button
-        onClick={applyDither}
-        disabled={status === "empty"}
-        className="w-full"
-      >
-        Dither image
-      </Button>
+      <div className="flex w-full gap-2">
+        <Button
+          onClick={applyDither}
+          disabled={status === "empty"}
+          className="flex-2"
+        >
+          Dither image
+        </Button>
+        {status === "loaded" && discardButton}
+      </div>
     );
   }
 
   return (
     <div className="flex w-full gap-2">
-      <ConfirmButton
-        label="Discard"
-        variant="destructive"
-        title="Discard image?"
-        description="The image, all adjustments and the processed result will be removed. This action cannot be undone."
-        onConfirm={() => {
-          discard();
-          resetView();
-          setShowProcessed(true);
-          setSplit(null);
-        }}
-      />
+      {discardButton}
       <ConfirmButton
         label="Reset"
         variant="outline"
@@ -54,9 +65,7 @@ export function ControlPanelActions() {
         description="Dither, filter and tone settings return to their defaults. The image stays loaded."
         onConfirm={() => {
           reset();
-          resetView();
-          setShowProcessed(true);
-          setSplit(null);
+          resetCanvas();
         }}
       />
     </div>

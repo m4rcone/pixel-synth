@@ -10,8 +10,9 @@ import {
   type ReactNode,
 } from "react";
 import { useCanvasContext } from "@/contexts/canvas-context";
+import { prefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 import { loadImageFile, type SourceImage } from "@/lib/editor/load-image";
-import type { Pixels } from "@/lib/editor/pixels";
+import { HEX_COLOR, type Pixels } from "@/lib/editor/pixels";
 import { RenderCancelledError, RenderClient } from "@/lib/editor/render-client";
 import { DEFAULT_SETTINGS, type EditorSettings } from "@/lib/editor/settings";
 
@@ -233,11 +234,6 @@ export function frameResult(
   return resultIndex === frame ? result : null;
 }
 
-/** Playback starts paused for people who prefer reduced motion. */
-function prefersReducedMotion() {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-
 const EditorStateContext = createContext<EditorState | undefined>(undefined);
 const EditorActionsContext = createContext<EditorActions | undefined>(
   undefined,
@@ -271,6 +267,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
         cancelRenders();
         shownFrame.current = 0;
         setFrame(0);
+        // Playback starts paused for people who prefer reduced motion.
         setPlaying(!!source.animation && !prefersReducedMotion());
         dispatch({ type: "load", source });
       },
@@ -322,7 +319,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
       if (
         Array.isArray(saved) &&
         saved.length >= 2 &&
-        saved.every((c) => typeof c === "string" && /^#[0-9a-f]{6}$/i.test(c))
+        saved.every((c) => typeof c === "string" && HEX_COLOR.test(c))
       ) {
         dispatch({
           type: "update",
@@ -336,6 +333,9 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   }, []);
   const customPalette = settings.color.custom;
   useEffect(() => {
+    // The untouched default is never written: on mount this effect runs
+    // before the restored palette lands, and would overwrite it.
+    if (customPalette === DEFAULT_SETTINGS.color.custom) return;
     try {
       localStorage.setItem(CUSTOM_PALETTE_KEY, JSON.stringify(customPalette));
     } catch {

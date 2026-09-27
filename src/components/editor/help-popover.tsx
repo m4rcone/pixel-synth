@@ -12,7 +12,7 @@ import {
 const TIPS = [
   {
     title: "Processing scale",
-    body: "Dithers a smaller copy of the image, then scales it back up to the original size. Lower values give bigger, chunkier grain.",
+    body: "Dithers a smaller copy of the image; the canvas and the export enlarge it without smoothing, so every pixel stays a crisp block. Lower values give bigger, chunkier grain.",
   },
   {
     title: "Error diffusion",
@@ -20,7 +20,7 @@ const TIPS = [
   },
   {
     title: "Halftone screens",
-    body: "Halftone and Line Screen draw a grid of dots or lines that grow with the tone. Screen size is the distance between dots, in processed pixels; angle turns the grid (45° is the classic for one ink). Big screens read best at full processing scale. On Line Screen, displacement lifts the lines where the image is bright (an oscilloscope or CRT look) and wave ripples them; both are measured in line spacings.",
+    body: "Halftone and Line Screen draw a grid of dots or lines that grow with the tone. Screen size is the distance between dots or lines, in processed pixels; angle turns the grid (45° is the classic for one ink). Big screens read best at full processing scale. On Line Screen, displacement lifts the lines where the image is bright (an oscilloscope or CRT look) and wave ripples them; both are measured in line spacings.",
   },
   {
     title: "Palette",
@@ -32,7 +32,7 @@ const TIPS = [
   },
   {
     title: "Pixel art preset",
-    body: "Shrinks the image to about 128 × 96 pixels’ worth of detail, whatever its shape, and applies PICO-8 with a 2×2 Bayer pattern. Save it ×4 or ×8 to share.",
+    body: "Shrinks the image to about 128 × 96 pixels’ worth of detail, whatever its shape, and applies PICO-8 with a 2×2 Bayer pattern. Save it at ×4 or ×8 to share.",
   },
   {
     title: "1-bit dot colors",
@@ -56,7 +56,7 @@ const TIPS = [
   },
   {
     title: "Canvas",
-    body: "Drag to pan, scroll or pinch to zoom. With the canvas focused: arrow keys pan, + and − zoom, 0 resets the view. In an animation, comma and period step a frame, K plays or pauses.",
+    body: "Drag to pan, scroll or pinch to zoom. With the canvas focused: arrow keys pan, + and − zoom, 0 resets the view. In split view, [ and ] move the divider. In an animation, comma and period step a frame, K plays or pauses.",
   },
 ];
 
@@ -70,7 +70,7 @@ export function HelpPopover() {
         <button
           type="button"
           aria-label="Editor help"
-          className="text-paper-dim hover:text-paper hover:bg-accent focus-visible:ring-safelight grid size-9 place-items-center transition-colors focus-visible:ring-2 focus-visible:outline-none"
+          className="text-paper-dim hover:text-paper-hot hover:bg-accent focus-visible:ring-safelight grid size-9 place-items-center transition-colors focus-visible:ring-2 focus-visible:outline-none"
         >
           <CircleHelp className="size-4.5" aria-hidden="true" />
         </button>

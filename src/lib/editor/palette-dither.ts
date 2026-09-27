@@ -4,8 +4,11 @@ import {
   createPixels,
   createRandom,
   hexToRgb,
+  luma,
   luminance,
+  transparentMask,
   type Pixels,
+  type Rgb,
 } from "./pixels";
 import { screenThreshold, warpedScreenThreshold } from "./screen";
 import {
@@ -13,10 +16,6 @@ import {
   type DitherChoice,
   type ScreenSettings,
 } from "./settings";
-
-type Rgb = [number, number, number];
-
-const luma = ([r, g, b]: Rgb) => 0.299 * r + 0.587 * g + 0.114 * b;
 
 /**
  * Dithers an image to a fixed palette.
@@ -27,7 +26,7 @@ const luma = ([r, g, b]: Rgb) => 0.299 * r + 0.587 * g + 0.114 * b;
  *   over 0–255 and dithers the luminance along that ramp.
  *
  * Halftone screens draw darker dots between each pair of neighboring colors.
- * Alpha is copied from the source.
+ * Alpha is copied from the source; error diffusion skips transparent pixels.
  */
 export function ditherToPalette(
   src: Pixels,
@@ -68,21 +67,25 @@ function ditherRamp(
 ): Uint8Array {
   const { width, height } = src;
   const levels = palette.length;
+  const out = new Uint8Array(width * height);
+  // A single color (e.g. extracted from a flat image) needs no dithering.
+  if (levels < 2) return out;
   const step = 255 / (levels - 1);
   const gray = luminance(src);
-  const out = new Uint8Array(width * height);
   const method = getMethod(algorithm);
   const quantize = (v: number) =>
     Math.min(levels - 1, Math.max(0, Math.round(v / step)));
 
   if (method.kind === "diffusion") {
     const { kernel, serpentine } = method;
+    const transparent = transparentMask(src);
     for (let y = 0; y < height; y++) {
       const reverse = serpentine && y % 2 === 1;
       const dir = reverse ? -1 : 1;
       for (let s = 0; s < width; s++) {
         const x = reverse ? width - 1 - s : s;
         const p = y * width + x;
+        if (transparent?.[p]) continue;
         const index = quantize(gray[p]);
         const unit = ((gray[p] - index * step) / kernel.divisor) * diffusion;
         out[p] = index;
@@ -127,6 +130,7 @@ function ditherColor(
       buffer[p * 3 + 2] = data[p * 4 + 2];
     }
     const { kernel, serpentine } = method;
+    const transparent = transparentMask(src);
     const clamp = (v: number) => (v < 0 ? 0 : v > 255 ? 255 : v);
 
     for (let y = 0; y < height; y++) {
@@ -135,6 +139,7 @@ function ditherColor(
       for (let s = 0; s < width; s++) {
         const x = reverse ? width - 1 - s : s;
         const p = y * width + x;
+        if (transparent?.[p]) continue;
         // Clamping before matching keeps accumulated error from running away
         // when the palette can't reach a color (e.g. no pure white).
         const r = clamp(buffer[p * 3]);

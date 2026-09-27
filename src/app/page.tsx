@@ -133,7 +133,7 @@ const homeStructuredData = [
 const focusRing =
   "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-safelight";
 
-const navLink = `text-caps px-2 py-1.5 text-paper-dim transition-colors hover:text-paper ${focusRing}`;
+const navLink = `text-caps px-2 py-1.5 text-paper-dim transition-colors hover:text-paper-hot ${focusRing}`;
 
 const textLink = `text-paper hover:text-paper-hot hover:decoration-paper-hot decoration-line-strong underline underline-offset-4 transition-colors ${focusRing}`;
 
@@ -187,8 +187,8 @@ export default function HomePage() {
               <p className="text-paper-dim max-w-md text-lg leading-relaxed">
                 Turn photos and animated GIFs into 1-bit, halftone or pixel art.{" "}
                 {ALGORITHMS.length} algorithms, {PALETTE_PRESETS.length}{" "}
-                palettes from Game Boy to risograph. Every pixel is processed on
-                your device.
+                palettes from Game Boy to Riso. Every pixel is processed on your
+                device.
               </p>
 
               <div className="flex flex-col gap-4">
@@ -324,7 +324,7 @@ export default function HomePage() {
                 width={PIXEL_ART_PREVIEW.width}
                 height={PIXEL_ART_PREVIEW.height}
                 unoptimized
-                className="w-full [image-rendering:pixelated]"
+                className="pixelated w-full"
               />
               <figcaption className="text-readout text-paper-dim mt-2">
                 {PIXEL_ART_PREVIEW.width} × {PIXEL_ART_PREVIEW.height} px, shown

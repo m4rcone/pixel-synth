@@ -81,7 +81,7 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
       "Floyd–Steinberg is the most widely used error-diffusion dithering algorithm. Published by Robert W. Floyd and Louis Steinberg in 1976, it reduces a grayscale or color image to a few colors, even pure black and white, while keeping smooth gradients and fine detail. Drag the slider to compare, then try it on your own image; nothing is uploaded.",
     method: [
       "The image is scanned pixel by pixel. Each pixel is rounded to the nearest available color, and the rounding error is passed on to four neighbors that haven’t been processed yet: 7/16 to the right, 3/16 below-left, 5/16 below and 1/16 below-right. Because all of the error is carried forward, the average brightness of every area is preserved: a 25% gray comes out as roughly one lit pixel in four.",
-      "The weights were chosen so that a flat 50% gray becomes a clean checkerboard. PixelSynth scans rows in alternating directions (serpentine), mirroring the weights on right-to-left rows, which breaks up the diagonal streaks a strict left-to-right scan leaves behind.",
+      "The weights were chosen so that a flat 50% gray becomes a clean checkerboard. On the right-to-left rows of the serpentine scan, PixelSynth mirrors them.",
     ],
     use: {
       bestFor: [
@@ -126,16 +126,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
       },
       colorFaq("Floyd–Steinberg"),
       {
-        question: "Why does my animated GIF flicker?",
-        answer: [
-          "Error diffusion reacts to tiny changes between frames: a one-pixel difference changes where every later dot lands. Try ",
-          algo("bayer-8-8", "Bayer"),
-          " or ",
-          algo("blue-noise", "blue noise"),
-          " dithering for animations; their dots stay fixed from frame to frame.",
-        ],
-      },
-      {
         question: "How do I get rid of worm patterns?",
         answer: [
           "Lower the Error diffusion slider in the editor so less error travels from pixel to pixel, add a touch of noise in the filters, or switch to an algorithm with a wider spread such as ",
@@ -152,8 +142,8 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     intro:
       "Jarvis, Judice and Ninke (JJN) is an error-diffusion algorithm that spreads each pixel’s error over 12 neighbors across three rows. J. F. Jarvis, C. N. Judice and W. H. Ninke of Bell Labs described it in 1976, the same year as Floyd–Steinberg, in a survey of ways to show continuous-tone pictures on two-level displays. The wider spread gives smoother gradients and fewer artifacts, at the cost of speed.",
     method: [
-      "Pixels are processed one at a time and rounded to the nearest available color. The error is split into 48ths: 7 and 5 go to the next two pixels on the same row, and the two rows below receive weights that fall off with distance, 3, 5, 7, 5, 3 and then 1, 3, 5, 3, 1. All 48/48 of the error is carried forward.",
-      "Because each pixel’s error is shared by three times as many neighbors as in Floyd–Steinberg, no single neighbor gets a large push, and the dots settle into a more even, less structured texture. The price is three times as many updates per pixel and a slightly softer rendering of fine edges, which the wider spread blurs a little.",
+      "Pixels are processed one at a time and rounded to the nearest available color. The error is split into 48ths: 7 and 5 go to the next two pixels on the same row, and the two rows below receive weights that fall off with distance, 3, 5, 7, 5, 3 and then 1, 3, 5, 3, 1.",
+      "Because each pixel’s error is shared by three times as many neighbors as in Floyd–Steinberg, no single neighbor gets a large push, and the dots settle into a more even, less structured texture. The price is three times as many updates per pixel, and fine edges come out slightly softer.",
     ],
     use: {
       bestFor: [
@@ -182,13 +172,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     ],
     faq: [
       {
-        question: "What’s the difference between JJN and Floyd–Steinberg?",
-        answer: [
-          algo("floyd-steinberg"),
-          " spreads the error over 4 neighbors, JJN over 12 across three rows. JJN gives smoother gradients with fewer worm patterns; Floyd–Steinberg is faster and keeps edges a little sharper.",
-        ],
-      },
-      {
         question: "Is JJN dithering slow?",
         answer: [
           "It updates 12 neighbors per pixel instead of 4, so it does about three times the work of Floyd–Steinberg. PixelSynth runs it in a background worker, so large images take a moment longer but the page stays responsive.",
@@ -209,7 +192,7 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     intro:
       "Stucki is an error-diffusion algorithm introduced by Peter Stucki at IBM Research in 1981. It uses the same 12-neighbor footprint as Jarvis–Judice–Ninke, but with weights that are powers of two and a steeper falloff, which gives a crisper, cleaner result with excellent detail.",
     method: [
-      "Each pixel is rounded to the nearest available color and its error is split into 42nds: 8 and 4 to the next two pixels on the same row, 2, 4, 8, 4, 2 on the row below and 1, 2, 4, 2, 1 two rows down. All of the error is carried forward.",
+      "Each pixel is rounded to the nearest available color and its error is split into 42nds: 8 and 4 to the next two pixels on the same row, 2, 4, 8, 4, 2 on the row below and 1, 2, 4, 2, 1 two rows down.",
       "Weights that are powers of two were cheap for the hardware of the time, since multiplying by 8, 4 or 2 is a bit shift. And because more of the error stays next to the current pixel than in JJN (8/42 instead of 7/48), edges stay sharper while the wide footprint still smooths out gradients.",
     ],
     use: {
@@ -239,14 +222,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     ],
     faq: [
       {
-        question: "What’s the difference between Stucki and JJN?",
-        answer: [
-          "Both spread the error over the same 12 neighbors. Stucki’s weights (1, 2, 4, 8 over 42) keep more of it close to the current pixel than ",
-          algo("jarvis-judice-and-ninke-jjn", "JJN"),
-          "’s (1, 3, 5, 7 over 48), so edges come out a little sharper.",
-        ],
-      },
-      {
         question: "Is Stucki good for laser engraving?",
         answer: [
           "Yes. It keeps fine detail and gives clean, well-separated dots. Stay in 1-bit, set the output width to what your engraver needs and save the PNG at ×1, then turn off the laser software’s own dithering.",
@@ -267,7 +242,7 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     intro:
       "Burkes is an error-diffusion algorithm by Daniel Burkes, shared in 1988 as a simplification of Stucki. It keeps Stucki’s first two rows of weights and drops the third, so each pixel’s error reaches 7 neighbors instead of 12. The result looks nearly the same as Stucki and renders noticeably faster.",
     method: [
-      "Each pixel is rounded to the nearest available color and the error is split into 32nds: 8 and 4 go to the next two pixels on the same row, and 2, 4, 8, 4, 2 to the five pixels below. All of the error is carried forward, over two rows only.",
+      "Each pixel is rounded to the nearest available color and the error is split into 32nds: 8 and 4 go to the next two pixels on the same row, and 2, 4, 8, 4, 2 to the five pixels below, over two rows only.",
       "Dividing by 32 is a single bit shift, which Stucki’s 42 is not, and only one row ahead has to be kept in memory. Dropping the third row makes the texture slightly less smooth than Stucki’s in large gradients, but on most images the two are hard to tell apart.",
     ],
     use: {
@@ -296,14 +271,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     ],
     faq: [
       {
-        question: "What’s the difference between Burkes and Stucki?",
-        answer: [
-          "Burkes is ",
-          algo("stucki"),
-          " without its third row: the same 8, 4 and 2, 4, 8, 4, 2 weights, over 32 instead of 42. It does a little over half the work for almost the same look.",
-        ],
-      },
-      {
         question: "When should I pick Burkes over Floyd–Steinberg?",
         answer: [
           "When ",
@@ -321,7 +288,7 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     intro:
       "Sierra, sometimes called Sierra-3, is an error-diffusion algorithm Frankie Sierra published in 1989. It spreads each pixel’s error over 10 neighbors across three rows, a footprint close to Jarvis–Judice–Ninke’s but with fewer, simpler weights. It gives natural, crisp textures and smooth gradients at a lower cost than JJN.",
     method: [
-      "Each pixel is rounded to the nearest available color and its error split into 32nds: 5 and 3 to the next two pixels on the row, 2, 4, 5, 4, 2 on the row below, and 2, 3, 2 on the three pixels centered two rows down. All of the error is carried forward.",
+      "Each pixel is rounded to the nearest available color and its error split into 32nds: 5 and 3 to the next two pixels on the row, 2, 4, 5, 4, 2 on the row below, and 2, 3, 2 on the three pixels centered two rows down.",
       "Compared with JJN, Sierra drops the two outer corners of the bottom row and divides by 32, a bit shift, instead of 48. That saves work on every pixel while keeping the wide, three-row spread that smooths gradients and suppresses worm patterns.",
     ],
     use: {
@@ -361,14 +328,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
           " over just 3. Smaller filters are faster and grainier.",
         ],
       },
-      {
-        question: "Is Sierra better than Jarvis–Judice–Ninke?",
-        answer: [
-          "They look almost the same. Sierra uses 10 weights instead of 12 and a divisor of 32 instead of 48, so it does a bit less work for a result that’s hard to tell from ",
-          algo("jarvis-judice-and-ninke-jjn", "JJN"),
-          ".",
-        ],
-      },
       colorFaq("Sierra"),
     ],
   },
@@ -379,7 +338,7 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     intro:
       "Two-Row Sierra is the reduced version of the Sierra filter that Frankie Sierra published a year after it, in 1990. It drops the third row and spreads each pixel’s error over 7 neighbors on just two rows, so it runs faster while keeping most of the smoothness of the full filter.",
     method: [
-      "Each pixel is rounded to the nearest available color and its error is split into 16ths: 4 and 3 go to the next two pixels on the row, and 1, 2, 3, 2, 1 to the five pixels below. All of the error is carried forward.",
+      "Each pixel is rounded to the nearest available color and its error is split into 16ths: 4 and 3 go to the next two pixels on the row, and 1, 2, 3, 2, 1 to the five pixels below.",
       "It has the same footprint as Burkes, but its weights fall off more gently: the pixel two steps ahead gets 3/16 instead of Burkes’ 2/16, and the one straight below 3/16 instead of 4/16. The error spreads a little wider along the row, for a softer, more even texture.",
     ],
     use: {
@@ -406,13 +365,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     ],
     faq: [
       {
-        question: "What’s the difference between Two-Row Sierra and Sierra?",
-        answer: [
-          algo("sierra"),
-          " adds a third row of weights (10 neighbors instead of 7). Two-Row Sierra is faster and nearly as smooth; the difference shows mostly in large, flat gradients.",
-        ],
-      },
-      {
         question: "Two-Row Sierra or Burkes?",
         answer: [
           "Both reach the same 7 neighbors. ",
@@ -430,7 +382,7 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     intro:
       "Sierra Lite, also known as Filter Lite, is the smallest filter in Frankie Sierra’s family and one of the cheapest error-diffusion algorithms there is. Each pixel’s error goes to just three neighbors, which makes it very fast while staying close to Floyd–Steinberg in look.",
     method: [
-      "Each pixel is rounded to the nearest available color and its error is split into quarters: half goes to the next pixel on the row, and the other half is shared by two pixels on the row below. All of the error is carried forward.",
+      "Each pixel is rounded to the nearest available color and its error is split into quarters: half goes to the next pixel on the row, and the other half is shared by two pixels on the row below.",
       "With so few neighbors the error doesn’t travel far, so the texture is a little coarser and more directional than Floyd–Steinberg’s, with more visible worms in flat areas. In exchange, it’s the fastest error diffusion in PixelSynth, and at small output sizes, where each dot is large anyway, the difference is hard to see.",
     ],
     use: {
@@ -462,12 +414,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
           " spreads its error over 4 neighbors instead of 3, which gives a slightly more even texture. Sierra Lite is a little faster.",
         ],
       },
-      {
-        question: "When should I use Sierra Lite?",
-        answer: [
-          "When speed matters more than the last bit of smoothness: huge images, quick tests, or pixel art at a small processing scale, where every dot is enlarged and fine texture differences disappear.",
-        ],
-      },
       colorFaq("Sierra Lite"),
     ],
   },
@@ -478,7 +424,7 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     intro:
       "Atkinson dithering was written by Bill Atkinson at Apple for the original Macintosh in 1984, and it gave MacPaint and early Mac software their signature look. It diffuses only three quarters of each pixel’s error, so highlights and shadows clip to clean white and black while midtones keep a crisp, stippled texture.",
     method: [
-      "Each pixel is rounded to the nearest available color and 1/8 of its error goes to each of six neighbors: two to the right, three on the row below and one two rows down. That hands out 6/8 of the error; the remaining quarter is simply dropped. PixelSynth scans every row left to right.",
+      "Each pixel is rounded to the nearest available color and 1/8 of its error goes to each of six neighbors: two to the right, three on the row below and one two rows down. That hands out 6/8 of the error; the remaining quarter is simply dropped.",
       "Dropping error means that near-black areas never build up enough brightness to place a white dot, and near-white areas never collect enough darkness for a black one. Small errors vanish instead of spreading, so the image gains contrast and clean flat areas, at the cost of detail in deep shadows and bright highlights.",
     ],
     use: {
@@ -502,14 +448,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
         question: "Why is Atkinson dithering called the Mac look?",
         answer: [
           "Bill Atkinson wrote it for the original 1984 Macintosh, whose screen could show only black and white. MacPaint, HyperCard and countless early Mac images were dithered with it, so its crisp stipple became the look of the era.",
-        ],
-      },
-      {
-        question: "Why do dark areas turn solid black?",
-        answer: [
-          "Atkinson drops a quarter of the error, so shadows never collect enough brightness to place a white dot. Lift the shadows with the brightness, gamma or black point controls before dithering, or pick ",
-          algo("floyd-steinberg"),
-          " for the full tonal range.",
         ],
       },
       {
@@ -553,12 +491,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
       { slug: "floyd-steinberg", look: "Organic, detailed" },
     ],
     faq: [
-      {
-        question: "How many gray levels can Bayer 2×2 show?",
-        answer: [
-          "Five in 1-bit: black, white and three patterns in between, with one, two or three lit pixels per 2×2 cell.",
-        ],
-      },
       {
         question: "Is Bayer dithering good for animated GIFs?",
         answer: [
@@ -614,14 +546,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
         ],
       },
       {
-        question: "Bayer 4×4 or 8×8?",
-        answer: [
-          "4×4 has a bolder, more recognizable pattern and 17 levels. ",
-          algo("bayer-8-8", "8×8"),
-          " has a finer pattern and 65 levels, for smoother gradients.",
-        ],
-      },
-      {
         question: "Why does my dithered image show moiré when resized?",
         answer: [
           "The pattern repeats every 4 pixels, so scaling by a fraction makes it beat against the new pixel grid. PixelSynth enlarges the view and the export nearest-neighbor by whole multiples, which keeps it crisp; resize by whole multiples elsewhere too.",
@@ -636,7 +560,7 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     intro:
       "Bayer 8×8 is the largest Bayer matrix in PixelSynth: 64 thresholds tiled every 8 pixels, from Bryce Bayer’s 1973 method. It renders 65 gray levels, so gradients look smooth while keeping the tidy, regular texture of ordered dithering, and it stays perfectly stable from frame to frame.",
     method: [
-      "The 8×8 matrix holds the ranks 0 to 63, built by nesting the 2×2 pattern inside itself three times. Each pixel is compared with the threshold at its position in the tile: brighter pixels turn white, darker ones black. Nothing is carried between pixels.",
+      "The 8×8 matrix holds the ranks 0 to 63, built by nesting the 2×2 pattern inside itself twice. Each pixel is compared with the threshold at its position in the tile: brighter pixels turn white, darker ones black. Nothing is carried between pixels.",
       "Every level lights the pixel farthest from those already lit, so dots are spread as evenly as the grid allows. With 64 thresholds the steps between levels are small enough for smooth gradients, and the cross-hatch is fine enough to recede on most images.",
     ],
     use: {
@@ -660,14 +584,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
       { slug: "floyd-steinberg", look: "Organic, flickers in animation" },
     ],
     faq: [
-      {
-        question: "Is Bayer 8×8 better than Floyd–Steinberg?",
-        answer: [
-          "For animation, yes: its dots stay put between frames. For still photos, ",
-          algo("floyd-steinberg"),
-          " usually keeps more detail and looks less mechanical.",
-        ],
-      },
       {
         question: "Why not use an even bigger Bayer matrix?",
         answer: [
@@ -717,14 +633,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     ],
     faq: [
       {
-        question: "What’s the difference between Clustered Dot and Halftone?",
-        answer: [
-          "Clustered Dot uses a fixed 4×4 cell aligned to the pixel grid. ",
-          algo("halftone"),
-          " builds a real print screen at any size and angle, with round, square or diamond dots.",
-        ],
-      },
-      {
         question: "Clustered or dispersed dots?",
         answer: [
           "Dispersed dithers like ",
@@ -763,16 +671,10 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
     ],
     faq: [
       {
-        question: "What is blue noise dithering?",
-        answer: [
-          "Ordered dithering with a mask whose thresholds are spread evenly without any pattern. The dots look random but never clump, so it reads as a fine grain instead of a grid or blotchy noise.",
-        ],
-      },
-      {
-        question: "Blue noise or Floyd–Steinberg?",
+        question: "Blue Noise or Floyd–Steinberg?",
         answer: [
           algo("floyd-steinberg"),
-          " keeps a little more detail in stills. Blue noise is steadier: its dots don’t shimmer in animations, and it has no worm patterns.",
+          " keeps a little more detail in stills. Blue Noise is steadier: its dots don’t shimmer in animations, and it has no worm patterns.",
         ],
       },
       {
@@ -794,7 +696,7 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
       "Random dithering is the simplest way to break up banding: each pixel is compared with a random threshold instead of a fixed one. It’s the oldest idea in dithering, and it gives a coarse, grainy, photographic texture with no pattern at all.",
     method: [
       "For every pixel a random number between 0 and 255 is drawn, and the pixel turns white if its brightness is higher. On average a 30% gray lights 30% of the pixels, so tones come out right, but the dots fall wherever chance puts them: some clump together and some areas are left bare.",
-      "That’s white noise, with energy at every frequency, including the low ones the eye sees as blotches, which is why random dither looks noisier than blue noise at the same density. PixelSynth seeds the generator, so the grain stays in place while you adjust other settings and in every frame of an animation.",
+      "That’s white noise, with energy at every frequency, including the low ones the eye sees as blotches, which is why random dither looks noisier than blue noise at the same density.",
     ],
     use: {
       bestFor: ["gritty film-grain, photocopy and glitch textures."],
@@ -827,12 +729,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
           "Random thresholds let dots clump and leave gaps, which the eye sees as blotches. ",
           algo("blue-noise"),
           " spreads the same number of dots evenly, so it looks much finer.",
-        ],
-      },
-      {
-        question: "Does the grain change every time?",
-        answer: [
-          "No. PixelSynth uses a seeded generator, so the same image with the same settings always gets the same grain, and animated frames don’t flicker.",
         ],
       },
       {
@@ -884,14 +780,6 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
           "They come from the same method. ",
           algo("blue-noise"),
           " uses a larger mask for a grain with no visible repetition; Void-and-Cluster’s smaller array has a slight rhythm that some images benefit from.",
-        ],
-      },
-      {
-        question: "Void-and-Cluster or Bayer?",
-        answer: [
-          "Both are ordered and stable in animation. ",
-          algo("bayer-8-8", "Bayer"),
-          " has a regular cross-hatch; void-and-cluster disperses its dots without a lattice, so it looks more natural.",
         ],
       },
     ],

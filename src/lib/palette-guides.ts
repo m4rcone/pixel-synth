@@ -128,12 +128,12 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
         "Open the editor with the Game Boy palette selected and drop in your image.",
       ],
       [
-        "Lower the processing scale until the image is about 160 pixels wide, the Game Boy’s own resolution, or apply the ",
+        "Set Output size to 160 pixels, the Game Boy’s own resolution, or apply the ",
         PIXEL_ART_PRESET,
         " and switch its palette to Game Boy.",
       ],
       [
-        "Pick a dither: ",
+        "Pick an algorithm: ",
         algo("bayer-4-4", "Bayer 4×4"),
         " gives an even, tile-like pattern, ",
         algo("floyd-steinberg", "Floyd–Steinberg"),
@@ -147,22 +147,9 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
     related: ["pico-8", "nes", "zx-spectrum"],
     faq: [
       {
-        question: "What are the Game Boy palette hex codes?",
-        answer: [
-          `From darkest to lightest: ${hexList("gameboy")}. They approximate the green screen of the original 1989 Game Boy (DMG-01).`,
-        ],
-      },
-      {
         question: "Did the Game Boy have an official color palette?",
         answer: [
           "No. The LCD shows four levels of darkness and its green tint comes from the screen, so every RGB version, including this one, is an approximation.",
-        ],
-      },
-      {
-        question:
-          "What’s the difference between the Game Boy and Game Boy Pocket palettes?",
-        answer: [
-          `The Pocket (1996) used an improved FSTN screen that looks black and white rather than green, so its four shades are much grayer, with only an olive hint: ${hexList("gameboy-pocket")}.`,
         ],
       },
       {
@@ -243,7 +230,7 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
         ": it shrinks the image to about 128 × 96 pixels’ worth of detail and uses PICO-8 with a 2×2 Bayer pattern.",
       ],
       [
-        "For a real cart screen, crop the image square first and lower the processing scale until it’s 128 pixels wide.",
+        "For a real cart screen, crop the image square first and set Output size to 128 pixels.",
       ],
       [
         "Save at ×4 or ×8 to share. At ×1 and 128 × 128, the PNG is ready for PICO-8’s import command, which loads it onto the sprite sheet.",
@@ -252,16 +239,6 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
     examples: ["bayer-2-2", "bayer-4-4", "floyd-steinberg", "blue-noise"],
     related: ["game-boy", "nes", "commodore-64"],
     faq: [
-      {
-        question: "What are the PICO-8 palette hex codes?",
-        answer: [`In order, colors 0 to 15: ${hexList("pico8")}.`],
-      },
-      {
-        question: "What are the names of the PICO-8 colors?",
-        answer: [
-          "The manual names them: black, dark blue, dark purple, dark green, brown, dark gray, light gray, white, red, orange, yellow, green, blue, indigo, pink and peach.",
-        ],
-      },
       {
         question: "Does PixelSynth include PICO-8’s secret palette?",
         answer: [
@@ -273,7 +250,7 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
       {
         question: "Why does my PICO-8 image look noisy?",
         answer: [
-          "At full resolution, 16 colors dither into fine noise. Shrink the image first, with the processing scale or the ",
+          "At full resolution, 16 colors dither into fine noise. Shrink the image first, with Output size or the ",
           PIXEL_ART_PRESET,
           ", so each pixel becomes a visible block, and prefer an ordered pattern like ",
           algo("bayer-2-2", "Bayer 2×2"),
@@ -323,7 +300,7 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
         "Open the editor with the NES palette selected. It matches by color, picking the nearest of the 54.",
       ],
       [
-        "Shrink the image toward the NES resolution, 256 × 240, with the processing scale, or apply the ",
+        "Shrink the image toward the NES resolution, 256 × 240, with Output size, or apply the ",
         PIXEL_ART_PRESET,
         " and switch its palette to NES.",
       ],
@@ -343,12 +320,6 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
         question: "How many colors are in the NES palette?",
         answer: [
           "64 entries, of which about 54 are distinct; the rest repeat black or gray. A single screen shows at most 25 of them.",
-        ],
-      },
-      {
-        question: "Why do NES palettes differ between emulators?",
-        answer: [
-          "The console produced a TV signal, not RGB values, and TVs decoded it differently. Every RGB palette is someone’s measurement or interpretation of that signal.",
         ],
       },
       {
@@ -421,9 +392,7 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
       [
         "Open the editor with the Commodore 64 palette selected. It matches by color.",
       ],
-      [
-        "Lower the processing scale until the image is about 320 pixels wide, the C64’s hi-res width.",
-      ],
+      ["Set Output size to 320 pixels, the C64’s hi-res width."],
       [
         "Try ",
         algo("bayer-4-4", "Bayer 4×4"),
@@ -438,12 +407,6 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
     examples: ["bayer-4-4", "bayer-8-8", "floyd-steinberg", "blue-noise"],
     related: ["zx-spectrum", "nes", "apple-ii"],
     faq: [
-      {
-        question: "What are the Commodore 64 hex codes?",
-        answer: [
-          `In the Pepto calibration, colors 0 to 15: ${hexList("c64")}.`,
-        ],
-      },
       {
         question: "Why are there different C64 palettes?",
         answer: [
@@ -490,7 +453,7 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
       },
     ],
     accuracy:
-      "The Spectrum outputs its colors as voltage levels. Emulators usually render normal colors at about 85% (#D7) and bright ones at full strength (#FF), as here.",
+      "The Spectrum outputs its colors as voltage levels, which emulators render at slightly different strengths. Here normal colors sit at about 85% (#D7) and bright ones at full strength (#FF).",
     sections: [
       {
         heading: "Eight colors, two brightnesses",
@@ -510,7 +473,7 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
             "Each attribute byte sets an ink color and a paper color from the 8, one bright bit for both, and a flash bit that swaps ink and paper at a steady rate. So any 8 × 8 block holds only two colors, and both are normal or both bright.",
           ],
           [
-            "When a character of one color crossed a background of another, the whole block changed color: the attribute clash that gave Spectrum games their look. Many games avoided it with a single-color play area. PixelSynth doesn’t apply the two-colors-per-block rule; for a clash-free Spectrum look, stay in 1-bit mode with a Spectrum ink and paper.",
+            "When a character of one color crossed a background of another, the whole block changed color: the attribute clash that gave Spectrum games their look. Many games avoided it with a single-color play area. PixelSynth doesn’t apply the two-colors-per-block rule; for a clash-free Spectrum look, stay in 1-bit mode and pick two Spectrum colors for the dots and the background.",
           ],
         ],
       },
@@ -519,9 +482,7 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
       [
         "Open the editor with the ZX Spectrum palette selected. It matches by color.",
       ],
-      [
-        "Lower the processing scale until the image is about 256 pixels wide, the Spectrum’s resolution.",
-      ],
+      ["Set Output size to 256 pixels, the Spectrum’s resolution."],
       [
         "Use ",
         algo("bayer-2-2", "Bayer 2×2"),
@@ -537,21 +498,15 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
     related: ["commodore-64", "cga", "apple-ii"],
     faq: [
       {
-        question: "What are the ZX Spectrum color hex codes?",
+        question: "Why do ZX Spectrum hex codes differ between sources?",
         answer: [
-          `Normal, then bright: ${hexList("zx-spectrum")}. Emulators pick different levels for the normal colors, from about #B2 to #D7 (Fuse uses #C0); all approximate the same voltages.`,
+          "Emulators pick different levels for the normal colors, from about #B2 to #D7 (Fuse uses #C0); all approximate the same voltages. This palette uses #D7, with the bright colors at #FF.",
         ],
       },
       {
         question: "Why does the ZX Spectrum have 15 colors and not 16?",
         answer: [
           "The bright bit brightens the channels that are on. Black has none on, so bright black is the same black.",
-        ],
-      },
-      {
-        question: "What is attribute clash?",
-        answer: [
-          "Color is stored per 8 × 8 block, with one ink and one paper each. When two differently colored objects share a block, one takes on the other’s colors.",
         ],
       },
     ],
@@ -609,9 +564,7 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
       [
         "Open the editor with a CGA palette selected: cyan/magenta or green/red. Both match by color.",
       ],
-      [
-        "Lower the processing scale until the image is about 320 pixels wide, CGA’s 4-color resolution.",
-      ],
+      ["Set Output size to 320 pixels, CGA’s 4-color resolution."],
       [
         "Use ",
         algo("bayer-2-2", "Bayer 2×2"),
@@ -626,12 +579,6 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
     examples: ["bayer-2-2", "bayer-4-4", "floyd-steinberg", "atkinson"],
     related: ["ega", "apple-ii", "zx-spectrum"],
     faq: [
-      {
-        question: "What are the CGA palette hex codes?",
-        answer: [
-          `Palette 1, high intensity: ${hexList("cga-cyan-magenta")}. Palette 0, high intensity: ${hexList("cga-green-red")}.`,
-        ],
-      },
       {
         question: "Why are old DOS games cyan and magenta?",
         answer: [
@@ -686,9 +633,7 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
     ],
     steps: [
       ["Open the editor with the EGA palette selected. It matches by color."],
-      [
-        "Lower the processing scale until the image is about 320 pixels wide, the resolution of most EGA games.",
-      ],
+      ["Set Output size to 320 pixels, the resolution of most EGA games."],
       [
         "Use ",
         algo("bayer-4-4", "Bayer 4×4"),
@@ -703,10 +648,6 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
     examples: ["bayer-4-4", "bayer-2-2", "floyd-steinberg", "blue-noise"],
     related: ["cga", "commodore-64", "apple-ii"],
     faq: [
-      {
-        question: "What are the EGA palette hex codes?",
-        answer: [`Colors 0 to 15: ${hexList("ega")}.`],
-      },
       {
         question: "How many colors does EGA have?",
         answer: [
@@ -767,7 +708,7 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
         "Open the editor with the Apple II hi-res palette selected. It matches by color.",
       ],
       [
-        "Lower the processing scale until the image is about 280 pixels wide, or 140 for the Apple II’s real color resolution.",
+        "Set Output size to 280 pixels, or 140 for the Apple II’s real color resolution.",
       ],
       [
         "With six colors, ",
@@ -781,12 +722,6 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
     examples: ["floyd-steinberg", "bayer-2-2", "bayer-4-4", "atkinson"],
     related: ["commodore-64", "cga", "zx-spectrum"],
     faq: [
-      {
-        question: "What are the Apple II hi-res hex codes?",
-        answer: [
-          `Black, green, purple, orange, blue and white: ${hexList("apple-ii")}.`,
-        ],
-      },
       {
         question: "Why does the Apple II have only six colors in hi-res?",
         answer: [

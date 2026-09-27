@@ -129,8 +129,12 @@ export function Canvas({ onStatusChange }: CanvasProps) {
     if (!canvas || !ctx) return;
 
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = Math.round(view.width * dpr);
-    canvas.height = Math.round(view.height * dpr);
+    // Resizing reallocates the backing store: only when the size changes,
+    // not on every pan or animation frame.
+    const pixelWidth = Math.round(view.width * dpr);
+    const pixelHeight = Math.round(view.height * dpr);
+    if (canvas.width !== pixelWidth) canvas.width = pixelWidth;
+    if (canvas.height !== pixelHeight) canvas.height = pixelHeight;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, view.width, view.height);
     if (!image || !frame) return;
@@ -164,9 +168,20 @@ export function Canvas({ onStatusChange }: CanvasProps) {
       draw(original!);
       ctx.restore();
       // Paper divider with a square grip: the console has no round shapes.
-      ctx.fillStyle = "rgb(207 230 255 / 0.9)";
+      // The grip is dark with a paper edge, so it shows on black and white.
+      const styles = getComputedStyle(canvas);
+      const paper = styles.getPropertyValue("--paper");
+      ctx.save();
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = paper;
       ctx.fillRect(dividerX - 0.5, 0, 1, view.height);
-      ctx.fillRect(dividerX - 5, view.height / 2 - 5, 10, 10);
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = styles.getPropertyValue("--ink");
+      ctx.fillRect(dividerX - 6, view.height / 2 - 6, 12, 12);
+      ctx.strokeStyle = paper;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(dividerX - 5.5, view.height / 2 - 5.5, 11, 11);
+      ctx.restore();
     }
     // frame is derived from source.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -349,7 +364,7 @@ export function Canvas({ onStatusChange }: CanvasProps) {
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      className="focus-visible:ring-ring relative h-[300px] min-w-0 cursor-grab touch-none overflow-hidden select-none focus-visible:ring-2 focus-visible:outline-hidden focus-visible:ring-inset active:cursor-grabbing md:h-[500px] lg:h-full"
+      className="focus-visible:ring-ring relative h-75 min-w-0 cursor-grab touch-none overflow-hidden select-none focus-visible:ring-2 focus-visible:outline-hidden focus-visible:ring-inset active:cursor-grabbing md:h-125 lg:h-full"
     >
       <p id="canvas-keyboard-instructions" className="sr-only">
         Interactive image preview. Use arrow keys to pan, Shift plus arrow keys
