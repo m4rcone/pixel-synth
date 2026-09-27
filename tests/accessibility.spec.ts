@@ -29,6 +29,8 @@ test.describe("accessibility", () => {
     "/algorithms/floyd-steinberg",
     "/algorithms/blue-noise",
     "/algorithms/random-dither",
+    "/palettes/game-boy",
+    "/palettes/nes",
     "/palettes",
   ]) {
     test(`has no axe violations on ${route}`, async ({ page }) => {
@@ -232,6 +234,7 @@ test.describe("accessibility on a phone", () => {
     "/algorithms",
     "/algorithms/bayer-4-4",
     "/palettes",
+    "/palettes/cga",
   ]) {
     test(`has no axe violations on ${route}`, async ({ page }) => {
       await page.goto(route);

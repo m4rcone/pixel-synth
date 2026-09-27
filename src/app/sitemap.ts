@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { ALGORITHMS } from "@/lib/algorithms";
+import { guidePresets, PALETTE_GUIDES } from "@/lib/palette-guides";
 import { PALETTE_PRESETS } from "@/lib/palettes";
 import {
   ANIMATED_DITHER,
@@ -47,6 +48,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: absoluteUrl(`/algorithms/${algorithm.slug}`),
       lastModified,
       images: [absoluteUrl(algorithm.preview)],
+    })),
+    ...PALETTE_GUIDES.map((guide) => ({
+      url: absoluteUrl(`/palettes/${guide.slug}`),
+      lastModified,
+      images: guidePresets(guide).map(({ id }) =>
+        absoluteUrl(palettePreview(id)),
+      ),
     })),
   ];
 }

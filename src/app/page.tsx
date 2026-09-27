@@ -26,6 +26,7 @@ import { SUPPORTED_IMAGE_TYPES } from "@/lib/editor/load-image";
 import extractedColors from "@/data/sample-extracted-palette.json";
 import { faqStructuredData } from "@/lib/faq";
 import { HOME_FAQ } from "@/lib/home-faq";
+import { paletteHref } from "@/lib/palette-guides";
 import {
   getPalettePreset,
   MAX_PALETTE_COLORS,
@@ -300,7 +301,7 @@ export default function HomePage() {
                     <Cartridge
                       key={id}
                       name={palette.name}
-                      href={`/palettes#palette-${id}`}
+                      href={paletteHref(id)}
                       colors={palette.colors}
                       detail={`Matches by ${palette.match}`}
                     />

@@ -38,11 +38,11 @@ export const PALETTE_PRESETS = [
     colors: ["#0f380f", "#306230", "#8bac0f", "#9bbc0f"],
   },
   {
-    // Wikipedia, "List of video game console palettes".
+    // Wikipedia, "List of video game console palettes" (Game Boy Pocket/Light).
     id: "gameboy-pocket",
     name: "Game Boy Pocket",
     description:
-      "The four near-grays of the 1996 Game Boy Pocket, which dropped the original’s green screen.",
+      "The four shades of the 1996 Game Boy Pocket, much grayer than the original’s green screen.",
     group: "Consoles & computers",
     match: "brightness",
     colors: ["#181818", "#4a5138", "#8c926b", "#c5caa4"],
@@ -153,11 +153,11 @@ export const PALETTE_PRESETS = [
     ],
   },
   {
-    // "Pepto" calibration, the one most emulators use.
+    // "Pepto" calibration, widely used by emulators.
     id: "c64",
     name: "Commodore 64",
     description:
-      "The Commodore 64’s 16 colors in the “Pepto” calibration most emulators use.",
+      "The Commodore 64’s 16 colors in the “Pepto” calibration widely used by emulators.",
     group: "Consoles & computers",
     match: "color",
     colors: [

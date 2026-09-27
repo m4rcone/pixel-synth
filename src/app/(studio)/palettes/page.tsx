@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { StructuredData } from "@/components/structured-data";
 import { Button } from "@/components/ui/button";
 import extractedColors from "@/data/sample-extracted-palette.json";
+import { guideForPalette, paletteHref } from "@/lib/palette-guides";
 import {
   MAX_PALETTE_COLORS,
   MIN_PALETTE_COLORS,
@@ -68,7 +69,7 @@ const structuredData = [
       itemListElement: PALETTE_PRESETS.map((palette, index) => ({
         "@type": "ListItem",
         position: index + 1,
-        url: absoluteUrl(`/palettes#palette-${palette.id}`),
+        url: absoluteUrl(paletteHref(palette.id)),
         name: palette.name,
         description: palette.description,
         image: absoluteUrl(palettePreview(palette.id)),
@@ -289,12 +290,17 @@ function PaletteCard({
   wide?: boolean;
 }) {
   const titleId = `palette-${id}-title`;
+  const guide = guideForPalette(id);
   return (
     <article
       id={`palette-${id}`}
       aria-labelledby={titleId}
+      // With a guide page, the title link is stretched over the whole card
+      // (as on algorithm cards); the editor link sits above it (z-10) and
+      // stays independently clickable.
       className={cn(
         "border-line-strong bg-ink-raised target:border-safelight flex h-full scroll-mt-20 flex-col overflow-hidden border",
+        guide && "group hover:border-paper relative transition-colors",
         wide && "sm:flex-row",
       )}
     >
@@ -313,7 +319,16 @@ function PaletteCard({
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div className="flex items-baseline justify-between gap-3">
           <h3 id={titleId} className="text-heading font-semibold">
-            {name}
+            {guide ? (
+              <Link
+                href={`/palettes/${guide.slug}`}
+                className="group-hover:text-paper-hot focus-visible:after:ring-safelight transition-colors after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset"
+              >
+                {name}
+              </Link>
+            ) : (
+              name
+            )}
           </h3>
           <span className="text-readout text-paper-dim shrink-0">
             {colors.length} colors
@@ -340,7 +355,7 @@ function PaletteCard({
           </span>
           <Link
             href={`/editor?palette=${id}`}
-            className="text-paper hover:text-paper-hot hover:decoration-paper-hot focus-visible:ring-safelight decoration-line-strong text-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
+            className="text-paper hover:text-paper-hot hover:decoration-paper-hot focus-visible:ring-safelight decoration-line-strong relative z-10 text-sm font-medium underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
           >
             Use in the editor
             <span className="sr-only">: {name}</span>
