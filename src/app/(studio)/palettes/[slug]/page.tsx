@@ -247,10 +247,17 @@ export default async function PaletteGuidePage({
             <h2 id="steps-heading" className="text-heading font-semibold">
               How to make {guide.name}-style images
             </h2>
-            <ol className="text-paper-dim mt-4 flex list-decimal flex-col gap-3 pl-5 leading-relaxed">
+            {/* Numbers drawn in the flow, not as outside markers, so they
+                stay inside the page padding with a hanging indent. */}
+            <ol className="text-paper-dim mt-4 flex flex-col gap-3 leading-relaxed">
               {guide.steps.map((step, index) => (
-                <li key={index}>
-                  <RichText parts={step} />
+                <li key={index} className="flex gap-3">
+                  <span aria-hidden="true" className="shrink-0 tabular-nums">
+                    {index + 1}.
+                  </span>
+                  <span>
+                    <RichText parts={step} />
+                  </span>
                 </li>
               ))}
             </ol>

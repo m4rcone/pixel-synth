@@ -53,7 +53,7 @@ export function CompareSlider({
       ref={containerRef}
       // Vertical swipes keep scrolling the page (the browser cancels the
       // pointer); horizontal ones move the divider.
-      className="bg-ink-sunken relative w-full cursor-ew-resize touch-pan-y overflow-hidden select-none"
+      className="bg-ink-sunken relative isolate w-full cursor-ew-resize touch-pan-y overflow-hidden select-none"
       style={{ aspectRatio: `${width} / ${height}` }}
       onPointerDown={(e) => {
         e.currentTarget.setPointerCapture(e.pointerId);
@@ -102,8 +102,10 @@ export function CompareSlider({
         style={{ clipPath: `inset(0 ${100 - reveal}% 0 0)` }}
       />
 
+      {/* Paper divider with a square grip, as in the editor. `isolate` on the
+          frame keeps both under the sticky header. */}
       <div
-        className="bg-paper-hot/75 pointer-events-none absolute inset-y-0 z-10 w-px"
+        className="bg-paper/90 pointer-events-none absolute inset-y-0 z-10 w-px"
         style={{ left: `${reveal}%` }}
       >
         <button
@@ -128,16 +130,10 @@ export function CompareSlider({
             e.preventDefault();
             setReveal((r) => Math.min(100, Math.max(0, move(r))));
           }}
-          className="focus-visible:ring-safelight border-paper-hot/40 bg-ink/65 text-paper-hot pointer-events-auto absolute top-1/2 left-1/2 grid size-9 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize place-items-center border backdrop-blur-sm focus-visible:ring-2 focus-visible:outline-none"
+          // A 10 px grip in a 24 px target (WCAG 2.5.8).
+          className="focus-visible:ring-safelight pointer-events-auto absolute top-1/2 left-1/2 grid size-6 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize place-items-center focus-visible:ring-2 focus-visible:outline-none"
         >
-          <svg viewBox="0 0 16 16" aria-hidden="true" className="size-4">
-            <path
-              d="M6 4 2 8l4 4M10 4l4 4-4 4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            />
-          </svg>
+          <span aria-hidden="true" className="bg-paper/90 size-2.5" />
         </button>
       </div>
     </div>
