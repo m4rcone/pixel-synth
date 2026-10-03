@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { CookieSettingsButton } from "@/components/analytics-consent";
 import { ALGORITHMS } from "@/lib/algorithms";
 import { PALETTE_PRESETS } from "@/lib/palettes";
+import { analyticsEnabled } from "@/lib/analytics";
 import { BUG_REPORT_URL, FEATURE_IDEA_URL } from "@/lib/feedback";
 import { siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
@@ -94,7 +96,17 @@ export function SiteFooter({ className }: { className?: string }) {
         </ul>
       </nav>
       <div className="border-line text-paper-dim mt-10 flex flex-col gap-2 border-t pt-7 text-sm sm:flex-row sm:justify-between">
-        <p>© 2026 PixelSynth: Dithering & Pixel Art Tool</p>
+        <p>
+          © 2026 PixelSynth: Dithering & Pixel Art Tool
+          {analyticsEnabled() && (
+            <>
+              {" · "}
+              <CookieSettingsButton
+                className={cn(linkClass, "cursor-pointer")}
+              />
+            </>
+          )}
+        </p>
         <p>
           Free, no ads, runs in your browser.{" "}
           <a
