@@ -5,6 +5,8 @@ import { RouteFocusManager } from "@/components/route-focus-manager";
 import { BRAND_COLORS } from "@/lib/brand";
 import { siteConfig } from "@/lib/site";
 import { Analytics } from "@vercel/analytics/next";
+import { AnalyticsConsent } from "@/components/analytics-consent";
+import { analyticsEnabled } from "@/lib/analytics";
 
 // Display face for titles and large numbers; the SCAN axis draws the
 // scanline inside the letter. The only preloaded font.
@@ -89,6 +91,7 @@ export default function RootLayout({
         <RouteFocusManager />
         {children}
         <Analytics />
+        {analyticsEnabled() && <AnalyticsConsent />}
       </body>
     </html>
   );
