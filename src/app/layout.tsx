@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import { Azeret_Mono, Sixtyfour } from "next/font/google";
+import { PageTransition } from "@/components/page-transition";
 import { RouteFocusManager } from "@/components/route-focus-manager";
 import { BRAND_COLORS } from "@/lib/brand";
 import { siteConfig } from "@/lib/site";
@@ -89,7 +90,7 @@ export default function RootLayout({
           Skip to content
         </a>
         <RouteFocusManager />
-        {children}
+        <PageTransition by="area">{children}</PageTransition>
         <Analytics />
         {analyticsEnabled() && <AnalyticsConsent />}
       </body>

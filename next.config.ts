@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
   // Playwright reaches a running `npm run dev` at 127.0.0.1; without this,
   // Next blocks its dev resources there and the page never hydrates.
   allowedDevOrigins: ["127.0.0.1"],
+  experimental: {
+    // React <ViewTransition> on navigation (src/components/page-transition.tsx).
+    viewTransition: true,
+  },
   images: {
     // 95 keeps smooth gradients (the undithered "before" images) free of WebP
     // blocking.

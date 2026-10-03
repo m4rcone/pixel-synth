@@ -1,7 +1,9 @@
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { FaqList } from "@/components/faq-list";
 import { AnimatedGifDemo } from "@/components/landing/animated-gif-demo";
+import { ScrollReveal } from "@/components/landing/scroll-reveal";
 import {
   HeroInstrument,
   type HeroAlgorithmInfo,
@@ -141,6 +143,7 @@ export default function HomePage() {
   return (
     <div className="scanlines relative min-h-svh overflow-x-clip">
       <StructuredData data={homeStructuredData} />
+      <ScrollReveal />
 
       <header className="border-line bg-ink/90 sticky top-0 z-20 border-b backdrop-blur-sm">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-8">
@@ -234,7 +237,10 @@ export default function HomePage() {
           <section aria-label="Specifications" className="pb-20">
             {/* Cells on a 1 px gap over the line color: one hairline between
                 cells at every column count, none doubled against the frame. */}
-            <dl className="border-line-strong bg-line grid grid-cols-2 gap-px border sm:grid-cols-3 lg:grid-cols-6">
+            <dl
+              data-reveal
+              className="border-line-strong bg-line grid grid-cols-2 gap-px border sm:grid-cols-3 lg:grid-cols-6"
+            >
               {SPECS.map((spec) => (
                 <div
                   key={spec.label}
@@ -250,7 +256,17 @@ export default function HomePage() {
                         : "order-1 text-sm leading-snug"
                     }
                   >
-                    {spec.value}
+                    {spec.numeric ? (
+                      <>
+                        {/* The visible copy counts up as it scrolls in. */}
+                        <span aria-hidden="true" data-count={spec.value}>
+                          {spec.value}
+                        </span>
+                        <span className="sr-only">{spec.value}</span>
+                      </>
+                    ) : (
+                      spec.value
+                    )}
                   </dd>
                 </div>
               ))}
@@ -317,21 +333,28 @@ export default function HomePage() {
             aria-labelledby="pixel-art-heading"
             className="grid items-center gap-8 pb-20 lg:grid-cols-2 lg:gap-12"
           >
-            <figure className="border-line-strong bg-ink-sunken border p-3">
-              <Image
-                src={PIXEL_ART_PREVIEW.src}
-                alt={`The sample image at ${PIXEL_ART_PREVIEW.width} by ${PIXEL_ART_PREVIEW.height} pixels, PICO-8 palette, 2×2 Bayer pattern`}
-                width={PIXEL_ART_PREVIEW.width}
-                height={PIXEL_ART_PREVIEW.height}
-                unoptimized
-                className="pixelated w-full"
-              />
+            <figure
+              data-reveal
+              className="border-line-strong bg-ink-sunken border p-3"
+            >
+              {/* Holds the coarse-to-native "enhance" canvas while it plays. */}
+              <div className="relative">
+                <Image
+                  data-enhance
+                  src={PIXEL_ART_PREVIEW.src}
+                  alt={`The sample image at ${PIXEL_ART_PREVIEW.width} by ${PIXEL_ART_PREVIEW.height} pixels, PICO-8 palette, 2×2 Bayer pattern`}
+                  width={PIXEL_ART_PREVIEW.width}
+                  height={PIXEL_ART_PREVIEW.height}
+                  unoptimized
+                  className="pixelated w-full"
+                />
+              </div>
               <figcaption className="text-readout text-paper-dim mt-2">
                 {PIXEL_ART_PREVIEW.width} × {PIXEL_ART_PREVIEW.height} px, shown
                 enlarged
               </figcaption>
             </figure>
-            <div className="flex max-w-lg flex-col gap-5">
+            <div data-reveal className="flex max-w-lg flex-col gap-5">
               <h2
                 id="pixel-art-heading"
                 className="font-display text-glow text-title font-normal"
@@ -354,7 +377,10 @@ export default function HomePage() {
             aria-labelledby="gif-heading"
             className="grid items-center gap-8 pb-20 lg:grid-cols-2 lg:gap-12"
           >
-            <div className="flex max-w-lg flex-col gap-5 lg:order-2">
+            <div
+              data-reveal
+              className="flex max-w-lg flex-col gap-5 lg:order-2"
+            >
               <h2
                 id="gif-heading"
                 className="font-display text-glow text-title font-normal"
@@ -382,17 +408,19 @@ export default function HomePage() {
                 Open the animated sample
               </Link>
             </div>
-            <AnimatedGifDemo
-              src={ANIMATED_DITHER.src}
-              still={ANIMATED_DITHER.still}
-              width={ANIMATED_DITHER.width}
-              height={ANIMATED_DITHER.height}
-              alt={`The animated sample, a neon grid rolling toward a striped sun, dithered with ${algorithmName(ANIMATED_DITHER.algorithm)} and the ${paletteName(ANIMATED_DITHER.palette)} palette`}
-              caption={`${ANIMATED_SAMPLE.frames} frames · ${ANIMATED_SAMPLE.delay} ms · ${algorithmName(ANIMATED_DITHER.algorithm)} · ${paletteName(ANIMATED_DITHER.palette)}`}
-            />
+            <div data-reveal className="min-w-0">
+              <AnimatedGifDemo
+                src={ANIMATED_DITHER.src}
+                still={ANIMATED_DITHER.still}
+                width={ANIMATED_DITHER.width}
+                height={ANIMATED_DITHER.height}
+                alt={`The animated sample, a neon grid rolling toward a striped sun, dithered with ${algorithmName(ANIMATED_DITHER.algorithm)} and the ${paletteName(ANIMATED_DITHER.palette)} palette`}
+                caption={`${ANIMATED_SAMPLE.frames} frames · ${ANIMATED_SAMPLE.delay} ms · ${algorithmName(ANIMATED_DITHER.algorithm)} · ${paletteName(ANIMATED_DITHER.palette)}`}
+              />
+            </div>
           </section>
 
-          <section aria-labelledby="faq-heading" className="pb-20">
+          <section data-reveal aria-labelledby="faq-heading" className="pb-20">
             <h2
               id="faq-heading"
               className="font-display text-glow text-title mb-8 font-normal"
@@ -403,6 +431,7 @@ export default function HomePage() {
           </section>
 
           <section
+            data-reveal
             aria-labelledby="cta-heading"
             className="border-line-strong bg-ink-raised mb-16 flex flex-col items-start gap-6 border px-6 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-10"
           >
@@ -439,7 +468,10 @@ function SectionHead({
   children: React.ReactNode;
 }) {
   return (
-    <div className="mb-10 flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+    <div
+      data-reveal
+      className="mb-10 flex flex-wrap items-end justify-between gap-x-8 gap-y-4"
+    >
       <div className="flex max-w-4xl flex-col gap-4">
         <h2 id={id} className="font-display text-glow text-title font-normal">
           {title}
@@ -475,7 +507,11 @@ function FamilyCard({ category }: { category: AlgorithmCategory }) {
   const others = members.filter((algorithm) => algorithm.slug !== lead.slug);
 
   return (
-    <li className="group border-line-strong bg-ink-raised hover:border-paper relative flex flex-col border transition-colors">
+    <li
+      data-reveal
+      data-reveal-group="families"
+      className="group border-line-strong bg-ink-raised hover:border-paper relative flex flex-col border transition-colors"
+    >
       <h3 className="text-caps text-paper border-line truncate border-b px-4 py-3">
         {family.name}
       </h3>
@@ -547,13 +583,23 @@ function Cartridge({
   detail: string;
 }) {
   return (
-    <li className="group border-line-strong bg-ink-raised hover:border-paper relative flex flex-col border transition-colors">
-      <div aria-hidden="true" className="flex h-10">
+    <li
+      data-reveal
+      data-reveal-group="palettes"
+      className="group border-line-strong bg-ink-raised hover:border-paper relative flex flex-col border transition-colors"
+    >
+      {/* Loads one color at a time as it scrolls in: 360 ms per strip. */}
+      <div
+        aria-hidden="true"
+        data-strip
+        className="flex h-10"
+        style={{ "--swatch-step": `${360 / colors.length}ms` } as CSSProperties}
+      >
         {colors.map((color, index) => (
           <span
             key={index}
             className="flex-1"
-            style={{ backgroundColor: color }}
+            style={{ backgroundColor: color, "--i": index } as CSSProperties}
           />
         ))}
       </div>

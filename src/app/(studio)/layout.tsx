@@ -1,3 +1,4 @@
+import { PageTransition } from "@/components/page-transition";
 import { SidebarLeft } from "@/components/sidebar-left";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { CanvasProvider } from "@/contexts/canvas-context";
@@ -18,7 +19,7 @@ export default function StudioLayout({
         <UnsavedChangesGuard />
         <SidebarProvider>
           <SidebarLeft />
-          {children}
+          <PageTransition by="page">{children}</PageTransition>
         </SidebarProvider>
       </EditorProvider>
     </CanvasProvider>
