@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { CookieSettingsButton } from "@/components/analytics-consent";
 import { ALGORITHMS } from "@/lib/algorithms";
+import { PIXEL_ART_LINK } from "@/lib/editor/pixel-art";
+import { paletteHref } from "@/lib/palette-guides";
 import { PALETTE_PRESETS } from "@/lib/palettes";
 import { analyticsEnabled } from "@/lib/analytics";
 import { BUG_REPORT_URL, FEATURE_IDEA_URL } from "@/lib/feedback";
@@ -17,7 +19,7 @@ const COLUMNS: {
       { label: "Open the editor", href: "/editor" },
       { label: "Try the sample", href: "/editor?sample=1" },
       { label: "Try an animated GIF", href: "/editor?sample=animated" },
-      { label: "Pixel art preset", href: "/editor?preset=pixel-art" },
+      { label: "Pixel art preset", href: PIXEL_ART_LINK },
     ],
   },
   {
@@ -31,7 +33,7 @@ const COLUMNS: {
     title: `${PALETTE_PRESETS.length} palettes`,
     links: PALETTE_PRESETS.map((palette) => ({
       label: palette.name,
-      href: `/palettes#palette-${palette.id}`,
+      href: paletteHref(palette.id),
     })),
   },
   {
@@ -72,7 +74,7 @@ export function SiteFooter({ className }: { className?: string }) {
               <p className="text-caps text-paper">{column.title}</p>
               <ul className="flex flex-col gap-2">
                 {column.links.map((link) => (
-                  <li key={link.href}>
+                  <li key={link.label}>
                     {link.external ? (
                       <a
                         href={link.href}

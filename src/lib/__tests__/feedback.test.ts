@@ -14,7 +14,7 @@ const context = {
       custom: ["#123456", "#abcdef"],
     },
   },
-  status: "dithered" as const,
+  status: "ready" as const,
   source: { width: 1800, height: 1200 },
   result: { width: 630, height: 420 },
   userAgent: "Mozilla/5.0 (Test)",

@@ -20,9 +20,9 @@ import { HEX_COLOR } from "./pixels";
 
 /**
  * Settings links: `/editor?s=<code>`. The code is base64url JSON holding only
- * what differs from the defaults, plus whether dithering was applied. It never
- * carries the image. Decoding treats the value as untrusted: every field is
- * validated and clamped, unknown fields are ignored.
+ * what differs from the defaults. It never carries the image. Decoding treats
+ * the value as untrusted: every field is validated and clamped, unknown fields
+ * are ignored (links made before images rendered on load carry a `d` flag).
  */
 export const SHARE_PARAM = "s";
 
@@ -33,8 +33,6 @@ export type SharedSettings = {
   settings: EditorSettings;
   /** The custom palette, only when the link carries one. */
   custom: string[] | null;
-  /** Dithering was applied when the link was made. */
-  dithered: boolean;
 };
 
 type Diff = Record<string, unknown>;
@@ -51,10 +49,7 @@ function diffObject<T extends object>(value: T, base: T): Diff | undefined {
   return Object.keys(diff).length ? diff : undefined;
 }
 
-export function encodeSettings(
-  settings: EditorSettings,
-  dithered: boolean,
-): string {
+export function encodeSettings(settings: EditorSettings): string {
   const base = DEFAULT_SETTINGS;
   const { custom, ...color } = settings.color;
   const { custom: baseCustom, ...baseColor } = base.color;
@@ -66,7 +61,6 @@ export function encodeSettings(
 
   const data: Diff = {
     v: VERSION,
-    ...(dithered ? { d: 1 } : {}),
     ...(settings.algorithm !== base.algorithm
       ? { algorithm: settings.algorithm }
       : {}),
@@ -227,16 +221,12 @@ export function decodeSettings(code: string): SharedSettings | null {
   const custom = colors(data.custom) ?? null;
   if (custom) settings.color.custom = custom;
 
-  return { settings, custom, dithered: data.d === 1 };
+  return { settings, custom };
 }
 
 /** Full link to the editor with these settings. */
-export function settingsUrl(
-  origin: string,
-  settings: EditorSettings,
-  dithered: boolean,
-) {
+export function settingsUrl(origin: string, settings: EditorSettings) {
   const url = new URL("/editor", origin);
-  url.searchParams.set(SHARE_PARAM, encodeSettings(settings, dithered));
+  url.searchParams.set(SHARE_PARAM, encodeSettings(settings));
   return url.toString();
 }

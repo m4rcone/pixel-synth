@@ -3,11 +3,13 @@
  * from the presets in palettes.ts; this holds the prose, the color names and
  * which presets each page covers. Keep the facts sourced: the hardware notes
  * follow each system's reference (Pan Docs, NESdev, the PICO-8 manual, IBM's
- * CGA/EGA documentation as summarized on Wikipedia).
+ * CGA/EGA documentation and TI's TMS9918 datasheet as summarized on
+ * Wikipedia); the print pages follow the history of each process.
  */
 
 import type { AlgorithmId } from "@/lib/algorithms";
 import type { FaqEntry, FaqPart } from "@/lib/faq";
+import { PIXEL_ART_LINK } from "@/lib/editor/pixel-art";
 import { hexToRgb } from "@/lib/editor/pixels";
 import { getPalettePreset, type PalettePreset } from "@/lib/palettes";
 
@@ -19,7 +21,8 @@ export type PaletteGuide = {
   /** Meta description, at most 160 characters. */
   description: string;
   intro: string;
-  facts: { year: string; hardware: string };
+  /** `label` names the hardware row: "Process" for print palettes. */
+  facts: { year: string; hardware: string; label?: "Hardware" | "Process" };
   /** Presets shown, the first one being the page's own. */
   palettes: {
     id: string;
@@ -37,6 +40,8 @@ export type PaletteGuide = {
   examples: AlgorithmId[];
   related: string[];
   faq: FaqEntry[];
+  /** Last meaningful update (YYYY-MM-DD), when newer than the site's. */
+  updated?: string;
 };
 
 const algo = (slug: AlgorithmId, text: string): FaqPart => ({
@@ -46,7 +51,7 @@ const algo = (slug: AlgorithmId, text: string): FaqPart => ({
 
 const PIXEL_ART_PRESET: FaqPart = {
   text: "pixel art preset",
-  href: "/editor?preset=pixel-art",
+  href: PIXEL_ART_LINK,
 };
 
 /** Hex codes of a preset as prose: "#0F380F, #306230 and #9BBC0F". */
@@ -732,6 +737,419 @@ export const PALETTE_GUIDES: PaletteGuide[] = [
         question: "Didn’t the Apple II have 16 colors?",
         answer: [
           "In its low-resolution mode, yes: 40 × 48 blocks in 16 colors. Later models added a double hi-res mode with 16 colors too. This palette covers the hi-res mode.",
+        ],
+      },
+    ],
+  },
+
+  {
+    slug: "msx",
+    updated: "2026-10-08",
+    name: "MSX",
+    description:
+      "The 15 MSX colors of the TI TMS9918 video chip with names and hex codes, its 2-colors-per-line rule, and a free tool to dither any image to MSX colors.",
+    intro:
+      "MSX computers drew everything with Texas Instruments’ TMS9918 video chip and its fixed set of 15 colors. Below are all of them with names and hex codes, how the chip’s 2-colors-per-line rule shaped MSX graphics, and a free way to dither any image to the MSX palette in your browser.",
+    facts: { year: "1983", hardware: "TI TMS9918, 256 × 192" },
+    palettes: [
+      {
+        id: "msx",
+        names: [
+          "Black",
+          "Medium green",
+          "Light green",
+          "Dark blue",
+          "Light blue",
+          "Dark red",
+          "Cyan",
+          "Medium red",
+          "Light red",
+          "Dark yellow",
+          "Light yellow",
+          "Dark green",
+          "Magenta",
+          "Gray",
+          "White",
+        ],
+      },
+    ],
+    accuracy:
+      "The TMS9918 outputs analog color signals, not RGB values. These are its datasheet levels converted to sRGB, as listed on Wikipedia; emulators and capture cards differ slightly, especially in the greens. Color 0 is transparent, so 15 colors are listed, in chip order 1 to 15.",
+    sections: [
+      {
+        heading: "One standard, many manufacturers",
+        paragraphs: [
+          [
+            "Microsoft and ASCII Corporation, led by Kazuhiko Nishi, announced MSX in 1983 as a common standard for home computers: any MSX machine, whether made by Sony, Panasonic, Philips or others, ran the same software. It sold best in Japan, the Netherlands, Spain and Brazil.",
+          ],
+          [
+            "The first generation used the TMS9918, the same video chip as the TI-99/4A, the ColecoVision and Sega’s SG-1000, so all of them share this palette. MSX2 (1985) moved to the Yamaha V9938, which picks its colors from 512.",
+          ],
+        ],
+      },
+      {
+        heading: "Two colors per line of eight pixels",
+        paragraphs: [
+          [
+            "In its 256 × 192 bitmap mode, the TMS9918 stores one foreground and one background color for every row of 8 pixels. That’s finer than the ZX Spectrum’s 8 × 8 attribute cells, so color clash is milder, but neighboring details on the same row still can’t use three colors. Up to 32 sprites add color on top, at most 4 per scanline.",
+          ],
+          [
+            "MSX artists worked around the limit with dither patterns and careful color pairs, and the palette’s soft greens, blues and reds give MSX games their look. PixelSynth matches this palette by color and doesn’t enforce the per-row rule, so the result has more color freedom than the hardware allowed.",
+          ],
+        ],
+      },
+    ],
+    steps: [
+      ["Open the editor with the MSX palette selected. It matches by color."],
+      ["Set Output size to 256 pixels, the TMS9918’s width."],
+      [
+        "Use ",
+        algo("bayer-4-4", "Bayer 4×4"),
+        " for regular, period-style patterns or ",
+        algo("floyd-steinberg", "Floyd–Steinberg"),
+        " for photos.",
+      ],
+      ["Save the PNG at ×2 or ×4 to keep the pixels sharp."],
+    ],
+    examples: ["bayer-4-4", "floyd-steinberg", "bayer-2-2", "blue-noise"],
+    related: ["zx-spectrum", "commodore-64", "nes"],
+    faq: [
+      {
+        question: "How many colors does the MSX have?",
+        answer: [
+          "The first generation shows 15 fixed colors plus transparent. MSX2 and later pick 16 at a time from 512, so this palette is the MSX1 one.",
+        ],
+      },
+      {
+        question:
+          "Does this palette work for the ColecoVision or the TI-99/4A?",
+        answer: [
+          "Yes. They use the same TMS9918 family of video chips, so the colors are the same, give or take how each TV or emulator decodes them.",
+        ],
+      },
+    ],
+  },
+
+  {
+    slug: "riso",
+    updated: "2026-10-08",
+    name: "Riso",
+    description:
+      "Riso Fluorescent Pink and Blue ink hex codes with black and paper, how risograph printing works, and a free tool to dither any image to a riso look.",
+    intro:
+      "Risograph prints are known for vivid, slightly grainy ink on uncoated paper. This palette uses two of Riso’s official ink colors, Fluorescent Pink (#FF48B0) and Blue (#0078BF), plus black, on a warm paper white. Below are the hex codes, how a risograph prints, and a free way to give any image a riso look in your browser.",
+    facts: {
+      year: "1980s",
+      hardware: "Riso digital duplicator",
+      label: "Process",
+    },
+    palettes: [
+      {
+        id: "riso",
+        names: ["Paper", "Fluorescent Pink", "Blue", "Black"],
+      },
+    ],
+    accuracy:
+      "Pink and blue are the screen values Riso publishes for its Fluorescent Pink and Blue inks. Real ink looks different on every paper, and fluorescent pink is brighter than any screen can show. Black is pure black and the paper is an off-white chosen for this palette.",
+    sections: [
+      {
+        heading: "How a risograph prints",
+        paragraphs: [
+          [
+            "The Risograph is a digital duplicator made by the Riso Kagaku Corporation of Tokyo. It scans or receives an image, burns it as tiny holes into a thin master sheet with a thermal head, wraps the master around an ink drum and pushes ink through the holes onto paper, page after page, quickly and cheaply.",
+          ],
+          [
+            "Each drum holds one ink, so a print in two colors goes through the machine twice, or through a two-drum model once. The inks are semi-transparent, so pink printed over blue makes purple, and the layers never line up perfectly: that slight misregistration is part of the look zines, posters and art books adopted.",
+          ],
+        ],
+      },
+      {
+        heading: "Why riso is already dithered",
+        paragraphs: [
+          [
+            "A master either has a hole or it doesn’t, so a risograph can’t print a gray: every tone is a pattern of dots, from a halftone screen or a grain-like diffusion pattern. That’s why dithering and riso go together so well, and why a dithered image prints on a risograph much as it looks on screen.",
+          ],
+          [
+            "This palette dithers the image to all four colors at once, by brightness. It gives the riso look on screen, but it doesn’t separate the inks or mix overprints: to print, make one grayscale layer per ink, for example by dithering a copy of the image in 1-bit for each color.",
+          ],
+        ],
+      },
+    ],
+    steps: [
+      [
+        "Open the editor with the Riso palette selected. It matches by brightness.",
+      ],
+      [
+        "Choose ",
+        algo("halftone", "Halftone"),
+        " for a classic print screen or ",
+        algo("blue-noise", "Blue Noise"),
+        " for an even, grainy texture.",
+      ],
+      [
+        "Adjust contrast and gamma until the pink and blue land where you want them, then save the PNG at full size for print or ×2 for screens.",
+      ],
+    ],
+    examples: [
+      "halftone",
+      "blue-noise",
+      "floyd-steinberg",
+      "clustered-dot-halftone-ordered",
+    ],
+    related: ["newsprint", "cyanotype", "sepia"],
+    faq: [
+      {
+        question: "Can I print this file on a risograph as it is?",
+        answer: [
+          "Not directly: a risograph needs one grayscale layer per ink. Use the palette to preview the look, then dither a 1-bit copy of the image for each ink and send those layers to print.",
+        ],
+      },
+      {
+        question: "Why does fluorescent pink look duller on my screen?",
+        answer: [
+          "Fluorescent ink turns ultraviolet light into visible pink, so it glows brighter than any color a screen can make. #FF48B0 is Riso’s screen approximation.",
+        ],
+      },
+    ],
+  },
+
+  {
+    slug: "cyanotype",
+    updated: "2026-10-08",
+    name: "Cyanotype",
+    description:
+      "Cyanotype blue hex codes from deep Prussian blue to paper, the history of the 1842 sun-print process, and a free tool to give any image a cyanotype look.",
+    intro:
+      "A cyanotype is a photograph printed in Prussian blue by sunlight, and it’s where the word blueprint comes from. This palette has four tones, from deep blue to paper white. Below are the hex codes, how the process works, and a free way to turn any image into a cyanotype-style dither in your browser.",
+    facts: {
+      year: "1842",
+      hardware: "Iron salts and sunlight",
+      label: "Process",
+    },
+    palettes: [
+      {
+        id: "cyanotype",
+        names: ["Deep Prussian blue", "Prussian blue", "Faded blue", "Paper"],
+      },
+    ],
+    accuracy:
+      "There is no standard cyanotype color: the blue depends on the paper, the exposure and the wash. These four tones, chosen for this palette, follow the range of a typical print, from fully exposed areas to bare paper.",
+    sections: [
+      {
+        heading: "Herschel’s blue prints",
+        paragraphs: [
+          [
+            "The astronomer Sir John Herschel discovered the process in 1842. Paper is coated with ferric ammonium citrate and potassium ferricyanide, dried in the dark and exposed to sunlight under a negative or an object. Where light hits, the iron salts turn into insoluble Prussian blue; rinsing in water washes away the rest and leaves white paper.",
+          ],
+          [
+            "In 1843 the botanist Anna Atkins used it for Photographs of British Algae: Cyanotype Impressions, laying seaweed straight on the paper; it is considered the first book illustrated with photographs. Later in the century engineers and architects copied drawings the same way, white lines on blue, and the blueprint was born.",
+          ],
+        ],
+      },
+      {
+        heading: "Dithering a cyanotype look",
+        paragraphs: [
+          [
+            "A real cyanotype is continuous tone, but its single blue makes it a natural fit for a short brightness palette: four tones of one hue read as one ink on paper, and dithering fills in the steps between them.",
+          ],
+          [
+            "PixelSynth matches this palette by brightness, so the darkest parts of the image become the deepest blue and highlights fall back to paper, whatever their original color. Soft algorithms like ",
+            algo("atkinson", "Atkinson"),
+            " keep the airy, washed-out highlights of a sun print.",
+          ],
+        ],
+      },
+    ],
+    steps: [
+      [
+        "Open the editor with the Cyanotype palette selected. It matches by brightness.",
+      ],
+      [
+        "Pick ",
+        algo("atkinson", "Atkinson"),
+        " for bright, open highlights or ",
+        algo("floyd-steinberg", "Floyd–Steinberg"),
+        " to keep more detail.",
+      ],
+      [
+        "Lower the white point to push more of the image toward deep blue, and save the PNG at ×2 or larger.",
+      ],
+    ],
+    examples: ["atkinson", "floyd-steinberg", "blue-noise", "line-screen"],
+    related: ["sepia", "newsprint", "riso"],
+    faq: [
+      {
+        question: "Can I use the result to make a real cyanotype?",
+        answer: [
+          "As a reference, yes. To print one, you need a negative: invert a grayscale or 1-bit version of the image, print it on transparency film and expose the coated paper through it.",
+        ],
+      },
+      {
+        question: "Why is it called a blueprint?",
+        answer: [
+          "Engineers copied technical drawings with the cyanotype process from the late 19th century on, which gave white lines on a blue ground. The name stuck even after other copying methods replaced it.",
+        ],
+      },
+    ],
+  },
+
+  {
+    slug: "newsprint",
+    updated: "2026-10-08",
+    name: "Newsprint",
+    description:
+      "Newsprint ink and yellowed paper hex codes, how newspapers print photos as halftone dots, and a free tool to give any image a newspaper halftone look.",
+    intro:
+      "Newspapers print photos as patterns of ink dots on cheap, slightly yellow paper. This 1-bit palette pairs a soft black ink with aged newsprint, so a dither looks printed rather than on screen. Below are both hex codes, how newspaper halftones work, and a free way to give any image the look in your browser.",
+    facts: {
+      year: "1880",
+      hardware: "Halftone on newsprint",
+      label: "Process",
+    },
+    palettes: [{ id: "newsprint", names: ["Ink", "Newsprint"] }],
+    accuracy:
+      "Both values were chosen for this palette: a warm black, since ink on absorbent paper never reaches pure black, and a cream like newsprint a few years old. Fresh newsprint is grayer and whiter.",
+    sections: [
+      {
+        heading: "Photos made of dots",
+        paragraphs: [
+          [
+            "A printing press lays down ink or no ink, so it can’t print a gray. Halftone screens solve that by breaking a photo into dots that grow in the shadows and shrink in the highlights. On March 4, 1880, The Daily Graphic of New York printed “A Scene in Shantytown,” one of the first halftone photographs in a newspaper, and within a few decades halftones replaced engraved illustrations.",
+          ],
+          [
+            "Newsprint soaks up ink and makes dots spread, so newspapers use coarse screens, often around 85 lines per inch, where magazines on coated paper use 150 or more. Those visible dots are the newspaper look.",
+          ],
+        ],
+      },
+      {
+        heading: "Why the paper turns yellow",
+        paragraphs: [
+          [
+            "Newsprint is made from mechanical wood pulp, which keeps most of the wood’s lignin. Light and air oxidize the lignin and the paper turns yellow, then brown, within years, which is why old clippings look warm. This palette uses that aged tone instead of pure white.",
+          ],
+          [
+            "PixelSynth matches this palette by brightness: everything darker than the threshold becomes ink. Pair it with ",
+            algo("halftone", "Halftone"),
+            " for round newspaper dots or ",
+            algo("line-screen", "Line Screen"),
+            " for an engraved look.",
+          ],
+        ],
+      },
+    ],
+    steps: [
+      [
+        "Open the editor with the Newsprint palette selected. It matches by brightness.",
+      ],
+      [
+        "Choose ",
+        algo("halftone", "Halftone"),
+        " and raise its screen size until the dots read from a distance.",
+      ],
+      [
+        "Add a little contrast, since newspaper photos lose their midtones, and save the PNG at full size or ×2.",
+      ],
+    ],
+    examples: [
+      "halftone",
+      "clustered-dot-halftone-ordered",
+      "line-screen",
+      "floyd-steinberg",
+    ],
+    related: ["riso", "sepia", "cyanotype"],
+    faq: [
+      {
+        question: "What resolution were newspaper halftones?",
+        answer: [
+          "Commonly 65 to 100 lines per inch, with 85 typical. Coarser screens hold up better on absorbent paper, where every dot spreads.",
+        ],
+      },
+      {
+        question: "Can I use pure black and white instead?",
+        answer: [
+          "Yes: the editor’s 1-bit mode prints black and white, or any two colors you pick. This palette is the same idea with ink and paper tones.",
+        ],
+      },
+    ],
+  },
+
+  {
+    slug: "sepia",
+    updated: "2026-10-08",
+    name: "Sepia",
+    description:
+      "Four sepia tone hex codes from deep brown to paper, where sepia toning came from, and a free tool to dither any photo to an antique sepia look.",
+    intro:
+      "Sepia is the warm brown of old photographs. This palette has four tones, from deep brown to aged paper, that turn any image into an antique-looking dither. Below are the hex codes, where sepia toning came from, and a free way to apply it in your browser.",
+    facts: {
+      year: "1880s",
+      hardware: "Silver sulfide toning",
+      label: "Process",
+    },
+    palettes: [
+      {
+        id: "sepia",
+        names: ["Deep brown", "Umber", "Tan", "Paper"],
+      },
+    ],
+    accuracy:
+      "There is no standard sepia: every print toned differently with paper, chemistry and age. These four tones, chosen for this palette, cover the range of a typical toned print, from the darkest shadows to the paper base.",
+    sections: [
+      {
+        heading: "A pigment, then a darkroom process",
+        paragraphs: [
+          [
+            "Sepia was first an ink and a pigment, the brown made from the ink sac of the cuttlefish, whose genus is Sepia. In photography the name moved to toning: bathing a black-and-white silver print in a sulfide solution turns its metallic silver into silver sulfide, which is brown.",
+          ],
+          [
+            "Toning was common from the late 19th century into the early 20th, and not only for the color: silver sulfide resists air and pollution far better than plain silver, so sepia prints last longer. That durability is why so many surviving photos from the period are brown.",
+          ],
+        ],
+      },
+      {
+        heading: "Sepia in four tones",
+        paragraphs: [
+          [
+            "A sepia print shows shadows in dark brown and highlights in the warm paper, with a smooth range in between. Four tones of one hue keep that range readable, and dithering fills in the steps.",
+          ],
+          [
+            "PixelSynth matches this palette by brightness, so colors don’t matter, only how light or dark each area is. Use ",
+            algo("floyd-steinberg", "Floyd–Steinberg"),
+            " for portraits, or ",
+            algo("blue-noise", "Blue Noise"),
+            " for a fine film-like grain.",
+          ],
+        ],
+      },
+    ],
+    steps: [
+      [
+        "Open the editor with the Sepia palette selected. It matches by brightness.",
+      ],
+      [
+        "Pick ",
+        algo("floyd-steinberg", "Floyd–Steinberg"),
+        " for detail or ",
+        algo("blue-noise", "Blue Noise"),
+        " for a film-like grain.",
+      ],
+      [
+        "Lower the contrast slightly for a faded look, then save the PNG at ×2 or larger.",
+      ],
+    ],
+    examples: ["floyd-steinberg", "atkinson", "blue-noise", "bayer-8-8"],
+    related: ["cyanotype", "newsprint", "riso"],
+    faq: [
+      {
+        question: "Is this the same as a sepia filter?",
+        answer: [
+          "A sepia filter tints every pixel brown and keeps smooth gradients. This palette reduces the image to four brown tones and dithers between them, so it looks printed.",
+        ],
+      },
+      {
+        question: "Why are old photos brown?",
+        answer: [
+          "Many were sepia toned on purpose, which made them more durable, and untoned prints also yellow and brown as their silver and paper age.",
         ],
       },
     ],

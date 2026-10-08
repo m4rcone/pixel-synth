@@ -9,6 +9,7 @@ import {
   useEditorState,
 } from "@/contexts/editor-context";
 import { Button } from "@/components/ui/button";
+import { track } from "@/lib/track";
 import {
   Popover,
   PopoverContent,
@@ -32,8 +33,7 @@ type Format = "gif" | "png";
 
 export function SaveButton() {
   const state = useEditorState();
-  const { status, result, resultFrames, settings, source, renderProgress } =
-    state;
+  const { result, resultFrames, settings, source, renderProgress } = state;
   const { encodeGif } = useEditorActions();
   const { frame } = useCanvasContext();
   const [open, setOpen] = useState(false);
@@ -47,18 +47,14 @@ export function SaveButton() {
   const frameCount = animation?.frames.length ?? 1;
   // PNG saves the shown frame (the only one of a still image).
   const still = frameResult(state, frame) ?? result;
-  // Only dithered output is sure to fit a GIF's 256 colors.
   const gifFrames =
-    status === "dithered" && !renderProgress && resultFrames?.every(Boolean)
+    !renderProgress && resultFrames?.every(Boolean)
       ? (resultFrames as ImageBitmap[])
       : null;
-  const gifHint = !animation
-    ? null
-    : status !== "dithered"
-      ? "Dither the image to save a GIF."
-      : !gifFrames
-        ? "Wait for every frame to render to save a GIF."
-        : null;
+  const gifHint =
+    animation && !gifFrames
+      ? "Wait for every frame to render to save a GIF."
+      : null;
   const saveGif = format === "gif" && !!gifFrames;
 
   const width = (saveGif ? gifFrames[0] : still)?.width ?? 0;
@@ -69,7 +65,6 @@ export function SaveButton() {
       : exportFits(width, height, k);
 
   function fileName(extension: string) {
-    if (status !== "dithered") return `pixelsynth-filtered.${extension}`;
     const { mode } = settings.color;
     const palette =
       mode === "palette"
@@ -109,10 +104,8 @@ export function SaveButton() {
           factor,
           (done, total) => setProgress(done / total),
         );
-        return download(
-          new Blob([bytes], { type: "image/gif" }),
-          fileName("gif"),
-        );
+        download(new Blob([bytes], { type: "image/gif" }), fileName("gif"));
+        return track("export", { format: "gif", scale: factor });
       }
       if (!still) return;
       // Indexed PNG first (dithered output has few colors); the canvas PNG
@@ -123,6 +116,7 @@ export function SaveButton() {
         (await canvasPng(still, factor));
       if (!blob) return fail();
       download(blob, fileName("png"));
+      track("export", { format: "png", scale: factor });
     } catch (error) {
       if (error instanceof TooManyColorsError) {
         setError(

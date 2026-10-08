@@ -15,6 +15,12 @@ export const PIXEL_ART_PRESET = {
   match: "color",
 } as const;
 
+/**
+ * Opens the editor ready for the visitor's own image: the preset applies to
+ * the next image loaded, an upload or the sample (see SettingsFromUrl).
+ */
+export const PIXEL_ART_LINK = "/editor?preset=pixel-art";
+
 /** Processing scale that brings a `width`×`height` image to the preset's size. */
 export function pixelArtScale(width: number, height: number): number {
   if (width <= 0 || height <= 0) return 1;

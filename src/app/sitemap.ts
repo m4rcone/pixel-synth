@@ -9,15 +9,17 @@ import {
   palettePreview,
   PIXEL_ART_PREVIEW,
 } from "@/lib/samples";
-import { absoluteUrl, siteConfig } from "@/lib/site";
+import { ALGORITHM_GUIDES } from "@/lib/algorithm-guides";
+import { absoluteUrl, pageUpdated, siteConfig } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date(siteConfig.updated);
+  const lastModified = (path: string, own?: string) =>
+    new Date(pageUpdated(path, own));
 
   return [
     {
       url: absoluteUrl("/"),
-      lastModified,
+      lastModified: lastModified("/"),
       images: [
         absoluteUrl(heroVariant("floyd-steinberg", "1-bit")),
         absoluteUrl(HERO_ORIGINAL.src),
@@ -27,16 +29,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: absoluteUrl("/editor"),
-      lastModified,
+      lastModified: lastModified("/editor"),
     },
     {
       url: absoluteUrl("/algorithms"),
-      lastModified,
+      lastModified: lastModified("/algorithms"),
       images: ALGORITHMS.map((algorithm) => absoluteUrl(algorithm.preview)),
     },
     {
       url: absoluteUrl("/palettes"),
-      lastModified,
+      lastModified: lastModified("/palettes"),
       images: [
         absoluteUrl(PIXEL_ART_PREVIEW.src),
         ...PALETTE_PRESETS.map((palette) =>
@@ -46,12 +48,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     ...ALGORITHMS.map((algorithm) => ({
       url: absoluteUrl(`/algorithms/${algorithm.slug}`),
-      lastModified,
+      lastModified: lastModified(
+        `/algorithms/${algorithm.slug}`,
+        ALGORITHM_GUIDES[algorithm.slug].updated,
+      ),
       images: [absoluteUrl(algorithm.preview)],
     })),
     ...PALETTE_GUIDES.map((guide) => ({
       url: absoluteUrl(`/palettes/${guide.slug}`),
-      lastModified,
+      lastModified: lastModified(`/palettes/${guide.slug}`, guide.updated),
       images: guidePresets(guide).map(({ id }) =>
         absoluteUrl(palettePreview(id)),
       ),

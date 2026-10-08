@@ -13,7 +13,7 @@ test("every internal landing link resolves", async ({ page, request }) => {
       "/editor?sample=1&algorithm=floyd-steinberg",
       "/algorithms/void-and-cluster",
       "/palettes#palette-pixelsynth",
-      "/palettes#palette-pico8",
+      "/palettes/pico-8",
       "/algorithms/clustered-dot-halftone-ordered",
       "/algorithms/blue-noise",
       "/editor?preset=pixel-art",
@@ -50,12 +50,11 @@ test("a cartridge without a page opens its card in the gallery", async ({
   await page.waitForLoadState("networkidle");
   await page
     .getByRole("region", { name: "Retro palettes: Game Boy, NES, PICO-8, CGA" })
-    .getByRole("link", { name: "Riso pink & blue" })
+    .getByRole("link", { name: "Your colors" })
     .click();
 
-  await expect(page).toHaveURL(/\/palettes#palette-riso$/);
-  await expect(page.locator("#palette-riso")).toBeFocused();
-  await expect(page.locator("#palette-riso")).toBeInViewport();
+  await expect(page).toHaveURL(/\/palettes#group-dynamic$/);
+  await expect(page.locator("#group-dynamic")).toBeInViewport();
 });
 
 test("the FAQ opens from the keyboard", async ({ page }) => {
@@ -68,18 +67,26 @@ test("the FAQ opens from the keyboard", async ({ page }) => {
   ).toBeVisible();
 });
 
-test("the pixel art button waits for the user's image", async ({ page }) => {
+test("the pixel art button waits for the visitor's own image", async ({
+  page,
+}) => {
   await page.goto("/");
   await page.getByRole("link", { name: "Try the pixel art preset" }).click();
   await expect(page).toHaveURL(/\/editor\?preset=pixel-art$/);
 
-  // Nothing is loaded for the user: the upload area is shown.
-  // Client-side navigation: the editor is hydrated already.
-  await expect(page.getByLabel(/drop an image/i)).toBeAttached();
-  await page.getByRole("button", { name: "Try a sample image" }).click();
+  // Nothing is loaded for the visitor: the upload area is shown.
+  const input = page.getByLabel(/drop an image/i);
+  await expect(input).toBeAttached();
+  await expect(
+    page.getByRole("application", { name: /image canvas/ }),
+  ).toHaveCount(0);
 
-  // Sample 1800×1200 → 136×91, dithered right away.
-  await expect(page.getByLabel("Output size")).toHaveValue("136");
+  // Their image gets the preset, sized for it: 250×250 → 111×111.
+  await input.setInputFiles("tests/fixtures/sphere-250.png");
+  await expect(page.getByLabel("Output size")).toHaveValue("111");
+  await expect(page.getByRole("combobox", { name: "Algorithm" })).toHaveText(
+    "Bayer 2×2",
+  );
   await expect(page.getByRole("combobox", { name: "Palette" })).toContainText(
     "PICO-8",
   );
@@ -99,8 +106,13 @@ test("the hero steps through algorithms and palettes", async ({ page }) => {
     "/editor?sample=1&algorithm=floyd-steinberg",
   );
 
+  // 1-bit isn't a palette, so the counter only numbers the presets.
+  const palettes = hero.getByRole("group", { name: "Palette" });
+  await expect(palettes).toContainText("--/17");
+
   await hero.getByRole("button", { name: "Next palette" }).click();
   await hero.getByRole("button", { name: "Previous algorithm" }).click();
+  await expect(palettes).toContainText("Game Boy01/17");
 
   // Previous from the first algorithm wraps to the last.
   await expect(
@@ -148,4 +160,16 @@ test("the footer links to Ko-fi in a new tab", async ({ page }) => {
     await expect(link).toHaveAttribute("href", "https://ko-fi.com/m4rcone");
     await expect(link).toHaveAttribute("target", "_blank");
   }
+});
+
+test("the footer links palettes to their own pages", async ({ page }) => {
+  await page.goto("/");
+  const footer = page.getByRole("contentinfo");
+  await expect(
+    footer.getByRole("link", { name: "Game Boy", exact: true }),
+  ).toHaveAttribute("href", "/palettes/game-boy");
+  // A palette without a page still lands on its gallery card.
+  await expect(
+    footer.getByRole("link", { name: "Grayscale 4", exact: true }),
+  ).toHaveAttribute("href", "/palettes#palette-grayscale-4");
 });

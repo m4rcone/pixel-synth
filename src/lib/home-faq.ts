@@ -1,4 +1,5 @@
 import { EXPORT_FACTORS } from "@/lib/editor/export";
+import { PIXEL_ART_LINK } from "@/lib/editor/pixel-art";
 import type { FaqEntry } from "@/lib/faq";
 import { siteConfig } from "@/lib/site";
 import { MAX_PALETTE_COLORS, MIN_PALETTE_COLORS } from "@/lib/palettes";
@@ -41,7 +42,7 @@ export const HOME_FAQ: FaqEntry[] = [
       "Choose the ",
       { text: "Game Boy palette", href: "/palettes/game-boy" },
       ", or apply the ",
-      { text: "pixel art preset", href: "/editor?preset=pixel-art" },
+      { text: "pixel art preset", href: PIXEL_ART_LINK },
       " and switch its palette to Game Boy.",
     ],
   },

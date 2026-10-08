@@ -18,7 +18,6 @@ async function upload(page: Page) {
 test("renders a dithered image and offers a download", async ({ page }) => {
   await page.goto("/editor");
   await upload(page);
-  await page.getByRole("button", { name: "Dither image" }).click();
   await expect(page.locator('[aria-live="polite"]')).toContainText(
     "Rendered image is ready",
   );
@@ -55,7 +54,6 @@ test("a render worker that fails to load falls back to the main thread", async (
   await page.route(/worker/i, (route) => route.abort());
   await page.goto("/editor");
   await upload(page);
-  await page.getByRole("button", { name: "Dither image" }).click();
   await expect(page.locator('[aria-live="polite"]')).toContainText(
     "Rendered image is ready",
   );
@@ -94,14 +92,13 @@ test("an image can be pasted from the clipboard", async ({ page }) => {
   }, PNG_BASE64);
 
   await expect(
-    page.getByRole("application", { name: "Original image canvas" }),
+    page.getByRole("application", { name: "Processed image canvas" }),
   ).toBeVisible();
 });
 
 test("split view compares original and processed", async ({ page }) => {
   await page.goto("/editor");
   await upload(page);
-  await page.getByRole("button", { name: "Dither image" }).click();
 
   const split = page.getByRole("button", { name: "Split before and after" });
   await split.click();
@@ -164,7 +161,6 @@ test("palette mode dithers to a preset and names the export", async ({
   await page.goto("/editor");
   await page.waitForLoadState("networkidle");
   await page.getByLabel(/drop an image/i).setInputFiles(SPHERE);
-  await page.getByRole("button", { name: "Dither image" }).click();
 
   await page.getByRole("button", { name: "Palette", exact: true }).click();
   await page.getByRole("combobox", { name: "Palette" }).click();
@@ -191,7 +187,6 @@ test("CMYK mode screens each ink at its angle and names the export", async ({
   await page.goto("/editor?algorithm=halftone");
   await page.waitForLoadState("networkidle");
   await page.getByLabel(/drop an image/i).setInputFiles(SPHERE);
-  await page.getByRole("button", { name: "Dither image" }).click();
   await page.getByRole("button", { name: "CMYK", exact: true }).click();
 
   const inks = page.getByRole("list", { name: "Inks" });
@@ -323,7 +318,7 @@ test("the empty editor loads the sample image", async ({ page }) => {
   await page.getByRole("button", { name: "Try a sample image" }).click();
 
   await expect(
-    page.getByRole("application", { name: "Original image canvas" }),
+    page.getByRole("application", { name: "Processed image canvas" }),
   ).toBeVisible();
   await expect(page.getByLabel("Output size")).toHaveValue("1800");
 });
@@ -382,10 +377,10 @@ test("the palettes page link applies the full pixel art preset", async ({
   await page.waitForLoadState("networkidle");
   await page.getByRole("link", { name: "Try the pixel art preset" }).click();
   await expect(page).toHaveURL(/\/editor\?preset=pixel-art$/);
-  await page.waitForLoadState("networkidle");
+  // The visitor picks the image: here, the sample.
   await page.getByRole("button", { name: "Try a sample image" }).click();
 
-  // Sample 1800×1200 → 136×91, dithered right away.
+  // Sample 1800×1200 → 136×91, rendered on arrival.
   await expect(page.getByLabel("Output size")).toHaveValue("136");
   await expect(
     page.getByRole("button", { name: "Reset", exact: true }),
@@ -401,7 +396,6 @@ test("the palettes page link applies the full pixel art preset", async ({
 test("1-bit mode names its dot colors", async ({ page }) => {
   await page.goto("/editor");
   await upload(page);
-  await page.getByRole("button", { name: "Dither image" }).click();
 
   await expect(
     page.getByRole("button", { name: "1-bit", exact: true }),
@@ -420,7 +414,7 @@ test("?sample=1 opens the editor on the sample image", async ({ page }) => {
   await page.goto("/editor?sample=1");
 
   await expect(
-    page.getByRole("application", { name: "Original image canvas" }),
+    page.getByRole("application", { name: "Processed image canvas" }),
   ).toBeVisible();
   await expect(page.getByLabel("Output size")).toHaveValue("1800");
 });
@@ -446,7 +440,6 @@ test("'Report a bug' carries the settings, never the image", async ({
   await page.goto("/editor?algorithm=atkinson");
   await page.waitForLoadState("networkidle");
   await page.getByLabel(/drop an image/i).setInputFiles(SPHERE);
-  await page.getByRole("button", { name: "Dither image" }).click();
   await page.getByRole("button", { name: "Editor help" }).click();
 
   const href = await page
@@ -473,7 +466,9 @@ test("a settings link reopens the editor with the same look", async ({
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   }
   await page.goto("/editor?sample=1&algorithm=atkinson&palette=gameboy");
-  await page.getByRole("button", { name: "Dither image" }).click();
+  await expect(page.locator('[aria-live="polite"]')).toContainText(
+    "Rendered image is ready",
+  );
   const contrast = page.getByRole("slider", { name: "Contrast" });
   await contrast.focus();
   await page.keyboard.press("ArrowRight");
@@ -544,7 +539,9 @@ test("error diffusion strength shows only for diffusion algorithms", async ({
   page,
 }) => {
   await page.goto("/editor?sample=1");
-  await page.getByRole("button", { name: "Dither image" }).click();
+  await expect(page.locator('[aria-live="polite"]')).toContainText(
+    "Rendered image is ready",
+  );
 
   const diffusion = page.getByRole("slider", { name: "Error diffusion" });
   await expect(diffusion).toHaveAttribute("aria-valuetext", "100%");
@@ -556,6 +553,7 @@ test("error diffusion strength shows only for diffusion algorithms", async ({
   await page.getByRole("option", { name: "Bayer 4×4" }).click();
   await expect(diffusion).toHaveCount(0);
 
+  await page.getByText("More filters").click();
   const saturation = page.getByRole("slider", { name: "Saturation" });
   await saturation.focus();
   await page.keyboard.press("Home");
@@ -564,7 +562,6 @@ test("error diffusion strength shows only for diffusion algorithms", async ({
 
 test("halftone screens show their size, angle and shape", async ({ page }) => {
   await page.goto("/editor?sample=1&algorithm=halftone");
-  await page.getByRole("button", { name: "Dither image" }).click();
   await expect(page.locator('[aria-live="polite"]')).toContainText(
     "Rendered image is ready",
   );
@@ -626,7 +623,6 @@ test("editing the NES palette keeps all 54 colors", async ({ page }) => {
 
 test("the save dialog blocks sizes browsers can't draw", async ({ page }) => {
   await page.goto("/editor?sample=1");
-  await page.getByRole("button", { name: "Dither image" }).click();
   await page.getByRole("button", { name: "Save" }).click();
   const dialog = page.getByRole("dialog", { name: "Save image" });
 
@@ -646,7 +642,6 @@ test("a failed export says so and keeps the dialog open", async ({ page }) => {
     window.CompressionStream = undefined as never;
   });
   await page.goto("/editor?sample=1");
-  await page.getByRole("button", { name: "Dither image" }).click();
   await page.getByRole("button", { name: "Save" }).click();
   const dialog = page.getByRole("dialog", { name: "Save image" });
   await dialog.getByRole("button", { name: "Save PNG" }).click();
@@ -661,7 +656,6 @@ test("a failed export says so and keeps the dialog open", async ({ page }) => {
 
 test("exports are indexed PNGs at the smallest bit depth", async ({ page }) => {
   await page.goto("/editor?sample=1&palette=gameboy");
-  await page.getByRole("button", { name: "Dither image" }).click();
   const header = async (factor: string) => {
     await page.getByRole("button", { name: "Save", exact: true }).click();
     const dialog = page.getByRole("dialog", { name: "Save image" });
@@ -694,7 +688,6 @@ test("a transparent 1-bit background saves as a PNG with transparency", async ({
   page,
 }) => {
   await page.goto("/editor?sample=1");
-  await page.getByRole("button", { name: "Dither image" }).click();
   await page.getByRole("checkbox", { name: "Transparent" }).click();
   await expect(page.getByLabel("Background", { exact: true })).toBeDisabled();
   await expect(page.locator('[aria-live="polite"]')).toContainText(
@@ -720,7 +713,6 @@ test("after a reset, transparency toggles back to the default background", async
   page,
 }) => {
   await page.goto("/editor?sample=1");
-  await page.getByRole("button", { name: "Dither image" }).click();
   const background = page.getByLabel("Background", { exact: true });
   const transparent = page.getByRole("checkbox", { name: "Transparent" });
   await background.fill("#1e88e5");
@@ -731,7 +723,6 @@ test("after a reset, transparency toggles back to the default background", async
     .getByRole("alertdialog", { name: "Reset adjustments?" })
     .getByRole("button", { name: "Reset", exact: true })
     .click();
-  await page.getByRole("button", { name: "Dither image" }).click();
   await expect(background).toHaveValue("#000000");
 
   await transparent.click();
@@ -750,6 +741,7 @@ test("levels points can't cross and gamma sits in the middle", async ({
 }) => {
   await page.goto("/editor?sample=1");
   await expect(page.getByRole("application")).toBeVisible();
+  await page.getByText("More filters").click();
   const black = page.getByRole("slider", { name: "Black point" });
   const white = page.getByRole("slider", { name: "White point" });
   const gamma = page.getByRole("slider", { name: "Gamma" });
@@ -818,11 +810,11 @@ test("every filter changes the image, and its reset restores it exactly", async 
   page,
 }) => {
   await page.goto("/editor?sample=1");
-  await page.getByRole("button", { name: "Dither image" }).click();
   await expect(page.locator('[aria-live="polite"]')).toContainText(
     "Rendered image is ready",
   );
   const original = await canvasPrint(page);
+  await page.getByText("More filters").click();
 
   // Keys that move each slider off its default; blur needs a few steps
   // before it is visible at all.
@@ -857,7 +849,6 @@ test("every dot color control changes the image, and bands can't cross", async (
   page,
 }) => {
   await page.goto("/editor?sample=1");
-  await page.getByRole("button", { name: "Dither image" }).click();
   await expect(page.locator('[aria-live="polite"]')).toContainText(
     "Rendered image is ready",
   );
@@ -915,4 +906,121 @@ test("every dot color control changes the image, and bands can't cross", async (
   await chooseCount("3 colors");
   await expect(midtones).toHaveAttribute("aria-valuenow", "1");
   await expect(shadows).toHaveAttribute("aria-valuenow", "0");
+});
+
+test("the render worker starts with the first image, not on content pages", async ({
+  page,
+}) => {
+  await page.goto("/algorithms");
+  await page.waitForLoadState("networkidle");
+  expect(page.workers()).toHaveLength(0);
+
+  await page.goto("/editor?sample=1");
+  await expect(page.locator('[aria-live="polite"]')).toContainText(
+    "Rendered image is ready",
+  );
+  expect(page.workers().length).toBeGreaterThan(0);
+});
+
+test("on a phone the canvas stays in view while the controls scroll", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const workspace = page.getByRole("region", {
+    name: "Image editor workspace",
+  });
+  const position = () =>
+    workspace.evaluate((el) => getComputedStyle(el).position);
+  // Empty, it scrolls away like the rest: there is nothing to keep in view.
+  await page.goto("/editor");
+  expect(await position()).toBe("relative");
+
+  await page.goto("/editor?sample=1");
+  await expect(page.locator('[aria-live="polite"]')).toContainText(
+    "Rendered image is ready",
+  );
+
+  expect(await position()).toBe("sticky");
+  await page.getByText("More filters").click();
+  await page.getByRole("slider", { name: "Blur" }).scrollIntoViewIfNeeded();
+  await expect(
+    page.getByRole("application", { name: "Processed image canvas" }),
+  ).toBeInViewport();
+});
+
+test("the less used filters fold away and say when they're changed", async ({
+  page,
+}) => {
+  await page.goto("/editor?sample=1");
+  await expect(page.locator('[aria-live="polite"]')).toContainText(
+    "Rendered image is ready",
+  );
+  await expect(page.getByRole("slider", { name: "Contrast" })).toBeVisible();
+  const blur = page.getByRole("slider", { name: "Blur" });
+  await expect(blur).toBeHidden();
+
+  const more = page.getByText("More filters");
+  await more.click();
+  await blur.focus();
+  await page.keyboard.press("PageUp");
+  await more.click();
+  await expect(blur).toBeHidden();
+  await expect(
+    page.locator("summary", { hasText: "More filters" }),
+  ).toContainText("1 changed");
+});
+
+test("an image dropped anywhere on the empty canvas area loads", async ({
+  page,
+}) => {
+  await page.goto("/editor");
+  await page.waitForLoadState("networkidle");
+  const dataTransfer = await page.evaluateHandle((base64) => {
+    const data = new DataTransfer();
+    const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+    data.items.add(new File([bytes], "dropped.png", { type: "image/png" }));
+    return data;
+  }, PNG_BASE64);
+
+  // Images are scaled down to 2000 px, and the frame says so up front.
+  await expect(page.locator("#image-upload-limit")).toContainText(
+    "Max 2000 px",
+  );
+
+  // Away from the button: the formats readout along the bottom of the frame.
+  const outside = page.locator("#image-upload-description");
+  await outside.dispatchEvent("dragenter", { dataTransfer });
+  await outside.dispatchEvent("drop", { dataTransfer });
+  await expect(
+    page.getByRole("application", { name: "Processed image canvas" }),
+  ).toBeVisible();
+});
+
+test("an image loaded with a pending preset renders once", async ({ page }) => {
+  // Counts the render requests the editor sends its worker.
+  await page.addInitScript(() => {
+    const post = Worker.prototype.postMessage;
+    (window as unknown as { renders: number }).renders = 0;
+    Worker.prototype.postMessage = function (
+      this: Worker,
+      ...args: Parameters<Worker["postMessage"]>
+    ) {
+      if ((args[0] as { type?: string })?.type === "render") {
+        (window as unknown as { renders: number }).renders += 1;
+      }
+      return post.apply(this, args);
+    } as Worker["postMessage"];
+  });
+  await page.goto("/editor?preset=pixel-art");
+  await page.waitForLoadState("networkidle");
+  await page.getByRole("button", { name: "Try a sample image" }).click();
+  await expect(page.locator('[aria-live="polite"]')).toContainText(
+    "Rendered image is ready",
+  );
+  await expect(page.getByLabel("Output size")).toHaveValue("136");
+  expect(
+    await page.evaluate(
+      () => (window as unknown as { renders: number }).renders,
+    ),
+  ).toBe(1);
 });

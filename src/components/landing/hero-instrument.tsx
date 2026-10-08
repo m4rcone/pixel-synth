@@ -56,6 +56,12 @@ export function HeroInstrument({
 
   const algorithm = algorithms[algorithmIndex];
   const palette = palettes[paletteIndex];
+  // 1-bit is the default mode, not a palette: it isn't numbered or counted,
+  // so the counter agrees with the palette count quoted across the site.
+  const presets = palettes.filter((p) => p.param);
+  const palettePosition = palette.param
+    ? `${pad(presets.indexOf(palette) + 1, 2)}/${pad(presets.length, 2)}`
+    : `--/${pad(presets.length, 2)}`;
   const variant = (a: number, p: number) =>
     variantPattern
       .replace("{algorithm}", algorithms[wrap(a, algorithms.length)].id)
@@ -129,8 +135,7 @@ export function HeroInstrument({
           label="Algorithm"
           noun="algorithm"
           value={algorithm.name}
-          index={algorithmIndex}
-          count={algorithms.length}
+          position={`${pad(algorithmIndex + 1, 2)}/${pad(algorithms.length, 2)}`}
           onStep={(step) =>
             setAlgorithmIndex((i) => wrap(i + step, algorithms.length))
           }
@@ -139,8 +144,7 @@ export function HeroInstrument({
           label="Palette"
           noun="palette"
           value={palette.name}
-          index={paletteIndex}
-          count={palettes.length}
+          position={palettePosition}
           onStep={(step) =>
             setPaletteIndex((i) => wrap(i + step, palettes.length))
           }
@@ -170,15 +174,14 @@ function Stepper({
   label,
   noun,
   value,
-  index,
-  count,
+  position,
   onStep,
 }: {
   label: string;
   noun: string;
   value: string;
-  index: number;
-  count: number;
+  /** Counter shown after the value, like `03/17`. */
+  position: string;
   onStep: (step: -1 | 1) => void;
 }) {
   return (
@@ -205,7 +208,7 @@ function Stepper({
         >
           <span className="truncate text-sm font-semibold">{value}</span>
           <span className="text-readout text-paper-dim shrink-0">
-            {pad(index + 1, 2)}/{pad(count, 2)}
+            {position}
           </span>
         </output>
         <button

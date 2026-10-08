@@ -7,7 +7,8 @@ import {
   AlgorithmPseudocode,
 } from "@/components/algorithm-method";
 import { CompareSlider } from "@/components/compare-slider";
-import { FaqList, RichText, textLink } from "@/components/faq-list";
+import { FaqList, RichText } from "@/components/faq-list";
+import { textLink } from "@/components/ui/link-styles";
 import { GlobalHeader } from "@/components/global-header";
 import { SiteFooter } from "@/components/site-footer";
 import { StructuredData } from "@/components/structured-data";
@@ -29,6 +30,7 @@ import {
   absoluteUrl,
   breadcrumbStructuredData,
   pageMetadata,
+  pageUpdated,
   siteConfig,
 } from "@/lib/site";
 
@@ -102,7 +104,7 @@ export default async function AlgorithmPage({
         name: siteConfig.creator,
         url: siteConfig.links.github,
       },
-      dateModified: siteConfig.updated,
+      dateModified: pageUpdated(path, guide.updated),
     },
     breadcrumbStructuredData([
       { name: "Algorithms", path: "/algorithms" },

@@ -39,8 +39,7 @@ export type RenderOptions = {
  *
  *   source → (downscale) → filters → dither (mono + tone map | palette | CMYK)
  *
- * Without `dither`, only the filters are applied (live preview before the
- * user commits to dithering).
+ * Without `dither`, only the filters are applied.
  */
 export function renderPixels(
   source: Pixels,

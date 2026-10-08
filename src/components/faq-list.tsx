@@ -1,10 +1,7 @@
 import Link from "next/link";
 import type { FaqEntry, FaqPart } from "@/lib/faq";
 
-const focusRing =
-  "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-safelight";
-
-export const textLink = `text-paper hover:text-paper-hot hover:decoration-paper-hot decoration-line-strong underline underline-offset-4 transition-colors ${focusRing}`;
+import { focusRing, textLink } from "@/components/ui/link-styles";
 
 /** Collapsible questions; build the FAQPage data from the same entries. */
 export function FaqList({ faq }: { faq: FaqEntry[] }) {

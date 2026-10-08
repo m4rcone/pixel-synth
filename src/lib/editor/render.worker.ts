@@ -18,7 +18,6 @@ export type WorkerRequest =
       type: "render";
       id: number;
       settings: EditorSettings;
-      dither: boolean;
       order: number[];
     }
   | { type: "decode-gif"; id: number; bytes: Uint8Array<ArrayBuffer> }
@@ -90,7 +89,6 @@ function fail(id: number, error: unknown) {
 async function render({
   id,
   settings,
-  dither,
   order,
 }: Extract<WorkerRequest, { type: "render" }>) {
   latestRender = id;
@@ -98,8 +96,9 @@ async function render({
   if (!source.length) throw new Error("No source image");
   const animated = source.length > 1;
   // One palette for every frame ("From image" would differ per frame).
-  const palette =
-    animated && dither ? resolveAnimationPalette(source, settings) : undefined;
+  const palette = animated
+    ? resolveAnimationPalette(source, settings)
+    : undefined;
 
   for (let n = 0; n < order.length; n++) {
     // Yield before every frame, the first too: a newer request already in the
@@ -107,7 +106,10 @@ async function render({
     await tick();
     if (latestRender !== id) return post({ type: "cancelled", id });
     const index = order[n];
-    const result = renderPixels(source[index], settings, { dither, palette });
+    const result = renderPixels(source[index], settings, {
+      dither: true,
+      palette,
+    });
     post(
       { type: "frame", id, index, result, done: n + 1, total: order.length },
       [result.pixels.data.buffer],

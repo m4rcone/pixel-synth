@@ -48,7 +48,7 @@ const TIPS = [
   },
   {
     title: "Animated GIF",
-    body: "Plays in the canvas. Once dithered, every frame shares one palette; save it as an animated GIF, or the shown frame as a PNG. Bayer and Blue Noise stay steady from frame to frame.",
+    body: "Plays in the canvas. Every frame shares one palette; save it as an animated GIF, or the shown frame as a PNG. Bayer and Blue Noise stay steady from frame to frame.",
   },
   {
     title: "Restore defaults",

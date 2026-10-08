@@ -76,7 +76,7 @@ export function ColorControls() {
   const { status, settings } = useEditorState();
   const { update, commit } = useEditorActions();
   const disabled = status === "empty";
-  const apply = status === "dithered" ? commit : update;
+  const apply = status === "ready" ? commit : update;
   const setColor = (patch: Partial<ColorSettings>) =>
     apply(({ color }) => ({ color: { ...color, ...patch } }));
 
@@ -202,7 +202,7 @@ function PaletteControls({
             setImported("");
             setColor({ custom });
           }}
-          render={status === "dithered" ? () => commit() : undefined}
+          render={status === "ready" ? () => commit() : undefined}
         />
       )}
 

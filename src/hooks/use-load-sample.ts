@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { useEditorActions } from "@/contexts/editor-context";
 import { ImageLoadError } from "@/lib/editor/load-image";
 import { ANIMATED_SAMPLE, SAMPLE_IMAGE } from "@/lib/samples";
+import { track } from "@/lib/track";
 
 export type SampleKind = "still" | "animated";
 
@@ -26,14 +27,17 @@ export function useLoadSample() {
         const response = await fetch(sample.src);
         if (!response.ok) throw new Error(String(response.status));
         const blob = await response.blob();
-        load(
-          await readImage(
-            new File([blob], sample.name, {
-              type:
-                blob.type || (kind === "animated" ? "image/gif" : "image/png"),
-            }),
-          ),
+        const image = await readImage(
+          new File([blob], sample.name, {
+            type:
+              blob.type || (kind === "animated" ? "image/gif" : "image/png"),
+          }),
         );
+        load(image);
+        track("image_loaded", {
+          source: kind === "animated" ? "sample_animated" : "sample",
+          animated: !!image.animation,
+        });
       } catch (error) {
         setError(
           error instanceof ImageLoadError
