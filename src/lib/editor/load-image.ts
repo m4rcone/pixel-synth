@@ -30,13 +30,21 @@ export const SUPPORTED_IMAGE_TYPES = [
   "image/bmp",
 ] as const;
 
-export const SUPPORTED_FORMATS_LABEL = "PNG, JPEG, WebP, GIF, AVIF or BMP";
-
-/** The formats, noting that GIFs may be animated. */
-export const SUPPORTED_FORMATS_DETAIL = SUPPORTED_FORMATS_LABEL.replace(
+/** Display names of the supported formats, in the order above. */
+export const SUPPORTED_FORMAT_NAMES = [
+  "PNG",
+  "JPEG",
+  "WebP",
   "GIF",
-  "GIF (animated too)",
-);
+  "AVIF",
+  "BMP",
+];
+
+/** The formats as prose: "PNG, JPEG, WebP, GIF, AVIF or BMP". */
+const SUPPORTED_FORMATS_LABEL = `${SUPPORTED_FORMAT_NAMES.slice(0, -1).join(", ")} or ${SUPPORTED_FORMAT_NAMES.at(-1)}`;
+
+/** The formats as a compact readout: "PNG · JPEG · … · BMP". */
+export const SUPPORTED_FORMATS_SHORT = SUPPORTED_FORMAT_NAMES.join(" · ");
 
 export class ImageLoadError extends Error {}
 

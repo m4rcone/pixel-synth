@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { FaqList, RichText, textLink } from "@/components/faq-list";
+import { FaqList, RichText } from "@/components/faq-list";
+import { textLink } from "@/components/ui/link-styles";
 import {
   PaletteVariants,
   VariantCompare,
@@ -39,6 +40,7 @@ import {
   absoluteUrl,
   breadcrumbStructuredData,
   pageMetadata,
+  pageUpdated,
   siteConfig,
 } from "@/lib/site";
 
@@ -115,7 +117,7 @@ export default async function PaletteGuidePage({
         name: siteConfig.creator,
         url: siteConfig.links.github,
       },
-      dateModified: siteConfig.updated,
+      dateModified: pageUpdated(path, guide.updated),
     },
     breadcrumbStructuredData([
       { name: "Palettes", path: "/palettes" },
@@ -185,7 +187,9 @@ export default async function PaletteGuidePage({
                 <Meta label="Year">
                   <span className="text-readout">{guide.facts.year}</span>
                 </Meta>
-                <Meta label="Hardware">{guide.facts.hardware}</Meta>
+                <Meta label={guide.facts.label ?? "Hardware"}>
+                  {guide.facts.hardware}
+                </Meta>
                 <Meta label="Match">{MATCH_LABEL[main.match]}</Meta>
               </dl>
 

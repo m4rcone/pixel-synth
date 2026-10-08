@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { StructuredData } from "@/components/structured-data";
 import { Button } from "@/components/ui/button";
 import extractedColors from "@/data/sample-extracted-palette.json";
+import { PIXEL_ART_LINK } from "@/lib/editor/pixel-art";
 import { guideForPalette, paletteHref } from "@/lib/palette-guides";
 import {
   MAX_PALETTE_COLORS,
@@ -156,9 +157,7 @@ export default function PalettesPage() {
               Save it at ×4 or ×8 and every pixel stays a crisp block.
             </p>
             <Button asChild className="self-start">
-              <Link href="/editor?preset=pixel-art">
-                Try the pixel art preset
-              </Link>
+              <Link href={PIXEL_ART_LINK}>Try the pixel art preset</Link>
             </Button>
           </div>
         </section>

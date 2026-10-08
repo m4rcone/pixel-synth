@@ -12,12 +12,9 @@ const SECTIONS: {
   Controls: () => React.ReactNode;
 }[] = [
   { id: "dither", title: "Dither", Controls: DitherControls },
-  {
-    id: "filters",
-    title: "Filters",
-    Controls: FilterControls,
-  },
+  // Color shapes the look most, so it comes before the fine-tuning filters.
   { id: "color", title: "Color", Controls: ColorControls },
+  { id: "filters", title: "Filters", Controls: FilterControls },
 ];
 
 /**
@@ -66,9 +63,7 @@ export function ControlPanel({ className }: { className?: string }) {
         ))}
       </div>
 
-      <footer className="border-line bg-ink-raised sticky bottom-0 border-t p-3 lg:static">
-        <ControlPanelActions />
-      </footer>
+      <ControlPanelActions />
     </section>
   );
 }

@@ -12,6 +12,7 @@ import {
   type AlgorithmId,
 } from "@/lib/algorithms";
 import type { FaqEntry, FaqPart } from "@/lib/faq";
+import { PIXEL_ART_LINK } from "@/lib/editor/pixel-art";
 import { paletteHref } from "@/lib/palette-guides";
 
 export type AlgorithmGuide = {
@@ -31,6 +32,8 @@ export type AlgorithmGuide = {
   /** Comparison rows: this algorithm first, then three others. */
   compare: { slug: AlgorithmId; look: string }[];
   faq: FaqEntry[];
+  /** Last meaningful update (YYYY-MM-DD), when newer than the site's. */
+  updated?: string;
 };
 
 const algo = (slug: AlgorithmId, text?: string): FaqPart => ({
@@ -389,7 +392,7 @@ export const ALGORITHM_GUIDES: Record<AlgorithmId, AlgorithmGuide> = {
       bestFor: ["quick previews, very large images and fast iteration."],
       worksWith: [
         "low-resolution pixel art, where each dot is big, like the ",
-        { text: "pixel art preset", href: "/editor?preset=pixel-art" },
+        { text: "pixel art preset", href: PIXEL_ART_LINK },
         ".",
       ],
       watchOut: [

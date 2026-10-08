@@ -47,8 +47,8 @@ export function DitherControls() {
   const { update, commit } = useEditorActions();
   const applyPixelArt = usePixelArtPreset();
   const disabled = status === "empty";
-  // Algorithm and scale only affect the output once dithering is applied.
-  const apply = status === "dithered" ? commit : update;
+  // Before an image loads, settings are stored and rendered on arrival.
+  const apply = status === "ready" ? commit : update;
   const category =
     settings.algorithm !== "none"
       ? getAlgorithm(settings.algorithm)?.category

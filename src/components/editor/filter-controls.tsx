@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronRight } from "lucide-react";
 import { useEditorActions, useEditorState } from "@/contexts/editor-context";
 import {
   DEFAULT_FILTERS,
@@ -43,7 +44,19 @@ const gammaScale = {
     ),
 };
 
-const FILTER_FIELDS: FilterField[] = [
+/** Shown at all times: the three that change a dither the most often. */
+const MAIN_FIELDS: FilterField[] = [
+  { key: "contrast", label: "Contrast" },
+  {
+    key: "brightness",
+    label: "Brightness",
+    format: (v) => decimals(v - 1),
+  },
+  { key: "gamma", label: "Gamma", format: decimals, scale: gammaScale },
+];
+
+/** Behind "More filters": levels points, color and texture. */
+const MORE_FIELDS: FilterField[] = [
   {
     key: "blackPoint",
     label: "Black point",
@@ -51,19 +64,12 @@ const FILTER_FIELDS: FilterField[] = [
     format: String,
     limit: (v, f) => Math.min(v, f.whitePoint - 1),
   },
-  { key: "gamma", label: "Gamma", format: decimals, scale: gammaScale },
   {
     key: "whitePoint",
     label: "White point",
     step: 1,
     format: String,
     limit: (v, f) => Math.max(v, f.blackPoint + 1),
-  },
-  { key: "contrast", label: "Contrast" },
-  {
-    key: "brightness",
-    label: "Brightness",
-    format: (v) => decimals(v - 1),
   },
   {
     key: "saturation",
@@ -82,45 +88,61 @@ export function FilterControls() {
   const { update, commit } = useEditorActions();
   const disabled = status === "empty";
 
-  // Filters preview immediately, even before dithering is applied. Limits
-  // apply to the latest filters, as the update runs.
+  // Limits apply to the latest filters, as the update runs.
   const setFilter =
     (key: keyof Filters, value: number, limit?: FilterField["limit"]) =>
     ({ filters }: { filters: Filters }) => ({
       filters: { ...filters, [key]: limit ? limit(value, filters) : value },
     });
 
+  const field = ({
+    key,
+    label,
+    step = 0.01,
+    format = decimals,
+    scale = identity,
+    limit,
+  }: FilterField) => (
+    <SliderField
+      key={key}
+      id={`filter-${key}`}
+      label={label}
+      value={scale.toSlider(settings.filters[key])}
+      defaultValue={scale.toSlider(DEFAULT_FILTERS[key])}
+      min={scale.toSlider(FILTER_LIMITS[key].min)}
+      max={scale.toSlider(FILTER_LIMITS[key].max)}
+      step={step}
+      disabled={disabled}
+      format={(position) => format(scale.fromSlider(position))}
+      onChange={(position) =>
+        update(setFilter(key, scale.fromSlider(position), limit))
+      }
+      onCommit={(position) =>
+        commit(setFilter(key, scale.fromSlider(position), limit))
+      }
+    />
+  );
+  // Said on the closed disclosure, so hidden changes are never a surprise.
+  const changed = MORE_FIELDS.filter(
+    ({ key }) => settings.filters[key] !== DEFAULT_FILTERS[key],
+  ).length;
+
   return (
     <div className="flex flex-col gap-3">
-      {FILTER_FIELDS.map(
-        ({
-          key,
-          label,
-          step = 0.01,
-          format = decimals,
-          scale = identity,
-          limit,
-        }) => (
-          <SliderField
-            key={key}
-            id={`filter-${key}`}
-            label={label}
-            value={scale.toSlider(settings.filters[key])}
-            defaultValue={scale.toSlider(DEFAULT_FILTERS[key])}
-            min={scale.toSlider(FILTER_LIMITS[key].min)}
-            max={scale.toSlider(FILTER_LIMITS[key].max)}
-            step={step}
-            disabled={disabled}
-            format={(position) => format(scale.fromSlider(position))}
-            onChange={(position) =>
-              update(setFilter(key, scale.fromSlider(position), limit))
-            }
-            onCommit={(position) =>
-              commit(setFilter(key, scale.fromSlider(position), limit))
-            }
+      {MAIN_FIELDS.map(field)}
+      <details className="group">
+        <summary className="text-label text-paper-dim hover:text-paper-hot focus-visible:ring-safelight flex h-8 cursor-pointer list-none items-center gap-2 transition-colors focus-visible:ring-2 focus-visible:outline-hidden">
+          <ChevronRight
+            aria-hidden="true"
+            className="size-3.5 transition-transform group-open:rotate-90 motion-reduce:transition-none"
           />
-        ),
-      )}
+          More filters
+          {changed > 0 && (
+            <span className="text-paper ml-auto">{changed} changed</span>
+          )}
+        </summary>
+        <div className="flex flex-col gap-3 pt-2">{MORE_FIELDS.map(field)}</div>
+      </details>
     </div>
   );
 }

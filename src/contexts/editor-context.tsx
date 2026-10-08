@@ -2,6 +2,7 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -15,13 +16,14 @@ import { loadImageFile, type SourceImage } from "@/lib/editor/load-image";
 import { HEX_COLOR, type Pixels } from "@/lib/editor/pixels";
 import { RenderCancelledError, RenderClient } from "@/lib/editor/render-client";
 import { DEFAULT_SETTINGS, type EditorSettings } from "@/lib/editor/settings";
+import { track } from "@/lib/track";
 
 /**
  * - `empty`: no image loaded.
- * - `loaded`: image loaded; filter changes preview without dithering.
- * - `dithered`: dithering applied; every setting change re-renders.
+ * - `ready`: image loaded and rendered on arrival; every committed setting
+ *   change re-renders.
  */
-export type EditorStatus = "empty" | "loaded" | "dithered";
+export type EditorStatus = "empty" | "ready";
 
 type EditorState = {
   status: EditorStatus;
@@ -53,13 +55,24 @@ type SettingsUpdate =
   | Partial<EditorSettings>
   | ((settings: EditorSettings) => Partial<EditorSettings>);
 
+/**
+ * Settings to apply together with the next image loaded, sized for it (the
+ * pixel art preset of a `?preset=` link). `name` is reported to analytics.
+ */
+export type NextLoadSettings = {
+  name: string;
+  settings: (
+    settings: EditorSettings,
+    size: { width: number; height: number },
+  ) => Partial<EditorSettings>;
+};
+
 type Action =
-  | { type: "load"; source: SourceImage }
+  | { type: "load"; source: SourceImage; next: NextLoadSettings | null }
   | { type: "discard" }
   | { type: "reset" }
   | { type: "update"; update: SettingsUpdate; render: boolean }
   | { type: "render" }
-  | { type: "applyDither" }
   | { type: "renderStart" }
   | {
       type: "renderDone";
@@ -104,14 +117,22 @@ const CUSTOM_PALETTE_KEY = "pixelsynth:custom-palette";
 
 function reducer(state: EditorState, action: Action): EditorState {
   switch (action.type) {
-    case "load":
+    case "load": {
+      const { width, height } = action.source.pixels;
       return {
         ...initialState,
-        settings: state.settings,
-        status: "loaded",
+        // Applied here, so the image's first render already uses them.
+        settings: action.next
+          ? {
+              ...state.settings,
+              ...action.next.settings(state.settings, { width, height }),
+            }
+          : state.settings,
+        status: "ready",
         source: action.source,
-        renderRequest: state.renderRequest,
+        renderRequest: state.renderRequest + 1,
       };
+    }
     case "discard":
       return {
         ...initialState,
@@ -121,14 +142,11 @@ function reducer(state: EditorState, action: Action): EditorState {
     case "reset":
       return {
         ...state,
-        status: state.source ? "loaded" : "empty",
-        result: null,
-        resultFrames: null,
-        resultPalette: null,
         settings: keepCustomPalette(DEFAULT_SETTINGS, state.settings),
-        isRendering: false,
-        renderProgress: null,
         error: null,
+        renderRequest: state.source
+          ? state.renderRequest + 1
+          : state.renderRequest,
       };
     case "update": {
       const partial =
@@ -145,12 +163,6 @@ function reducer(state: EditorState, action: Action): EditorState {
     }
     case "render":
       return { ...state, renderRequest: state.renderRequest + 1 };
-    case "applyDither":
-      return {
-        ...state,
-        status: "dithered",
-        renderRequest: state.renderRequest + 1,
-      };
     case "renderStart":
       return { ...state, isRendering: true, error: null };
     case "renderDone":
@@ -204,13 +216,14 @@ type EditorActions = {
    */
   readImage: (file: File) => Promise<SourceImage>;
   load: (source: SourceImage) => void;
+  /** Sets (or with null, clears) settings for the next image loaded. */
+  setNextLoadSettings: (next: NextLoadSettings | null) => void;
   discard: () => void;
   reset: () => void;
   /** Change settings without rendering (e.g. while a slider is dragged). */
   update: (update: SettingsUpdate) => void;
   /** Change settings and render the result. */
   commit: (update?: SettingsUpdate) => void;
-  applyDither: () => void;
   setError: (error: string | null) => void;
   /** Encodes rendered animation frames as a GIF in the render worker. */
   encodeGif: (
@@ -221,17 +234,15 @@ type EditorActions = {
 };
 
 /**
- * The processed image for a frame: the still result, a dithered animation's
- * frame, or the filter preview when it was rendered for this frame. Null
- * when that frame has no render (yet).
+ * The processed image for a frame: the still result or an animation's
+ * frame. Null when that frame has no render (yet).
  */
 export function frameResult(
-  { source, result, resultFrames, resultIndex }: EditorState,
+  { source, result, resultFrames }: EditorState,
   frame: number,
 ): ImageBitmap | null {
   if (!source?.animation) return result;
-  if (resultFrames) return resultFrames[frame] ?? null;
-  return resultIndex === frame ? result : null;
+  return resultFrames?.[frame] ?? null;
 }
 
 const EditorStateContext = createContext<EditorState | undefined>(undefined);
@@ -243,17 +254,27 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const latestRender = useRef(0);
   const renderer = useRef<RenderClient | null>(null);
-  const { frame, setFrame, playing, setPlaying } = useCanvasContext();
+  const nextLoad = useRef<NextLoadSettings | null>(null);
+  const { frame, setFrame, setPlaying } = useCanvasContext();
   // Read when a render starts, without re-running the render effect.
   const shownFrame = useRef(frame);
   useEffect(() => {
     shownFrame.current = frame;
   }, [frame]);
 
-  useEffect(() => {
-    renderer.current = new RenderClient();
-    return () => renderer.current?.dispose();
-  }, []);
+  // Started on first use: the studio's content pages share this provider and
+  // never need the worker.
+  const getRenderer = useCallback(
+    () => (renderer.current ??= new RenderClient()),
+    [],
+  );
+  useEffect(
+    () => () => {
+      renderer.current?.dispose();
+      renderer.current = null;
+    },
+    [],
+  );
 
   const actions = useMemo<EditorActions>(() => {
     // Invalidate in-flight renders so they cannot publish over a new state.
@@ -262,14 +283,20 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     };
 
     return {
-      readImage: (file) => loadImageFile(file, renderer.current ?? undefined),
+      readImage: (file) => loadImageFile(file, getRenderer()),
       load: (source) => {
         cancelRenders();
         shownFrame.current = 0;
         setFrame(0);
         // Playback starts paused for people who prefer reduced motion.
         setPlaying(!!source.animation && !prefersReducedMotion());
-        dispatch({ type: "load", source });
+        const next = nextLoad.current;
+        nextLoad.current = null;
+        dispatch({ type: "load", source, next });
+        if (next) track("preset_applied", { preset: next.name });
+      },
+      setNextLoadSettings: (next) => {
+        nextLoad.current = next;
       },
       discard: () => {
         cancelRenders();
@@ -285,14 +312,11 @@ export function EditorProvider({ children }: { children: ReactNode }) {
         update
           ? dispatch({ type: "update", update, render: true })
           : dispatch({ type: "render" }),
-      applyDither: () => dispatch({ type: "applyDither" }),
       setError: (error) => dispatch({ type: "setError", error }),
       encodeGif: (frames, factor, onProgress) => {
         const animation = sourceRef.current?.animation;
-        if (!animation || !renderer.current) {
-          return Promise.reject(new Error("No animation"));
-        }
-        return renderer.current.encodeGif(
+        if (!animation) return Promise.reject(new Error("No animation"));
+        return getRenderer().encodeGif(
           frames,
           animation.delays,
           animation.loop,
@@ -301,7 +325,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
         );
       },
     };
-  }, [setFrame, setPlaying]);
+  }, [getRenderer, setFrame, setPlaying]);
 
   const { renderRequest, source, status, settings, result, resultFrames } =
     state;
@@ -346,12 +370,12 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   // The worker keeps its own copy of the source pixels (every frame).
   useEffect(() => {
     if (!source) return;
-    renderer.current?.setSource(source.animation?.frames ?? [source.pixels]);
+    getRenderer().setSource(source.animation?.frames ?? [source.pixels]);
     return () => {
       source.bitmap.close();
       source.animation?.bitmaps.forEach((bitmap) => bitmap.close());
     };
-  }, [source]);
+  }, [source, getRenderer]);
 
   // Free rendered bitmaps' GPU memory once no state refers to them (an
   // animation's `result` is also one of its `resultFrames`).
@@ -366,30 +390,13 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     liveBitmaps.current = live;
   }, [result, resultFrames]);
 
-  // Before dithering, an animation previews filters on the paused frame
-  // only: render the newly shown frame when it changes.
-  const { resultIndex } = state;
-  useEffect(() => {
-    if (
-      status === "loaded" &&
-      source?.animation &&
-      !playing &&
-      result &&
-      resultIndex !== frame
-    ) {
-      dispatch({ type: "render" });
-    }
-    // Only a frame change (or pausing) asks for a new preview.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [frame, playing]);
-
   // Renders run after the state update that requested them, so they always
   // see the latest settings. Only the most recent render may publish a result.
   useEffect(() => {
     if (renderRequest === 0 || !source || status === "empty") return;
 
     const id = ++latestRender.current;
-    const client = renderer.current!;
+    const client = getRenderer();
     const animation = source.animation;
     const shown = animation ? shownFrame.current : 0;
     const isLatest = () => id === latestRender.current;
@@ -405,10 +412,9 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     };
     dispatch({ type: "renderStart" });
 
-    // A still image, or one frame of an animation before dithering.
-    if (!animation || status !== "dithered") {
+    if (!animation) {
       client
-        .render(settings, status === "dithered", shown)
+        .render(settings)
         .then(async ({ pixels, palette }) => ({
           bitmap: await toBitmap(pixels),
           palette,
@@ -456,7 +462,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     };
 
     client
-      .renderFrames(settings, true, order, (index, result, done, total) => {
+      .renderFrames(settings, order, (index, result, done, total) => {
         palette = result.palette;
         // Chained so frames publish in the order they were rendered.
         conversions = conversions.then(async () => {

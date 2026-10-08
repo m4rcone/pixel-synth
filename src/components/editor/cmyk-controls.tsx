@@ -14,7 +14,7 @@ export function CmykControls() {
   const { status, settings } = useEditorState();
   const { update, commit } = useEditorActions();
   const disabled = status === "empty";
-  const apply = status === "dithered" ? commit : update;
+  const apply = status === "ready" ? commit : update;
   const screens =
     settings.algorithm !== "none" &&
     getAlgorithm(settings.algorithm)?.category === "screen";

@@ -12,6 +12,9 @@ import type {
 /** A render replaced by a newer one (or a new source) before it finished. */
 export class RenderCancelledError extends Error {}
 
+/** The worker failed to load or crashed while a request was in flight. */
+class WorkerFailedError extends Error {}
+
 type FrameCallback = (
   index: number,
   result: RenderResult,
@@ -81,7 +84,7 @@ export class RenderClient {
       console.error("Render worker failed", event.message || event);
       this.worker?.terminate();
       this.worker = null;
-      this.rejectPending(new Error("Render worker failed"));
+      this.rejectPending(new WorkerFailedError("Render worker failed"));
     };
   }
 
@@ -92,13 +95,9 @@ export class RenderClient {
   }
 
   /** Renders one frame (the only one of a still image). */
-  async render(
-    settings: EditorSettings,
-    dither: boolean,
-    frame = 0,
-  ): Promise<RenderResult> {
+  async render(settings: EditorSettings, frame = 0): Promise<RenderResult> {
     let result: RenderResult | null = null;
-    await this.renderFrames(settings, dither, [frame], (_, r) => (result = r));
+    await this.renderFrames(settings, [frame], (_, r) => (result = r));
     return result!;
   }
 
@@ -108,32 +107,34 @@ export class RenderClient {
    */
   async renderFrames(
     settings: EditorSettings,
-    dither: boolean,
     order: number[],
     onFrame: FrameCallback,
   ): Promise<void> {
-    if (!this.worker) {
-      if (!this.frames.length) throw new Error("No source image");
-      const { renderPixels, resolveAnimationPalette } =
-        await import("./pipeline");
-      const palette =
-        this.frames.length > 1 && dither
-          ? resolveAnimationPalette(this.frames, settings)
-          : undefined;
-      order.forEach((index, n) =>
-        onFrame(
-          index,
-          renderPixels(this.frames[index], settings, { dither, palette }),
-          n + 1,
-          order.length,
-        ),
-      );
-      return;
-    }
-    return this.request(
-      (id) => ({ type: "render", id, settings, dither, order }),
-      [],
-      { onFrame },
+    return this.onWorkerOrMainThread(
+      () =>
+        this.request((id) => ({ type: "render", id, settings, order }), [], {
+          onFrame,
+        }),
+      async () => {
+        if (!this.frames.length) throw new Error("No source image");
+        const { renderPixels, resolveAnimationPalette } =
+          await import("./pipeline");
+        const palette =
+          this.frames.length > 1
+            ? resolveAnimationPalette(this.frames, settings)
+            : undefined;
+        order.forEach((index, n) =>
+          onFrame(
+            index,
+            renderPixels(this.frames[index], settings, {
+              dither: true,
+              palette,
+            }),
+            n + 1,
+            order.length,
+          ),
+        );
+      },
     );
   }
 
@@ -144,13 +145,20 @@ export class RenderClient {
   async decodeAnimation(
     bytes: Uint8Array<ArrayBuffer>,
   ): Promise<Animation | null> {
-    if (!this.worker) {
-      const { decodeAnimation } = await import("./animation");
-      return decodeAnimation(bytes);
-    }
-    return this.request(
-      (id) => ({ type: "decode-gif", id, bytes }),
-      [bytes.buffer],
+    return this.onWorkerOrMainThread(
+      () => {
+        // The worker gets a copy, so the bytes survive for the main-thread
+        // fallback if it fails.
+        const copy = bytes.slice();
+        return this.request(
+          (id) => ({ type: "decode-gif", id, bytes: copy }),
+          [copy.buffer],
+        );
+      },
+      async () => {
+        const { decodeAnimation } = await import("./animation");
+        return decodeAnimation(bytes);
+      },
     );
   }
 
@@ -166,11 +174,33 @@ export class RenderClient {
       const { encodeAnimation } = await import("./animation");
       return encodeAnimation(frames, delays, loop, factor, onProgress);
     }
+    // Every frame was rendered first, so the worker is up by now: transfer
+    // the frames rather than copy them (a crash fails only this save; the
+    // next one runs on the main thread).
     return this.request(
       (id) => ({ type: "encode-gif", id, frames, delays, loop, factor }),
       frames.map((frame) => frame.data.buffer),
       { onProgress },
     );
+  }
+
+  /**
+   * Runs a request in the worker, or on the main thread without one. The
+   * worker starts with the first image, so a worker that won't load can fail
+   * while that first request is in flight: the request then reruns on the
+   * main thread instead of failing.
+   */
+  private async onWorkerOrMainThread<T>(
+    onWorker: () => Promise<T>,
+    onMainThread: () => Promise<T>,
+  ): Promise<T> {
+    if (!this.worker) return onMainThread();
+    try {
+      return await onWorker();
+    } catch (error) {
+      if (error instanceof WorkerFailedError) return onMainThread();
+      throw error;
+    }
   }
 
   dispose() {

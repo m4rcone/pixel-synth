@@ -57,22 +57,20 @@ const changed: EditorSettings = {
 
 describe("settings links", () => {
   it("round-trips every setting", () => {
-    const shared = decodeSettings(encodeSettings(changed, true));
+    const shared = decodeSettings(encodeSettings(changed));
     expect(shared).toEqual({
       settings: changed,
       custom: changed.color.custom,
-      dithered: true,
     });
   });
 
   it("keeps the defaults tiny and URL-safe", () => {
-    const code = encodeSettings(DEFAULT_SETTINGS, false);
+    const code = encodeSettings(DEFAULT_SETTINGS);
     expect(code.length).toBeLessThan(20);
-    expect(encodeSettings(changed, true)).toMatch(/^[\w-]+$/);
+    expect(encodeSettings(changed)).toMatch(/^[\w-]+$/);
     expect(decodeSettings(code)).toEqual({
       settings: DEFAULT_SETTINGS,
       custom: null,
-      dithered: false,
     });
   });
 
@@ -81,7 +79,7 @@ describe("settings links", () => {
       ...changed,
       color: { ...changed.color, palette: "gameboy" as const },
     };
-    expect(decodeSettings(encodeSettings(preset, false))?.custom).toBeNull();
+    expect(decodeSettings(encodeSettings(preset))?.custom).toBeNull();
   });
 
   it("reads a retired palette id as its replacement", () => {
@@ -89,6 +87,13 @@ describe("settings links", () => {
       encode({ v: 1, color: { mode: "palette", palette: "darkroom" } }),
     )!;
     expect(shared.settings.color.palette).toBe("pixelsynth");
+  });
+
+  it("still reads links that carry the old dithered flag", () => {
+    expect(decodeSettings(encode({ v: 1, d: 1 }))).toEqual({
+      settings: DEFAULT_SETTINGS,
+      custom: null,
+    });
   });
 
   it("clamps out-of-range values and drops invalid ones", () => {
@@ -127,7 +132,6 @@ describe("settings links", () => {
     expect(settings.color.palette).toBe(DEFAULT_SETTINGS.color.palette);
     expect(settings.color.extractCount).toBe(MAX_PALETTE_COLORS);
     expect(shared.custom).toBeNull();
-    expect(shared.dithered).toBe(false);
   });
 
   it("clamps the screen and keeps its cell size whole", () => {
@@ -162,7 +166,7 @@ describe("settings links", () => {
       ...DEFAULT_SETTINGS,
       color: { ...DEFAULT_SETTINGS.color, mode: "cmyk" as const, black: 1 },
     };
-    expect(decodeSettings(encodeSettings(cmyk, false))?.settings).toEqual(cmyk);
+    expect(decodeSettings(encodeSettings(cmyk))?.settings).toEqual(cmyk);
     const clamped = decodeSettings(
       encode({ v: 1, color: { mode: "cmyk", black: 7 } }),
     );
@@ -176,7 +180,7 @@ describe("settings links", () => {
   it("carries a transparent background", () => {
     const transparent = { ...DEFAULT_SETTINGS, background: null };
     expect(
-      decodeSettings(encodeSettings(transparent, false))?.settings.background,
+      decodeSettings(encodeSettings(transparent))?.settings.background,
     ).toBeNull();
     expect(
       decodeSettings(encode({ v: 1, background: "blue" }))?.settings.background,
@@ -190,7 +194,7 @@ describe("settings links", () => {
   });
 
   it("builds an editor link with the code", () => {
-    const url = new URL(settingsUrl("https://pixelsynth.art", changed, true));
+    const url = new URL(settingsUrl("https://pixelsynth.art", changed));
     expect(url.pathname).toBe("/editor");
     expect(
       decodeSettings(url.searchParams.get(SHARE_PARAM)!)?.settings,

@@ -1,3 +1,4 @@
+import type { EditorStatus } from "@/contexts/editor-context";
 import type { EditorSettings } from "@/lib/editor/settings";
 import { siteConfig } from "@/lib/site";
 
@@ -13,7 +14,7 @@ type Size = { width: number; height: number };
 
 export type BugReportContext = {
   settings: EditorSettings;
-  status: "empty" | "loaded" | "dithered";
+  status: EditorStatus;
   /** Size of the loaded image, never its pixels or name. */
   source: Size | null;
   result: Size | null;

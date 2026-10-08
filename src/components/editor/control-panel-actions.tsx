@@ -16,9 +16,10 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+/** Discard and Reset, once there is an image to act on. */
 export function ControlPanelActions() {
   const { status } = useEditorState();
-  const { applyDither, discard, reset } = useEditorActions();
+  const { discard, reset } = useEditorActions();
   const { resetView, setShowProcessed, setSplit } = useCanvasContext();
 
   const resetCanvas = () => {
@@ -26,38 +27,21 @@ export function ControlPanelActions() {
     setShowProcessed(true);
     setSplit(null);
   };
-  // Also offered before the first dither, so a wrong image can go right away.
-  const discardButton = (
-    <ConfirmButton
-      label="Discard"
-      variant="destructive"
-      title="Discard image?"
-      description="The image, all adjustments and the processed result will be removed. This action cannot be undone."
-      onConfirm={() => {
-        discard();
-        resetCanvas();
-      }}
-    />
-  );
 
-  if (status !== "dithered") {
-    return (
-      <div className="flex w-full gap-2">
-        <Button
-          onClick={applyDither}
-          disabled={status === "empty"}
-          className="flex-2"
-        >
-          Dither image
-        </Button>
-        {status === "loaded" && discardButton}
-      </div>
-    );
-  }
+  if (status === "empty") return null;
 
   return (
-    <div className="flex w-full gap-2">
-      {discardButton}
+    <footer className="border-line bg-ink-raised sticky bottom-0 flex gap-2 border-t p-3 lg:static">
+      <ConfirmButton
+        label="Discard"
+        variant="destructive"
+        title="Discard image?"
+        description="The image, all adjustments and the processed result will be removed. This action cannot be undone."
+        onConfirm={() => {
+          discard();
+          resetCanvas();
+        }}
+      />
       <ConfirmButton
         label="Reset"
         variant="outline"
@@ -68,7 +52,7 @@ export function ControlPanelActions() {
           resetCanvas();
         }}
       />
-    </div>
+    </footer>
   );
 }
 

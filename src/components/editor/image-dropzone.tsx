@@ -1,16 +1,19 @@
 "use client";
 
 import { type ChangeEvent, type DragEvent, useRef, useState } from "react";
-import { ImageUp, LoaderCircle } from "lucide-react";
+import { LoaderCircle, Lock } from "lucide-react";
 import { useEditorActions } from "@/contexts/editor-context";
 import {
   ImageLoadError,
-  SUPPORTED_FORMATS_DETAIL,
+  MAX_IMAGE_SIZE,
+  SUPPORTED_FORMATS_SHORT,
   SUPPORTED_IMAGE_TYPES,
 } from "@/lib/editor/load-image";
+import { track } from "@/lib/track";
 import { cn } from "@/lib/utils";
 import { useLoadSample } from "@/hooks/use-load-sample";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { textLink } from "@/components/ui/link-styles";
 
 export function ImageDropzone() {
   const { load, readImage, setError } = useEditorActions();
@@ -20,7 +23,9 @@ export function ImageDropzone() {
 
   async function openFile(file: File) {
     try {
-      load(await readImage(file));
+      const image = await readImage(file);
+      load(image);
+      track("image_loaded", { source: "upload", animated: !!image.animation });
     } catch (error) {
       setError(
         error instanceof ImageLoadError
@@ -56,89 +61,123 @@ export function ImageDropzone() {
     if (file) void openFile(file);
   }
 
+  const sampleLink = `${textLink} inline-flex items-center gap-1.5 disabled:opacity-60`;
+
   return (
-    <div className="relative flex min-h-105 items-center justify-center px-6 py-8 md:min-h-125 lg:h-full">
-      <div className="relative w-full max-w-md">
-        {/* The label wraps the visually hidden input, so it is the click target. */}
-        <label
-          htmlFor="image-upload"
-          onDragEnter={handleDragEnter}
-          onDragOver={(event) => event.preventDefault()}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
+    // The whole well takes drops, framed like a viewfinder.
+    <div
+      onDragEnter={handleDragEnter}
+      onDragOver={(event) => event.preventDefault()}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      className={cn(
+        "relative flex min-h-105 items-center justify-center px-6 pt-12 pb-24 transition-colors md:min-h-125 lg:h-full",
+        isDragging && "bg-ink-raised/60",
+      )}
+    >
+      <span
+        aria-hidden="true"
+        className={cn(
+          "reticle pointer-events-none absolute inset-4 transition-colors",
+          isDragging ? "text-safelight" : "text-line-strong",
+        )}
+      />
+
+      <div className="relative flex w-full max-w-xl flex-col items-center gap-5 text-center">
+        <span
+          aria-hidden="true"
           className={cn(
-            "group flex cursor-pointer flex-col items-center gap-5 border border-dashed px-8 py-12 text-center transition-colors",
-            "focus-within:border-safelight focus-within:ring-safelight focus-within:ring-2",
-            isDragging
-              ? "border-safelight bg-ink-raised/80"
-              : "border-line-strong bg-ink-raised/40 hover:border-paper hover:bg-ink-raised/70",
+            "crosshair size-11 transition-colors",
+            isDragging ? "text-safelight" : "text-paper-dim",
+          )}
+        />
+        <p
+          id="dropzone-title"
+          className="font-display text-title text-glow font-normal text-balance"
+        >
+          Drop an image
+        </p>
+        <p className="text-paper-dim -mt-2 text-sm">
+          or paste from the clipboard
+        </p>
+
+        {/* The label is the visible button; the input inside it takes focus,
+            so keyboard users get the same control. */}
+        <label
+          className={cn(
+            buttonVariants({ size: "lg" }),
+            "has-focus-visible:outline-safelight cursor-pointer has-focus-visible:outline-2 has-focus-visible:outline-offset-3 has-focus-visible:outline-solid",
           )}
         >
-          <span
-            aria-hidden="true"
-            className={cn(
-              "border-line-strong group-hover:text-paper-hot grid size-14 place-items-center border transition-colors",
-              isDragging ? "text-safelight" : "text-paper/50",
-            )}
-          >
-            <ImageUp className="size-6" />
-          </span>
-
-          <span className="flex flex-col gap-1.5">
-            <span className="text-heading font-semibold">
-              Drop an image to dither
-            </span>
-            <span className="text-paper-dim text-sm">
-              Click to browse, or paste from the clipboard
-            </span>
-          </span>
-
+          <span id="dropzone-choose">Choose image</span>
           <input
             id="image-upload"
             type="file"
             accept={SUPPORTED_IMAGE_TYPES.join(",")}
-            aria-describedby="image-upload-description"
+            aria-labelledby="dropzone-title dropzone-choose"
+            aria-describedby="image-upload-description image-upload-limit image-upload-privacy"
             onChange={handleChange}
             className="sr-only"
           />
         </label>
 
-        <p
-          id="image-upload-description"
-          className="text-paper-dim mt-4 text-center text-sm"
-        >
-          {SUPPORTED_FORMATS_DETAIL}
-        </p>
-
-        <div className="mt-6 flex flex-col items-center gap-3">
-          <span className="text-paper-dim text-sm">or</span>
-          <Button
-            variant="outline"
+        <p className="text-paper-dim flex items-center justify-center gap-x-2 gap-y-1 text-sm max-sm:flex-col">
+          <button
+            type="button"
             onClick={() => loadSample("still")}
             disabled={loadingSample !== null}
+            className={sampleLink}
           >
             {loadingSample === "still" && (
-              <LoaderCircle className="animate-spin" aria-hidden="true" />
+              <LoaderCircle
+                className="size-3.5 animate-spin"
+                aria-hidden="true"
+              />
             )}
             {loadingSample === "still"
               ? "Loading sample…"
               : "Try a sample image"}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
+          </button>
+          <span aria-hidden="true" className="text-line-strong max-sm:hidden">
+            ·
+          </span>
+          <button
+            type="button"
             onClick={() => loadSample("animated")}
             disabled={loadingSample !== null}
-            className="text-paper-dim hover:text-paper-hot"
+            className={sampleLink}
           >
             {loadingSample === "animated" && (
-              <LoaderCircle className="animate-spin" aria-hidden="true" />
+              <LoaderCircle
+                className="size-3.5 animate-spin"
+                aria-hidden="true"
+              />
             )}
             {loadingSample === "animated"
               ? "Loading animated sample…"
               : "Try an animated sample"}
-          </Button>
-        </div>
+          </button>
+        </p>
+      </div>
+
+      {/* Console readouts inside the frame: the size limit up top (phones
+          have no room for it), formats and privacy along the bottom. */}
+      <p
+        id="image-upload-limit"
+        className="text-caps text-paper-dim absolute top-9 left-10 max-sm:hidden"
+      >
+        Max {MAX_IMAGE_SIZE} px
+        <span className="sr-only">: larger images are scaled down</span>
+      </p>
+
+      <div className="text-caps text-paper-dim absolute inset-x-10 bottom-9 flex flex-wrap justify-center gap-x-6 gap-y-1 text-center sm:justify-between">
+        <span id="image-upload-description">{SUPPORTED_FORMATS_SHORT}</span>
+        <span id="image-upload-privacy" className="flex items-center gap-1.5">
+          <Lock aria-hidden="true" className="size-3" />
+          <span>
+            Local<span className="sr-only">: nothing is uploaded</span>
+          </span>
+        </span>
       </div>
     </div>
   );

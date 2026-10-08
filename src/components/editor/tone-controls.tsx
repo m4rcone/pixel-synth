@@ -58,8 +58,7 @@ function setRange(slot: ToneSlot, range: number) {
 export function ToneControls() {
   const { status, settings } = useEditorState();
   const { update, commit } = useEditorActions();
-  // Tone mapping colors the dithered output, so it needs a dithered image.
-  const disabled = status !== "dithered";
+  const disabled = status === "empty";
 
   // Native color pickers fire continuously while dragging; render once they settle.
   const commitColor = useDebouncedCallback(() => commit(), 150);

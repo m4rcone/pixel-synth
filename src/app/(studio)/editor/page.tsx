@@ -9,6 +9,8 @@ import { SettingsFromUrl } from "@/components/editor/settings-from-url";
 import { ImageDropzone } from "@/components/editor/image-dropzone";
 import { ImageLoadError } from "@/lib/editor/load-image";
 import { useEditorActions, useEditorState } from "@/contexts/editor-context";
+import { track } from "@/lib/track";
+import { cn } from "@/lib/utils";
 
 export default function EditorPage() {
   const { status, source, result, isRendering, renderProgress, error } =
@@ -34,7 +36,9 @@ export default function EditorPage() {
       if (!file) return;
       event.preventDefault();
       try {
-        load(await readImage(file));
+        const image = await readImage(file);
+        load(image);
+        track("image_loaded", { source: "paste", animated: !!image.animation });
       } catch (error) {
         setError(
           error instanceof ImageLoadError
@@ -47,19 +51,32 @@ export default function EditorPage() {
     return () => window.removeEventListener("paste", onPaste);
   }, [status, load, readImage, setError]);
 
+  // A new image renders on arrival, so its first render says it loaded. The
+  // image counts as settled once any render ends (a failed one too), so
+  // later renders, retries included, announce themselves plainly.
+  const [settledSource, setSettledSource] = useState(source);
+  if (source && !isRendering && settledSource !== source) {
+    setSettledSource(source);
+  }
+
   // Animations announce the start and end of a render, never each frame.
   const frames = source?.animation?.frames.length;
+  const loaded = frames
+    ? `Animated GIF loaded: ${frames} frames.`
+    : "Image loaded.";
   const announcement = isRendering
-    ? frames && status === "dithered"
-      ? "Rendering animation."
-      : "Rendering image."
+    ? settledSource === source
+      ? frames
+        ? "Rendering animation."
+        : "Rendering image."
+      : `${loaded} Editor controls are now available.`
     : manualAnnouncement ||
-      (status === "dithered" && result
+      (result
         ? frames
           ? "Animation ready."
           : "Rendered image is ready."
         : source
-          ? `${frames ? `Animated GIF loaded: ${frames} frames.` : "Image loaded."} Editor controls are now available.`
+          ? loaded
           : "");
 
   return (
@@ -78,7 +95,11 @@ export default function EditorPage() {
       <div className="lg:h-below-header flex flex-col lg:flex-row">
         <section
           aria-label="Image editor workspace"
-          className="relative flex min-w-0 flex-1 flex-col"
+          // Pinned on phones only once there is an image to keep in view.
+          className={cn(
+            "bg-ink flex min-w-0 flex-1 flex-col",
+            status === "empty" ? "relative" : "sticky-workspace",
+          )}
         >
           {error && (
             <div

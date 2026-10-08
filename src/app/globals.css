@@ -162,6 +162,15 @@
   letter-spacing: 0.02em;
 }
 
+/* Tailwind v4's outline-none also sets --tw-outline-style to none, and the
+   `outline-none focus-visible:outline-2` pattern reads that variable, so
+   keyboard focus drew no outline at all. Outside any layer, this wins over
+   the utilities: a focused element gets a solid style back, and only the
+   outline width and color it asks for appear. */
+:focus-visible {
+  --tw-outline-style: solid;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring;
@@ -257,6 +266,39 @@
   }
 }
 
+/* Image-analysis reticle: four corner brackets framing a target area, such
+   as the empty editor's drop target. Drawn in currentColor, so the frame
+   takes the element's text color (line, hover white, safelight when active). */
+@utility reticle {
+  --bracket: linear-gradient(currentColor, currentColor);
+  background:
+    var(--bracket) 0 0 / 1.5rem 2px,
+    var(--bracket) 0 0 / 2px 1.5rem,
+    var(--bracket) 100% 0 / 1.5rem 2px,
+    var(--bracket) 100% 0 / 2px 1.5rem,
+    var(--bracket) 0 100% / 1.5rem 2px,
+    var(--bracket) 0 100% / 2px 1.5rem,
+    var(--bracket) 100% 100% / 1.5rem 2px,
+    var(--bracket) 100% 100% / 2px 1.5rem;
+  background-repeat: no-repeat;
+}
+
+/* Viewfinder crosshair: a cross with a small square at its center, in
+   currentColor. Decorative, beside the reticle of the empty editor. */
+@utility crosshair {
+  display: block;
+  position: relative;
+  background:
+    linear-gradient(currentColor, currentColor) center / 1px 100% no-repeat,
+    linear-gradient(currentColor, currentColor) center / 100% 1px no-repeat;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 28%;
+    border: 1px solid currentColor;
+  }
+}
+
 /* Pixel rulers around an image: one tick per step of the processing
    resolution, `--ticks` intervals across. Only around images (hero, editor
    viewport), always aria-hidden. */
@@ -287,6 +329,18 @@
 /* Fills the viewport below the sticky global header (h-14). */
 @utility h-below-header {
   height: calc(100svh - 3.5rem);
+}
+
+/* Phones held upright keep the canvas (once it shows an image) in view,
+   under the global header, while the controls scroll below it. Short
+   screens leave it in the flow. */
+@utility sticky-workspace {
+  position: relative;
+  @media (width < 48rem) and (height >= 40rem) {
+    position: sticky;
+    top: 3.5rem;
+    z-index: 10;
+  }
 }
 
 /* Images are enlarged nearest-neighbor: every pixel stays a sharp block. */

@@ -35,6 +35,7 @@ test.describe("accessibility", () => {
     "/algorithms/random-dither",
     "/palettes/game-boy",
     "/palettes/nes",
+    "/palettes/riso",
     "/palettes",
   ]) {
     test(`has no axe violations on ${route}`, async ({ page }) => {
@@ -44,6 +45,39 @@ test.describe("accessibility", () => {
       await expectNoAccessibilityViolations(page);
     });
   }
+
+  test("the 404 page keeps the console look and passes axe", async ({
+    page,
+  }) => {
+    const response = await page.goto("/no-such-page");
+    expect(response?.status()).toBe(404);
+    await page.waitForLoadState("networkidle");
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: /No signal/ }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("main").getByRole("link", { name: "Open the editor" }),
+    ).toHaveAttribute("href", "/editor");
+    // Next's built-in 404 paints a white page; this one stays on the screen.
+    const background = await page.evaluate(
+      () => getComputedStyle(document.body).backgroundColor,
+    );
+    expect(background).not.toBe("rgb(255, 255, 255)");
+    await expectNoAccessibilityViolations(page);
+  });
+
+  test("keyboard focus draws the safelight outline", async ({ page }) => {
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    // Skip link, logo, then the first header link.
+    for (let i = 0; i < 3; i++) await page.keyboard.press("Tab");
+    const style = await page.evaluate(() => {
+      const css = getComputedStyle(document.activeElement!);
+      return { style: css.outlineStyle, color: css.outlineColor };
+    });
+    expect(style).toEqual({ style: "solid", color: "rgb(255, 210, 63)" });
+  });
 
   test("skip link moves focus to main content", async ({ page }) => {
     await page.goto("/");
@@ -70,15 +104,31 @@ test.describe("accessibility", () => {
     await expectNoAccessibilityViolations(page);
   });
 
+  test("the empty editor's upload button shows keyboard focus", async ({
+    page,
+  }) => {
+    await page.goto("/editor");
+    await page.waitForLoadState("networkidle");
+    const input = page.locator("#image-upload");
+    await input.focus();
+    await page.keyboard.press("Shift+Tab");
+    await page.keyboard.press("Tab");
+    await expect(input).toBeFocused();
+    const outline = await page
+      .locator("label", { has: input })
+      .evaluate((label) => getComputedStyle(label).outlineStyle);
+    expect(outline).toBe("solid");
+  });
+
   test("upload exposes the canvas and live status", async ({ page }) => {
     await page.goto("/editor");
     await uploadTinyImage(page);
 
     await expect(
-      page.getByRole("application", { name: "Original image canvas" }),
+      page.getByRole("application", { name: "Processed image canvas" }),
     ).toBeVisible();
     await expect(page.locator('[aria-live="polite"]')).toContainText(
-      "Image loaded",
+      "Rendered image is ready",
     );
   });
 
@@ -87,7 +137,7 @@ test.describe("accessibility", () => {
     await uploadTinyImage(page);
 
     const canvas = page.getByRole("application", {
-      name: "Original image canvas",
+      name: "Processed image canvas",
     });
     await canvas.focus();
 
@@ -127,10 +177,10 @@ test.describe("accessibility", () => {
   }) => {
     await page.goto("/editor");
     await uploadTinyImage(page);
-    await page.getByRole("button", { name: "Dither image" }).click();
     await expect(
       page.getByRole("button", { name: "Reset", exact: true }),
     ).toBeVisible();
+    await page.getByText("More filters").click();
 
     await expectNoAccessibilityViolations(page);
   });
@@ -140,7 +190,6 @@ test.describe("accessibility", () => {
   }) => {
     await page.goto("/editor");
     await uploadTinyImage(page);
-    await page.getByRole("button", { name: "Dither image" }).click();
     await page.getByRole("button", { name: "Palette", exact: true }).click();
     await page.getByRole("button", { name: "Edit colors" }).click();
     await expectNoAccessibilityViolations(page);
@@ -155,7 +204,6 @@ test.describe("accessibility", () => {
   test("CMYK controls have no axe violations", async ({ page }) => {
     await page.goto("/editor?algorithm=halftone");
     await uploadTinyImage(page);
-    await page.getByRole("button", { name: "Dither image" }).click();
     await page.getByRole("button", { name: "CMYK", exact: true }).click();
     await expect(page.getByRole("list", { name: "Inks" })).toBeVisible();
     await expectNoAccessibilityViolations(page);

@@ -78,7 +78,7 @@ export function Canvas({ onStatusChange }: CanvasProps) {
     setSplit,
   } = useCanvasContext();
   const state = useEditorState();
-  const { source, result, status } = state;
+  const { source, result } = state;
   useAnimationPlayback();
   const {
     animation,
@@ -88,13 +88,9 @@ export function Canvas({ onStatusChange }: CanvasProps) {
     togglePlaying,
     step: stepFrame,
   } = useAnimationControls();
-  // The shown frame, before and after. An animation previews filters on
-  // the paused frame only, so it plays unfiltered before dithering.
+  // The shown frame, before and after.
   const original = animation ? animation.bitmaps[frameIndex] : source?.bitmap;
-  const processed =
-    animation && status !== "dithered" && playing
-      ? null
-      : frameResult(state, frameIndex);
+  const processed = frameResult(state, frameIndex);
   const splitting = split !== null && !!result && !!source;
   const image = splitting
     ? (processed ?? original)

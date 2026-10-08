@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Link2 } from "lucide-react";
 import { useEditorState } from "@/contexts/editor-context";
 import { settingsUrl } from "@/lib/editor/share";
+import { track } from "@/lib/track";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -45,18 +46,15 @@ export function ShareSettings() {
 
 /** Rendered only while the popover is open, so the link matches that moment. */
 function ShareLink() {
-  const { settings, status } = useEditorState();
+  const { settings } = useEditorState();
   const [copied, setCopied] = useState<"yes" | "failed" | null>(null);
-  const url = settingsUrl(
-    window.location.origin,
-    settings,
-    status === "dithered",
-  );
+  const url = settingsUrl(window.location.origin, settings);
 
   async function copy() {
     try {
       await navigator.clipboard.writeText(url);
       setCopied("yes");
+      track("share_link_copied", {});
     } catch {
       setCopied("failed");
       document.getElementById("share-settings-url")?.focus();

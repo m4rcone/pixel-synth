@@ -9,17 +9,13 @@ import { getPalettePreset } from "../src/lib/palettes";
 
 const FRAMES = ANIMATED_SAMPLE.frames;
 
-/** Opens the animated sample, paused (reduced motion) unless asked. */
+/**
+ * Opens the animated sample, paused (reduced motion) unless asked, and waits
+ * for every frame to render (it renders on arrival).
+ */
 async function openSample(page: Page, query = "", { motion = false } = {}) {
   if (!motion) await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto(`/editor?sample=animated${query}`);
-  await expect(page.locator('[aria-live="polite"]')).toContainText(
-    `Animated GIF loaded: ${FRAMES} frames`,
-  );
-}
-
-async function applyDither(page: Page) {
-  await page.getByRole("button", { name: "Dither image" }).click();
   await expect(page.locator('[aria-live="polite"]')).toContainText(
     "Animation ready.",
   );
@@ -102,11 +98,10 @@ test("an animated GIF can be dropped or picked like any image", async ({
   await expect(counter(page)).toHaveText(`Frame 1 of ${FRAMES}`);
 });
 
-test("applying dither renders every frame, then saves an animated GIF", async ({
+test("every frame renders on arrival, then saves as an animated GIF", async ({
   page,
 }) => {
   await openSample(page, "&palette=gameboy");
-  await applyDither(page);
 
   await page.getByRole("button", { name: "Save", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Save animation" });
@@ -202,7 +197,6 @@ for (const viewport of [
     await openSample(page);
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
-    await applyDither(page);
     await page.getByRole("button", { name: "Save", exact: true }).click();
     await expect(
       page.getByRole("button", { name: "Animated GIF" }),
@@ -211,3 +205,33 @@ for (const viewport of [
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   });
 }
+
+test("the animated sample takes a pending pixel art preset", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/editor?preset=pixel-art");
+  await page.waitForLoadState("networkidle");
+  await page.getByRole("button", { name: "Try an animated sample" }).click();
+
+  // 360×240 → 136×91, every frame rendered with the preset.
+  await expect(page.locator('[aria-live="polite"]')).toContainText(
+    "Animation ready.",
+  );
+  await expect(page.getByLabel("Output size")).toHaveValue("136");
+  await expect(page.getByRole("combobox", { name: "Algorithm" })).toHaveText(
+    "Bayer 2×2",
+  );
+  await expect(page.getByRole("combobox", { name: "Palette" })).toContainText(
+    "PICO-8",
+  );
+  await expect(counter(page)).toHaveText(`Frame 1 of ${FRAMES}`);
+});
+
+test("an animated GIF stays animated when the render worker won't load", async ({
+  page,
+}) => {
+  await page.route(/worker/i, (route) => route.abort());
+  await openSample(page);
+  await expect(counter(page)).toHaveText(`Frame 1 of ${FRAMES}`);
+});

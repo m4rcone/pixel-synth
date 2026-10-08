@@ -9,10 +9,11 @@ import {
   type HeroAlgorithmInfo,
   type HeroPaletteInfo,
 } from "@/components/landing/hero-instrument";
-import { Logo } from "@/components/logo";
 import { SiteFooter } from "@/components/site-footer";
+import { SiteHeader } from "@/components/site-header";
 import { StructuredData } from "@/components/structured-data";
 import { Button } from "@/components/ui/button";
+import { focusRing, textLink } from "@/components/ui/link-styles";
 import {
   ALGORITHM_CATEGORIES,
   ALGORITHMS,
@@ -25,6 +26,7 @@ import {
 import { MAX_ANIMATION_FRAMES } from "@/lib/editor/animation-limits";
 import { EXPORT_FACTORS } from "@/lib/editor/export";
 import { SUPPORTED_IMAGE_TYPES } from "@/lib/editor/load-image";
+import { PIXEL_ART_LINK } from "@/lib/editor/pixel-art";
 import extractedColors from "@/data/sample-extracted-palette.json";
 import { faqStructuredData } from "@/lib/faq";
 import { HOME_FAQ } from "@/lib/home-faq";
@@ -50,7 +52,6 @@ import { absoluteUrl, siteConfig } from "@/lib/site";
 
 const SAMPLE_LINK = "/editor?sample=1";
 const ANIMATED_SAMPLE_LINK = "/editor?sample=animated";
-const PIXEL_ART_LINK = "/editor?preset=pixel-art";
 
 const paletteName = (id: string) => getPalettePreset(id)?.name ?? id;
 const algorithmName = (slug: string) => getAlgorithm(slug)?.shortName ?? slug;
@@ -132,41 +133,13 @@ const homeStructuredData = [
   faqStructuredData(HOME_FAQ),
 ];
 
-const focusRing =
-  "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-safelight";
-
-const navLink = `text-caps px-2 py-1.5 text-paper-dim transition-colors hover:text-paper-hot ${focusRing}`;
-
-const textLink = `text-paper hover:text-paper-hot hover:decoration-paper-hot decoration-line-strong underline underline-offset-4 transition-colors ${focusRing}`;
-
 export default function HomePage() {
   return (
     <div className="scanlines relative min-h-svh overflow-x-clip">
       <StructuredData data={homeStructuredData} />
       <ScrollReveal />
 
-      <header className="border-line bg-ink/90 sticky top-0 z-20 border-b backdrop-blur-sm">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-8">
-          <Link href="/" aria-label="PixelSynth home" className={focusRing}>
-            <Logo wordmarkClassName="max-sm:sr-only" />
-          </Link>
-          <nav aria-label="Primary" className="flex items-center sm:gap-2">
-            <Link href="/editor" className={navLink}>
-              Editor
-            </Link>
-            <Link href="/algorithms" className={navLink}>
-              Algorithms
-            </Link>
-            <Link href="/palettes" className={navLink}>
-              Palettes
-            </Link>
-          </nav>
-          <p className="text-caps text-paper-dim flex items-center gap-2 max-lg:hidden">
-            <span aria-hidden="true" className="bg-safelight size-2" />
-            Local · 0 uploads
-          </p>
-        </div>
-      </header>
+      <SiteHeader />
 
       <div className="mx-auto flex max-w-6xl flex-col px-4 sm:px-8">
         <main
@@ -188,16 +161,16 @@ export default function HomePage() {
               </h1>
 
               <p className="text-paper-dim max-w-md text-lg leading-relaxed">
-                Turn photos and animated GIFs into 1-bit, halftone or pixel art.{" "}
-                {ALGORITHMS.length} algorithms, {PALETTE_PRESETS.length}{" "}
-                palettes from Game Boy to Riso. Every pixel is processed on your
-                device.
+                Turn photos and animated GIFs into{" "}
+                <span className="whitespace-nowrap">1-bit</span>, halftone or
+                pixel art for album covers, game sprites, posters and laser
+                engraving. Every pixel is processed on your device.
               </p>
 
               <div className="flex flex-col gap-4">
                 <div className="flex flex-wrap items-center gap-3">
                   <Button asChild size="lg">
-                    <Link href="/editor">Open the editor</Link>
+                    <Link href="/editor">Dither your image</Link>
                   </Button>
                   <Button asChild size="lg" variant="outline">
                     <Link href={SAMPLE_LINK}>Try the sample</Link>
@@ -441,7 +414,7 @@ export default function HomePage() {
             </p>
             <div className="flex flex-wrap gap-3">
               <Button asChild size="lg">
-                <Link href="/editor">Open the editor</Link>
+                <Link href="/editor">Dither your image</Link>
               </Button>
               <Button asChild size="lg" variant="outline">
                 <Link href={SAMPLE_LINK}>Try the sample</Link>

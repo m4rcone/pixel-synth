@@ -9,8 +9,18 @@ export const siteConfig = {
   description: `Turn photos and animated GIFs into dithered, 1-bit or pixel art in your browser. ${ALGORITHMS.length} algorithms, Game Boy, NES, PICO-8 and CGA palettes. Free, no uploads.`,
   creator: "m4rcone",
   previewImage: "/specimens/floyd-steinberg.png",
-  /** Last meaningful content update, used by the sitemap. */
+  /**
+   * Last meaningful content update (YYYY-MM-DD) of the pages without their
+   * own date in `pageUpdates` or in their guide; used by the sitemap and the
+   * guides' structured data.
+   */
   updated: "2026-09-26",
+  /** Pages updated since `updated`, by path. */
+  pageUpdates: {
+    "/": "2026-10-08",
+    "/editor": "2026-10-08",
+    "/palettes": "2026-10-08",
+  } as Record<string, string>,
   links: {
     /** Author profile (structured data). */
     github: "https://github.com/m4rcone",
@@ -20,6 +30,11 @@ export const siteConfig = {
     support: "https://ko-fi.com/m4rcone",
   },
 };
+
+/** Last meaningful content update of a page: its own date or the site's. */
+export function pageUpdated(path: string, own?: string) {
+  return own ?? siteConfig.pageUpdates[path] ?? siteConfig.updated;
+}
 
 export function absoluteUrl(path = "/") {
   return new URL(path, siteConfig.url).toString();

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { isAlgorithmId } from "@/lib/algorithms";
 import { faqAnswerText, faqStructuredData, type FaqPart } from "@/lib/faq";
+import { PIXEL_ART_LINK } from "@/lib/editor/pixel-art";
 import {
   getPaletteGuide,
   gplFile,
@@ -52,7 +53,7 @@ describe.each(PALETTE_GUIDES)("$slug palette guide", (guide) => {
       if (algorithm) expect(isAlgorithmId(algorithm[1])).toBe(true);
       else if (page) expect(getPaletteGuide(page[1])).toBeDefined();
       else if (card) expect(isPaletteId(card[1])).toBe(true);
-      else expect(href).toBe("/editor?preset=pixel-art");
+      else expect(href).toBe(PIXEL_ART_LINK);
     }
   });
 
@@ -86,6 +87,6 @@ describe("palette guide links", () => {
   it("links presets to their guide, others to their card", () => {
     expect(guideForPalette("gameboy-pocket")?.slug).toBe("game-boy");
     expect(paletteHref("gameboy")).toBe("/palettes/game-boy");
-    expect(paletteHref("sepia")).toBe("/palettes#palette-sepia");
+    expect(paletteHref("grayscale-4")).toBe("/palettes#palette-grayscale-4");
   });
 });
